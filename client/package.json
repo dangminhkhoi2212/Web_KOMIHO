@@ -1,0 +1,35 @@
+{
+    "name": "client",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev -p 3000",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "@hookform/resolvers": "^3.2.0",
+        "@reduxjs/toolkit": "^1.9.5",
+        "autoprefixer": "10.4.14",
+        "axios": "^1.4.0",
+        "clsx": "^2.0.0",
+        "debug": "^4.3.4",
+        "flowbite": "^1.8.1",
+        "flowbite-react": "^0.5.0",
+        "next": "13.4.12",
+        "next-auth": "^4.23.1",
+        "postcss": "8.4.27",
+        "react": "18.2.0",
+        "react-countdown": "^2.3.5",
+        "react-dom": "18.2.0",
+        "react-hook-form": "^7.45.4",
+        "react-icons": "^4.10.1",
+        "react-redux": "^8.1.2",
+        "react-spinners": "^0.13.8",
+        "redux-persist": "^6.0.0",
+        "supports-color": "8.1.1",
+        "tailwindcss": "3.3.3",
+        "yup": "^1.2.0"
+    }
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="shortcut icon" href="./logo.png" type="image/x-icon" />
+        <link rel="stylesheet" href="./assets/style.css" />
+
+        <style>
+            a {
+                background-color: #8fb3ff;
+                padding: 10px 15px;
+                border-radius: 10px;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div
+            style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            ">
+            <div
+                style="
+                    display: flex;
+                    flex-direction: column;
+                    gap: 7px;
+                    justify-content: center;
+                    align-items: center;
+                ">
+                <h4>Welcome to KOMIHO</h4>
+                <p>
+                    You have entered ${data.email} as your Email Address for
+                    your account.
+                </p>
+                <p>
+                    Please verify your email address by clicking on the button
+                    below.
+                </p>
+                <a
+                    href="${process.env.CLIENT_URL}/verify-email?email=${data.email}&emailToken=${emailToken}"
+                    style="
+                        padding: 0.8rem 1.2rem;
+                        border-radius: 1rem;
+                        background-color: #2954ad;
+                        color: #ffffff;
+                    ">
+                    Verify</a
+                >
+            </div>
+        </div>
+    </body>
+</html>

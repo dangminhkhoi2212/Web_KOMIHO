@@ -1,0 +1,2 @@
+font: ewert
+link: https://favicon.io/favicon-generator/
