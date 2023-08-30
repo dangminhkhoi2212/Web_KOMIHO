@@ -26,6 +26,7 @@ const MediaLink = () => {
                         width={0}
                         height={0}
                         alt={list.name}
+                        priority
                         className={clsx(list.cls)}
                     />
                 </a>

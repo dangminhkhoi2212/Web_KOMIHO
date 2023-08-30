@@ -7,7 +7,12 @@ const routes = {
     forgetPassword: '/login/forget-password',
     register: '/register',
 
-    myStore: '/my-store',
+    store: '/store',
+    storeAllProducts: '/store/all',
+    storeShirts: '/store/shirts',
+    storePants: '/store/pants',
+
+    addProduct: '/add-product',
     myAccount: '/account/my-account',
     profile: '/account/my-account/profile',
     address: '/account/my-account/address',

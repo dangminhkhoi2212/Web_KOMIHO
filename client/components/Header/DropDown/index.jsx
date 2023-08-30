@@ -15,7 +15,11 @@ export default function DropdownItem() {
     const [show, setShow] = useState(false);
     const handleLogout = () => {
         setUser(null);
-        localStorage.clear();
+
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+
+        localStorage.removeItem('persist:root');
         signOut({ callbackUrl: routes.login });
     };
     return (
@@ -26,8 +30,8 @@ export default function DropdownItem() {
                     onMouseEnter={() => setShow(true)}
                     onMouseLeave={() => setShow(false)}>
                     <AvatarText
-                        src={user.image && user.image.url}
-                        text={user.name}
+                        src={user?.avatar?.url}
+                        text={user?.name}
                         className="cursor-pointer text-sm"
                     />
                     {show && (

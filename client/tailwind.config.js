@@ -24,6 +24,8 @@ module.exports = {
                 header: '100',
                 'drop-down': '1000',
                 container: '50',
+                loading: '2000',
+                alert: '5000',
             },
         },
     },

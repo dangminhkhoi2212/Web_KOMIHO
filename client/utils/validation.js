@@ -4,7 +4,7 @@ const phoneRegExp = /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/;
 
 const emailYup = yup
     .string()
-    .required()
+    .required('Email is a required field')
     .email('Email must be a valid email')
     .matches(/^(?!.*@[^,]*,)/, 'Email must be a valid email')
     .trim();
@@ -12,7 +12,7 @@ const emailYup = yup
 export const phoneYup = yup
     .string()
     .test('phone', 'Invalid phone number', (phoneNumber) => {
-        if (phoneNumber.length > 0) {
+        if (phoneNumber?.length > 0) {
             return phoneRegExp.test(phoneNumber);
         }
         return true;
@@ -23,7 +23,7 @@ const nameYup = yup
     .max(30, 'Length of name is not over 30 characters');
 const passwordYup = yup
     .string()
-    .required()
+    .required('Password is a required field')
     .min(5, 'Must be 5 characters or more')
     .matches(/[@$!%*#?&]+/, 'One special character in @$!%*#?&')
     .matches(/\d+/, 'One number');
@@ -71,6 +71,10 @@ export const loginSchema = yup.object({
 export const registerSchema = yup.object({
     name: nameYup,
     email: emailYup,
+    phone: phoneYup,
     password: passwordYup,
     passwordConfirmation: confirmPasswordYup,
+});
+export const deleteAccountSchema = yup.object({
+    password: passwordYup,
 });

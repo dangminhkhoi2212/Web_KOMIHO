@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 
 const PROVINCE_API = 'https://provinces.open-api.vn/api/';
 import SelectInput from '@/components/SelectCustom';
+import { useDispatch } from 'react-redux';
 const AddressForm = ({ setValue }) => {
+    const dispatch = useDispatch();
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
@@ -20,7 +22,12 @@ const AddressForm = ({ setValue }) => {
 
                 if (data) setProvinces(data);
             } catch (error) {
-                console.log('🚀 ~ file: index.jsx:19 ~ getApi ~ error:', error);
+                dispatch(
+                    setAlert({
+                        status: 'failure',
+                        message: "Don't get provinces. Please try again.",
+                    }),
+                );
             }
         };
         getApi();
@@ -37,7 +44,12 @@ const AddressForm = ({ setValue }) => {
 
                 if (data) setDistricts(data.districts);
             } catch (error) {
-                console.log('🚀 ~ file: index.jsx:19 ~ getApi ~ error:', error);
+                dispatch(
+                    setAlert({
+                        status: 'failure',
+                        message: "Don't get districts. Please try again.",
+                    }),
+                );
             }
         };
         getApi();
@@ -54,7 +66,12 @@ const AddressForm = ({ setValue }) => {
 
                 if (data) setWards(data.wards);
             } catch (error) {
-                console.log('🚀 ~ file: index.jsx:19 ~ getApi ~ error:', error);
+                dispatch(
+                    setAlert({
+                        status: 'failure',
+                        message: "Don't get wards. Please try again.",
+                    }),
+                );
             }
         };
         getApi();
@@ -70,7 +87,9 @@ const AddressForm = ({ setValue }) => {
             : '';
 
         const ward = wards ? wards.find((item) => item.code == wardCode) : '';
-        const data = `${ward?.name}, ${district?.name}, ${province?.name}`;
+        const data = `${ward?.name || '...'}, ${district?.name || '...'}, ${
+            province?.name || '...'
+        }`;
         setValue(data);
     }, [provinceCode, districtCode, wardCode]);
     return (

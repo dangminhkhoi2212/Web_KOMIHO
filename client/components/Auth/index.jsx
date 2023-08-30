@@ -7,19 +7,22 @@ import { Suspense } from 'react';
 import ProviderStore from '@/redux/Provider';
 import UserLogin from './UserLogin';
 import Loading from '@/components/Loading';
+import ShowAlert from './ShowAlert';
 const Auth = ({ children }) => {
     return (
         <ProviderStore>
             <SessionProvider>
                 <UserLogin>
-                    <div className=" flex flex-col justify-between ">
+                    <div className=" flex flex-col justify-between relative ">
                         <Header />
-                        <div className="bg-default py-4 lg:px-20 relative z-container ">
-                            <BreadCrumb />
-                            <Suspense
-                                fallback={<Loading loadingStatus={true} />}>
-                                {children}
-                            </Suspense>
+                        <div className="bg-default py-4 lg:px-20 min-h-[400px]   ">
+                            <ShowAlert>
+                                <BreadCrumb />
+                                <Suspense
+                                    fallback={<Loading loadingStatus={true} />}>
+                                    {children}
+                                </Suspense>
+                            </ShowAlert>
                         </div>
                         <Footer />
                     </div>

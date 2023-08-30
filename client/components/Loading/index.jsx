@@ -5,14 +5,13 @@ const Loading = ({ loadingStatus, colorProp, sizeProp }) => {
     const size = sizeProp || 100;
 
     return (
-        <div className="flex justify-center items-center inset-0 absolute z-drop-down">
+        <div className="flex justify-center items-center inset-0 fixed z-loading ">
             <HashLoader
                 color={color}
                 loading={loadingStatus}
                 size={size}
                 aria-label="Loading Spinner"
                 data-testid="loader"
-                // cssOverride="opacity-100"
                 speedMultiplier={1.6}
             />
         </div>

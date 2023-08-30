@@ -17,16 +17,11 @@ import InputCustom from '@/components/InputCustom';
 import Logo from '../Logo';
 import routes from '@/routes';
 import Alert from '@/components/Alert';
+import { setAlert } from '../Alert/alertSlice';
 const LoginForm = () => {
-    const searchParams = useSearchParams();
     const dispatch = useDispatch();
     const router = useRouter();
-    const [notice, setNotice] = useState('');
-    useEffect(() => {
-        const info = searchParams.get('notice');
-        setNotice(info);
-    }, [router]);
-    const [message, setMessage] = useState('');
+
     const [loading, setLoading] = useState(false);
     const {
         handleSubmit,
@@ -43,6 +38,9 @@ const LoginForm = () => {
 
             if (result) {
                 dispatch(setUser(result));
+                dispatch(
+                    setAlert({ status: 'success', message: 'Login Success.' }),
+                );
                 localStorage.setItem('accessToken', result.accessToken);
                 localStorage.setItem('refreshToken', result.refreshToken);
                 router.push(routes.home);
@@ -51,12 +49,16 @@ const LoginForm = () => {
         } catch (error) {
             setLoading(false);
 
-            setMessage(error.response.data.message || error.message);
+            dispatch(
+                setAlert({
+                    status: 'failure',
+                    message: error?.response?.data?.message || error?.message,
+                }),
+            );
         }
     };
     return (
         <div className="flex flex-col justify-center gap-3 bg-white rounded-xl p-5 w-80 shadow-md ">
-            {notice && <Alert message={notice} status={'warning'} />}
             <div className="  text-center">
                 <p className="text-2xl font-bold ">Welcome</p>
                 <Logo />
@@ -111,7 +113,6 @@ const LoginForm = () => {
                         )}
                     />
                 </div>
-                <span className="text-red-500">{message}</span>
                 <p
                     className="text-center cursor-pointer text-accent"
                     onClick={() => {

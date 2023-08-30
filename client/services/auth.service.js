@@ -17,6 +17,7 @@ export const verifyEmail = async (email, emailToken) => {
         })
     ).data;
 };
-export const register = async (name, email, password) => {
-    return (await api.post('/auth/register', { name, email, password })).data;
+export const register = async (name, email, phone, password) => {
+    return (await api.post('/auth/register', { name, email, phone, password }))
+        .data;
 };

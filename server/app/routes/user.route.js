@@ -7,12 +7,15 @@ import { verifyToken } from '../middleware/verifyToken.js';
 router
     .route('/update/profile/:userId')
     .put(verifyToken, multer.single('avatar'), userController.updateUser);
-router.route('/update/address/:userId').put(userController.updateAddress);
+router
+    .route('/update/address/:userId')
+    .put(verifyToken, userController.updateAddress);
 
 router
     .route('/:id')
-    .post(userController.deleteUser)
-    .put(userController.updateUser);
+    .get(userController.getUser)
+    .post(verifyToken, userController.deleteUser)
+    .put(verifyToken, userController.updateUser);
 router
     .route('/')
     .get(userController.getAllUsers)

@@ -2,15 +2,16 @@
 import { createElement, useEffect, useState } from 'react';
 import { Alert } from 'flowbite-react';
 import { statusList } from './statusList';
-export default function index({ status, message }) {
+export default function index({ id, status, message }) {
     const [isShow, setIsShow] = useState(true);
 
     useEffect(() => {
+        setIsShow(true);
         const showTime = setTimeout(() => {
             setIsShow(false);
         }, 3000);
         return () => clearTimeout(showTime);
-    }, []);
+    }, [id]);
     return (
         <>
             {isShow &&
@@ -24,7 +25,7 @@ export default function index({ status, message }) {
                                 onDismiss={() => {
                                     setIsShow(false);
                                 }}
-                                className="absolute top-2 inset-x-1/4 z-drop-down">
+                                className="fixed inset-x-1/4 z-alert shadow-md ">
                                 <span>
                                     <p>{message}</p>
                                 </span>

@@ -1,14 +1,14 @@
 import bcrypt from 'bcrypt';
 import User from '../models/user.model.js';
 import ApiError from '../utils/apiError.js';
-import 'dotenv/config';
+import 'dotenv/config.js';
 import {
     createAccessToken,
     createRefreshToken,
 } from '../services/token.service.js';
 import { sendMail } from '../utils/mailer.js';
-const PROPERTIES_USER =
-    'name email phone image  emailVerified bank address refreshToken';
+
+const PROPERTIES_USER = process.env.PROPERTIES_USER;
 
 export const login = async (req, res, next) => {
     try {
@@ -74,18 +74,21 @@ export const register = async (req, res, next) => {
     try {
         const data = req.body;
 
-        const existed = await checkUserExisted(data.email);
+        const existedEmail = await checkUserExisted(data?.email);
+        if (existedEmail) {
+            return next(new ApiError(400, 'This email is existed.'));
+        }
+        const existedPhone = await checkUserExisted(data?.phone);
+        if (existedPhone) {
+            return next(new ApiError(400, 'This phone is existed.'));
+        }
+        const hashPassword = await bcrypt.hash(data.password, BCRYPT_HASH);
 
-        if (existed) {
-            next(new ApiError(400, 'This user existed.'));
-        } else {
-            const hashPassword = await bcrypt.hash(data.password, BCRYPT_HASH);
-
-            const emailToken = await bcrypt.hash(data.email, BCRYPT_HASH);
-            await sendMail(
-                data.email,
-                'Verify Account',
-                `<div style="display: table;">
+        const emailToken = await bcrypt.hash(data.email, BCRYPT_HASH);
+        await sendMail(
+            data.email,
+            'Verify Account',
+            `<div style="display: table;">
                     <div style="display: table-cell; vertical-align: middle;">
                         <div style="text-align: center;padding: 1rem;border: 1px solid;border-radius: 1rem;">
                             <h4>Welcome to KOMIHO</h4>
@@ -113,18 +116,17 @@ export const register = async (req, res, next) => {
                         </div>
                     </div>
                 </div>`,
-            );
+        );
 
-            const newUser = await User.create({
-                ...data,
-                password: hashPassword,
-            });
-            const userWithoutPassword = await User.findById(newUser._id)
-                .select('-password')
-                .lean();
+        const newUser = await User.create({
+            ...data,
+            password: hashPassword,
+        });
+        const userWithoutPassword = await User.findById(newUser._id)
+            .select('-password')
+            .lean();
 
-            return res.json(userWithoutPassword);
-        }
+        return res.json(userWithoutPassword);
     } catch (error) {
         next(new ApiError(error.code || 500, error.message));
     }

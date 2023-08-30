@@ -6,30 +6,45 @@ import { useSelector } from 'react-redux';
 import { getUser } from '@/redux/selector';
 import { loginWithGoogle } from '@/services/auth.service';
 import { setUser } from '@/components/Auth/authSlice';
+import { setAlert } from '@/components/Alert/alertSlice';
 import Loading from '@/components/Loading';
 const UserLogin = ({ children }) => {
-    const user = useSelector(getUser);
+    const userId = useSelector((state) => state.user._id);
+    console.log('🚀 ~ file: index.jsx:13 ~ UserLogin ~ user:', userId);
     const { data: session, status } = useSession();
-    // console.log('🚀 ~ file: index.jsx:12 ~ UserLogin ~ status:', status);
-    // console.log('🚀 ~ file: index.jsx:12 ~ UserLogin ~ session:', session);
     const dispatch = useDispatch();
+
     useEffect(() => {
         const login = async () => {
             try {
                 if (session && session.id_token) {
-                    if (!user._id) {
+                    if (!userId) {
                         const result = await loginWithGoogle(session.id_token);
+
                         dispatch(setUser(result));
+                        dispatch(
+                            setAlert({
+                                status: 'success',
+                                message: 'Login successfully.',
+                            }),
+                        );
                         localStorage.setItem('accessToken', result.accessToken);
                         localStorage.setItem(
                             'refreshToken',
                             result.refreshToken,
                         );
                     }
+                    return;
                 }
                 return;
             } catch (error) {
-                console.log('🚀 ~ file: index.jsx:21 ~ login ~ error:', error);
+                dispatch(
+                    setAlert({
+                        status: 'failure',
+                        message:
+                            error?.response?.data?.message || 'Login failed.',
+                    }),
+                );
             }
         };
         login();

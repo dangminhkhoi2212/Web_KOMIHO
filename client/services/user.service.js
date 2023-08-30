@@ -13,3 +13,9 @@ export const updateProfile = async (userId, data) => {
 export const updateAddress = async (userId, data) => {
     return (await api.put(`/user/update/address/${userId}`, data)).data;
 };
+export const deleteUser = async (userId, password) => {
+    return (await api.post(`/user/${userId}`, { password })).data;
+};
+export const getUserApi = async (userId) => {
+    return (await api.get(`/user/${userId}`)).data;
+};

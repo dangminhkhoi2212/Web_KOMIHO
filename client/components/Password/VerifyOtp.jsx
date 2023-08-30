@@ -14,7 +14,7 @@ import { VscSend } from 'react-icons/vsc';
 import Alert from '@/components/Alert';
 import InputCustom from '@/components/InputCustom';
 import { otpSchema } from '@/utils/validation';
-const VerifyCode = ({ handleNext, email, setOtp }) => {
+const VerifyCode = ({ handleEvent, email, setOtp }) => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [messageAlert, setMessageAlert] = useState('');
@@ -53,7 +53,7 @@ const VerifyCode = ({ handleNext, email, setOtp }) => {
             setLoading(false);
             if (result.otp) {
                 setOtp(data.otp);
-                handleNext();
+                if (handleEvent) handleEvent();
             }
         } catch (error) {
             setLoading(false);

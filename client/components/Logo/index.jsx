@@ -8,9 +8,9 @@ const Logo = () => {
                 src={LogoImage}
                 alt="logo"
                 priority
-                width={50}
-                height={50}></Image>
-            <p className="text-xl font-semibold">KOMIHO</p>
+                width={36}
+                height={36}></Image>
+            <p className="text-md font-semibold">KOMIHO</p>
         </Link>
     );
 };

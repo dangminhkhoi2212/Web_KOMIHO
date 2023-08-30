@@ -11,15 +11,7 @@ export const refreshToken = async (req, res, next) => {
         const refreshToken = req.body.refreshToken;
         if (!refreshToken) next(new ApiError(401, "Don't find refresh token"));
 
-        console.log(
-            '🚀 ~ file: refreshToken.controller.js:17 ~ refreshToken ~ refreshToken:',
-            refreshToken,
-        );
         const data = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-        console.log(
-            '🚀 ~ file: refreshToken.controller.js:18 ~ refreshToken ~ data:',
-            data,
-        );
 
         const user = await User.findById(data.userId);
         if (!user) {

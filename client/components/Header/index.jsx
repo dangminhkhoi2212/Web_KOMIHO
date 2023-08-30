@@ -13,7 +13,7 @@ const Header = () => {
     const user = useSelector(getUser);
 
     return (
-        <div className="w-full  bg-white text-center pt-3 z-header text-sm">
+        <div className=" bg-white text-center pt-3 z-header text-sm sticky top-0 ">
             <div className="flex items-center justify-around">
                 <div className="">
                     <MdOutlineEmail className="inline text-2xl mx-2" />
@@ -22,7 +22,7 @@ const Header = () => {
                 <Logo />
                 <MediaLink />
             </div>
-            <div className="flex flex-row justify-evenly items-center sticky top-10">
+            <div className="flex flex-row justify-evenly items-center w-full ">
                 <Search />
                 <Navigate />
                 {user._id ? <DropDown /> : <UserTools />}

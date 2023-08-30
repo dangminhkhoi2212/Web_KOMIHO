@@ -3,12 +3,14 @@ import { OAuth2Client } from 'google-auth-library';
 import ApiError from '../utils/apiError.js';
 import User from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
-const PROPERTIES_USER =
-    'name email phone image  emailVerified bank address refreshToken';
+
+const PROPERTIES_USER = process.env.PROPERTIES_USER;
+
 import {
     createAccessToken,
     createRefreshToken,
 } from '../services/token.service.js';
+
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const loginWithGoogle = async (req, res, next) => {
@@ -47,7 +49,7 @@ export const loginWithGoogle = async (req, res, next) => {
             name: payload.name,
             email: payload.email,
             emailVerified: true,
-            image: {
+            avatar: {
                 url: payload.picture,
             },
             refreshToken,

@@ -41,10 +41,10 @@ const layout = ({ children }) => {
     return (
         <div className="grid grid-cols-12 gap-3 items-start xl:mx-20 my-5">
             <div className="col-span-3 flex flex-col gap-3 justify-center items-center">
-                <div className="border-2 border-double py-3 w-full rounded-md">
+                <div className="border-4 border-double py-3 w-full rounded-xl">
                     <AvatarText
-                        name={user.name}
-                        src={user.image && user.image.url}
+                        name={user?.name}
+                        src={user?.avatar?.url}
                         text={'Edit profile'}
                     />
                 </div>
@@ -65,6 +65,7 @@ const layout = ({ children }) => {
                                         <Link
                                             href={child.link}
                                             key={child.name}
+                                            as={child.link}
                                             className="hover:text-primary">
                                             {child.name}
                                         </Link>
@@ -74,7 +75,7 @@ const layout = ({ children }) => {
                     ))}
                 </div>
             </div>
-            <div className="col-span-9 xl:p-5  rounded-md bg-white relative">
+            <div className="col-span-9 xl:p-5  rounded-md bg-white relative min-h-[250px]">
                 <Suspense fallback={<Loading />}>{children}</Suspense>
             </div>
         </div>

@@ -6,7 +6,7 @@ import { getUser } from '@/redux/selector';
 import { FiEdit3 } from 'react-icons/fi';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useState } from 'react';
-import Model from '@/components/Model';
+import Modal from '@/components/Modal';
 import { RiMapPinAddLine } from 'react-icons/ri';
 
 import { useDispatch } from 'react-redux';
@@ -14,31 +14,42 @@ import { setUser } from '@/components/Auth/authSlice';
 import { updateAddress } from '@/services/user.service';
 import Loading from '@/components/Loading';
 import Alert from '@/components/Alert';
+import { setAlert } from '@/components/Alert/alertSlice';
 const Address = () => {
     const user = useSelector(getUser);
     const [showEditPickup, setShowEditPickup] = useState(false);
     const [showEditStore, setShowEditStore] = useState(false);
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
-    const [message, setMessage] = useState('');
-    const [statusAlert, setStatusAlert] = useState('');
 
     const handleUpdate = async (data) => {
         try {
             setLoading(true);
-            setMessage('');
             if ('pickup' in data) setShowEditPickup(false);
             else setShowEditStore(false);
 
             const result = await updateAddress(user._id, data);
-            if (result) dispatch(setUser(result));
+            if (result) {
+                dispatch(
+                    setAlert({
+                        status: 'success',
+                        message: 'Update successfully.',
+                    }),
+                );
+                dispatch(setUser(result));
+            }
 
-            setStatusAlert('success');
-            setMessage('Update successfully.');
             setLoading(false);
         } catch (error) {
-            setStatusAlert('failure');
-            setMessage('Update failed. Please try again.');
+            dispatch(
+                setAlert({
+                    status: 'failure',
+                    message:
+                        error?.response?.data?.message ||
+                        'Update failed. Please try again.',
+                }),
+            );
+
             setLoading(false);
         }
     };
@@ -46,24 +57,36 @@ const Address = () => {
     const handleDelete = async (type) => {
         try {
             setLoading(true);
-            setMessage('');
             var result;
             if (type === 'pickup') {
                 result = await updateAddress(user._id, { pickup: {} });
             } else result = await updateAddress(user._id, { store: {} });
-            if (result) dispatch(setUser(result));
-            setStatusAlert('success');
-            setMessage('Delete successfully.');
+            if (result) {
+                dispatch(setUser(result));
+                dispatch(
+                    setAlert({
+                        status: 'success',
+                        message: 'Delete successfully.',
+                    }),
+                );
+            }
             setLoading(false);
         } catch (error) {
-            setStatusAlert('failure');
-            setMessage('Delete failed. Please try again.');
+            console.log(
+                '🚀 ~ file: page.jsx:74 ~ handleDelete ~ error:',
+                error,
+            );
+            dispatch(
+                setAlert({
+                    status: 'failure',
+                    message: 'Delete failed. Please try again.',
+                }),
+            );
             setLoading(false);
         }
     };
     return (
         <div className="">
-            {message && <Alert status={statusAlert} message={message} />}
             {loading && <Loading loadingStatus={loading} />}
 
             <div>
@@ -72,7 +95,7 @@ const Address = () => {
                     note={'Your order will be delivered to this address.'}
                     key={'pickup'}>
                     {showEditPickup && (
-                        <Model
+                        <Modal
                             label={'Update pickup address'}
                             showModel={showEditPickup}
                             handleEvent={() => setShowEditPickup(false)}>
@@ -81,7 +104,7 @@ const Address = () => {
                                 handleUpdate={handleUpdate}
                                 address={user?.address?.pickup}
                             />
-                        </Model>
+                        </Modal>
                     )}
                     {user?.address?.pickup ? (
                         <div className="grid grid-cols-12 p-4 bg-secondary rounded-xl">
@@ -122,7 +145,7 @@ const Address = () => {
                     note={'Shippers will get goods from this address.'}
                     key={'store'}>
                     {showEditStore && (
-                        <Model
+                        <Modal
                             label={'Update store address'}
                             showModel={showEditStore}
                             handleEvent={() => setShowEditStore(false)}>
@@ -131,7 +154,7 @@ const Address = () => {
                                 handleUpdate={handleUpdate}
                                 address={user?.address?.store}
                             />
-                        </Model>
+                        </Modal>
                     )}
                     {user?.address?.store ? (
                         <div className="grid grid-cols-12 p-4 bg-secondary rounded-xl">

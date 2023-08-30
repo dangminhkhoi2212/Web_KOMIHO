@@ -1,8 +1,8 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import { useSearchParams, useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import EmailImage from '@/public/images/enter_email.svg';
 import AccountTemplate from '@/components/Account/AccountTemplate';
@@ -12,31 +12,44 @@ import { getUser } from '@/redux/selector';
 import VerifyOtp from '@/components/Password/VerifyOtp';
 import UpdatePassword from '@/components/Password/UpdatePassword';
 import routes from '@/routes';
-import Model from '@/components/Model';
-import Alert from '@/components/Alert';
+import Modal from '@/components/Modal';
+import { setAlert } from '@/components/Alert/alertSlice';
 
 const STEP_INITIAL = 1;
 const STEP_VERIFY_OTP = 2;
 const STEP_UPDATE_PASSWORD = 3;
 
 const Password = () => {
-    const searchParams = useSearchParams();
-    const router = useRouter();
+    const dispatch = useDispatch();
 
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1);
 
     const [otp, setOtp] = useState();
     const user = useSelector(getUser);
-    const [updatePassword, setUpdatePassword] = useState(false);
 
     const startUpdatePassword = async () => {
         try {
             setLoading(true);
             await sendOtp(user?.email);
             handleNext();
+            dispatch(
+                setAlert({
+                    status: 'success',
+                    message: 'Send OTP successfully. Please check your email.',
+                }),
+            );
             setLoading(false);
-        } catch (error) {}
+        } catch (error) {
+            dispatch(
+                setAlert({
+                    status: 'failure',
+                    message:
+                        error?.response?.data?.message ||
+                        'Send OTP failure. Please try again.',
+                }),
+            );
+        }
     };
 
     const handleNext = () => {
@@ -46,38 +59,20 @@ const Password = () => {
         setStep((pre) => Math.max(pre - 1, 1));
     };
 
-    useEffect(() => {
-        setUpdatePassword(false);
-        const updatePasswordQuery = searchParams.get('updatePassword');
-        setUpdatePassword(updatePasswordQuery || false);
-        const setTime = setTimeout(() => {
-            router.replace(routes.password);
-        }, 3000);
-        return () => {
-            clearTimeout(setTime);
-        };
-    }, [searchParams, router]);
-
     return (
         <AccountTemplate title={'Password'}>
-            {updatePassword && (
-                <Alert
-                    message={'Update password successfully.'}
-                    status={'success'}
-                />
-            )}
             <div className="flex flex-col justify-center items-center">
                 <Image
                     src={EmailImage}
                     width={0}
                     height={0}
-                    className="w-52 h-52 rounded-r-full object-cover "
+                    className="w-32 h-32 rounded-r-full object-cover "
                     alt="email"
                     priority
                 />
                 <button
                     onClick={startUpdatePassword}
-                    className="px-3 py-2 h-12 min-w-[80px] rounded-xl text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent relative">
+                    className="px-4 h-12 min-w-[80px] rounded-full text-sm text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent relative">
                     {loading ? (
                         <Loading
                             loadingStatus={loading}
@@ -91,7 +86,7 @@ const Password = () => {
             </div>
 
             {step === STEP_VERIFY_OTP && (
-                <Model
+                <Modal
                     label={'Verify Otp'}
                     showModel={step == 2}
                     handleEvent={() => setStep(1)}>
@@ -100,10 +95,10 @@ const Password = () => {
                         handleNext={handleNext}
                         setOtp={setOtp}
                     />
-                </Model>
+                </Modal>
             )}
             {step === STEP_UPDATE_PASSWORD && (
-                <Model label={'Update Password'} showModel={step == 3}>
+                <Modal label={'Update Password'} showModel={step == 3}>
                     <UpdatePassword
                         handleEvent={() => {
                             setStep(1);
@@ -112,7 +107,7 @@ const Password = () => {
                         otp={otp}
                         linkRedirect={`${routes.password}?updatePassword=true`}
                     />
-                </Model>
+                </Modal>
             )}
         </AccountTemplate>
     );

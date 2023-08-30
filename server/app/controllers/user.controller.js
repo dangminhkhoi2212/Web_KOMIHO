@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import 'dotenv/config';
+import 'dotenv/config.js';
 
 import User from '../models/user.model.js';
 import ApiError from '../utils/apiError.js';
@@ -10,12 +10,12 @@ import {
     uploadToCloudinary,
 } from '../services/cloudinary.service.js';
 import { checkUserExisted } from './auth.controller.js';
-const PROPERTIES_USER =
-    'name email phone image  emailVerified bank address refreshToken';
+const PROPERTIES_USER = process.env.PROPERTIES_USER;
+const BCRYPT_HASH = process.env.BCRYPT_HASH;
 const getUser = async (req, res, next) => {
     try {
-        const userId = req.params;
-        const result = await User.findById(userId);
+        const userId = req.params.id;
+        const result = await User.findById(userId).select(PROPERTIES_USER);
         res.json(result);
     } catch (error) {
         next(new ApiError(error.code || 500, error.message));
@@ -33,8 +33,10 @@ const updateUser = async (req, res, next) => {
     try {
         const userId = req.params.userId;
         const data = req.body;
+
         const file = req.file;
-        const isUpdateAvatar = req.body.isUpdateAvatar;
+
+        const isUpdateAvatar = data.isUpdateAvatar;
 
         const oldUser = await User.findById(userId);
         if (!oldUser) return next(new ApiError(401, 'User not found.'));
@@ -54,22 +56,18 @@ const updateUser = async (req, res, next) => {
                     new ApiError(401, 'This phone number already exists.'),
                 );
         }
-        if (data.password) {
-            const hashPassword = await bcrypt.hash(data.password, BCRYPT_HASH);
-            data.password = hashPassword;
-        }
 
         if (file && isUpdateAvatar) {
-            if (oldUser.image.public_id)
-                await deleteFile(oldUser.image.public_id, 'image');
+            if (oldUser.avatar.public_id)
+                await deleteFile(oldUser.avatar.public_id, 'image');
             const avatar = await uploadToCloudinary(
                 file.path,
                 'image',
                 `komiho/users/${userId}/public`,
             );
-            data.image = {};
-            data.image.public_id = avatar.public_id;
-            data.image.url = avatar.url;
+            data.avatar = {};
+            data.avatar.public_id = avatar.public_id;
+            data.avatar.url = avatar.url;
         }
         await User.findByIdAndUpdate(userId, data);
         const result = await User.findById(userId).select(PROPERTIES_USER);
@@ -93,14 +91,27 @@ const deleteUser = async (req, res, next) => {
         if (!user) next(new ApiError(404, 'User not found'));
         const match = bcrypt.compare(password, user.password);
         if (!match) {
-            next(new ApiError(403, 'Invalid password'));
+            next(new ApiError(403, "Password don't match"));
             return;
         }
+        //delete avatar
+        const avatar = user.avatar;
+        await deleteFile(avatar.public_id, 'image');
+        await deleteFolder(`komiho/users/${userId}`);
+
+        //delete product
+
+        //delete feedback
 
         await User.findByIdAndDelete(userId);
-        res.json({ message: `Deleted user ${userId}` });
+        res.json({ message: `Deleted user ${userId}`, status: 'success' });
     } catch (error) {
-        next(new ApiError(500, error.message));
+        next(
+            new ApiError(
+                error.code || 500,
+                error.message || error?.error?.message || 'Server error',
+            ),
+        );
     }
 };
 const deleteAllUsers = async (req, res, next) => {

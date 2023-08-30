@@ -12,19 +12,19 @@ import { updateProfile } from '@/services/user.service';
 import { useDispatch } from 'react-redux';
 import { setUser } from '@/components/Auth/authSlice';
 import Loading from '@/components/Loading';
-import Alert from '@/components/Alert';
 import clsx from 'clsx';
+import { setAlert } from '@/components/Alert/alertSlice';
 
 const ProfileForm = () => {
     const user = useSelector(getUser);
+    console.log('🚀 ~ file: index.jsx:20 ~ ProfileForm ~ user:', user);
     const dispatch = useDispatch();
-    const [isPhone, setIsPhone] = useState(user && user.phone ? true : false);
-    const [avtUrl, setAvtUrl] = useState(user && user.image && user.image.url);
+    const [isPhone, setIsPhone] = useState(user?.phone ? true : false);
+    const [avtUrl, setAvtUrl] = useState(
+        user && user.avatar && user.avatar.url,
+    );
     const inputFile = useRef(null);
     const [loading, setLoading] = useState(false);
-    const [showAlert, setShowAlert] = useState(false);
-    const [messageAlert, setMessageAlert] = useState('');
-    const [statusAlert, setStatusAlert] = useState('');
     const [fileSize, setFileSize] = useState(null);
     const {
         control,
@@ -35,9 +35,9 @@ const ProfileForm = () => {
     } = useForm({
         resolver: yupResolver(profileSchema),
         defaultValues: {
-            name: user && user.name,
-            email: user && user.email,
-            phone: (user && user.phone) || '',
+            name: user?.name,
+            email: user?.email,
+            phone: user?.phone || '',
             avatar: {},
         },
     });
@@ -47,25 +47,24 @@ const ProfileForm = () => {
     const handleUpdate = async (data) => {
         try {
             setLoading(true);
-            setShowAlert(false);
             data.isUpdateAvatar = false;
-
-            if (data.avatar.length > 0 && data.avatar[0]) {
-                data.avatar = data.avatar[0];
-                data.isUpdateAvatar = true;
-            }
 
             const form = new FormData();
             form.append('name', data.name);
             form.append('email', data.email);
             form.append('phone', data.phone);
-            form.append('avatar', data.avatar);
+            if (data.avatar.length > 0 && data.avatar[0]) {
+                data.avatar = data.avatar[0];
+                form.append('avatar', data.avatar);
+                data.isUpdateAvatar = true;
+            }
             form.append('isUpdateAvatar', data.isUpdateAvatar);
 
             const result = await updateProfile(user._id, form);
 
             if (result) {
-                //delete form after submission
+                //delete form after update
+                if (data.avatar) if (avtUrl) URL.revokeObjectURL(avtUrl);
                 reset({
                     name: form.get('name'),
                     email: form.get('email'),
@@ -77,17 +76,25 @@ const ProfileForm = () => {
                 }
 
                 dispatch(setUser(result));
+                dispatch(
+                    setAlert({
+                        status: 'success',
+                        message: 'Your profile updated successfully.',
+                    }),
+                );
 
-                setMessageAlert('Your profile updated successfully.');
-                setStatusAlert('success');
-                setShowAlert(true);
+                setFileSize('');
             }
-
             setLoading(false);
         } catch (error) {
-            setShowAlert(true);
-            setMessageAlert('Have an error. Please try again.');
-            setStatusAlert('failure');
+            dispatch(
+                setAlert({
+                    status: 'failure',
+                    message:
+                        error?.response?.data?.message ||
+                        'Have an error. Please try again.',
+                }),
+            );
             setLoading(false);
         }
     };
@@ -105,7 +112,6 @@ const ProfileForm = () => {
     };
     return (
         <div className=" ">
-            {showAlert && <Alert status={statusAlert} message={messageAlert} />}
             <form
                 onSubmit={handleSubmit(handleUpdate)}
                 className="grid grid-cols-12 gap-3 ">
@@ -121,9 +127,9 @@ const ProfileForm = () => {
                                 placeholder={'Full name'}
                                 value={field.value}
                                 onChange={(e) => field.onChange(e.target.value)}
-                                helperText={errors.name?.message}
+                                helperText={errors?.name?.message}
                                 color={
-                                    errors.name?.message ? 'failure' : 'gray'
+                                    errors?.name?.message ? 'failure' : 'gray'
                                 }
                             />
                         )}
@@ -138,9 +144,9 @@ const ProfileForm = () => {
                                 placeholder={'Your email'}
                                 value={field.value}
                                 onChange={(e) => field.onChange(e.target.value)}
-                                helperText={errors.email?.message}
+                                helperText={errors?.email?.message}
                                 color={
-                                    errors.email?.message ? 'failure' : 'gray'
+                                    errors?.email?.message ? 'failure' : 'gray'
                                 }
                             />
                         )}
@@ -159,9 +165,9 @@ const ProfileForm = () => {
                                         onChange={(e) =>
                                             field.onChange(e.target.value)
                                         }
-                                        helperText={errors.phone?.message}
+                                        helperText={errors?.phone?.message}
                                         color={
-                                            errors.phone?.message
+                                            errors?.phone?.message
                                                 ? 'failure'
                                                 : 'gray'
                                         }
@@ -251,7 +257,7 @@ const ProfileForm = () => {
                 </div>
                 <button
                     type="submit"
-                    className=" px-3 py-2 rounded-full bg-primary hover:bg-accent text-white shadow-md transition-all duration-300 ease-in-out ">
+                    className="h-8 w-16 text-center rounded-full bg-primary hover:bg-accent text-white shadow-md transition-all duration-300 ease-in-out ">
                     Save
                 </button>
             </form>

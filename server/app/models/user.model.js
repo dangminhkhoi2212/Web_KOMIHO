@@ -12,7 +12,6 @@ const UserSchema = new Schema(
         },
         phone: {
             type: String,
-            minLength: [10, 'no should have minimum 10 digits'],
             maxLength: [10, 'no should have maximum 10 digits'],
             match: [/\d{10}/, 'no should only have digits'],
             default: null,
@@ -21,7 +20,7 @@ const UserSchema = new Schema(
             type: String,
             trim: true,
         },
-        image: {
+        avatar: {
             public_id: { type: String },
             url: { type: String },
         },
