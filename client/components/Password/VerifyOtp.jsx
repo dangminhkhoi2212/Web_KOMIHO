@@ -52,7 +52,7 @@ const VerifyCode = ({ handleEvent, email, setOtp }) => {
             const result = await verifyOtp(email, data.otp);
             setLoading(false);
             if (result.otp) {
-                setOtp(data.otp);
+                if (setOtp) setOtp(data.otp);
                 if (handleEvent) handleEvent();
             }
         } catch (error) {

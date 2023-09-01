@@ -1,27 +1,33 @@
 'use client';
 import Link from 'next/link';
-import { Suspense } from 'react';
 import { createElement } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
 import { LuClipboardList } from 'react-icons/lu';
+import { IoStorefrontOutline } from 'react-icons/io5';
 import { useSelector } from 'react-redux';
-import { getUser } from '@/redux/selector';
+import { getName, getUrlAvatar, getUserId } from '@/redux/selector';
 import routes from '@/routes';
 import AvatarText from '@/components/Avatar';
 import { AiOutlineDelete } from 'react-icons/ai';
-import Loading from '../loading';
 
-const children = [
+const childrenAccount = [
     { name: 'Profile', link: routes.profile },
     { name: 'Address', link: routes.address },
     { name: 'Password', link: routes.password },
 ];
+const childrenStore = [{ name: 'Add Product', link: routes.addProduct }];
 const listParent = [
     {
         icon: AiOutlineUser,
         name: 'My Account',
         link: routes.myAccount,
-        children: children,
+        children: childrenAccount,
+    },
+    {
+        icon: IoStorefrontOutline,
+        name: 'My Store',
+        link: routes.myStore,
+        children: childrenStore,
     },
     {
         icon: LuClipboardList,
@@ -37,14 +43,17 @@ const listParent = [
     },
 ];
 const layout = ({ children }) => {
-    const user = useSelector(getUser);
+    const UrlAvatar = useSelector(getUrlAvatar);
+    const userId = useSelector(getUserId);
+    const name = useSelector(getName);
+
     return (
         <div className="grid grid-cols-12 gap-3 items-start xl:mx-20 my-5">
             <div className="col-span-3 flex flex-col gap-3 justify-center items-center">
                 <div className="border-4 border-double py-3 w-full rounded-xl">
                     <AvatarText
-                        name={user?.name}
-                        src={user?.avatar?.url}
+                        name={name}
+                        src={UrlAvatar}
                         text={'Edit profile'}
                     />
                 </div>
@@ -76,7 +85,7 @@ const layout = ({ children }) => {
                 </div>
             </div>
             <div className="col-span-9 xl:p-5  rounded-md bg-white relative min-h-[250px]">
-                <Suspense fallback={<Loading />}>{children}</Suspense>
+                {children}
             </div>
         </div>
     );

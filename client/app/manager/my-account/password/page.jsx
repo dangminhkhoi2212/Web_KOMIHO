@@ -8,7 +8,7 @@ import EmailImage from '@/public/images/enter_email.svg';
 import AccountTemplate from '@/components/Account/AccountTemplate';
 import Loading from '@/components/Loading';
 import { sendOtp } from '@/services/password/otp.service';
-import { getUser } from '@/redux/selector';
+import { getEmail } from '@/redux/selector';
 import VerifyOtp from '@/components/Password/VerifyOtp';
 import UpdatePassword from '@/components/Password/UpdatePassword';
 import routes from '@/routes';
@@ -26,12 +26,12 @@ const Password = () => {
     const [step, setStep] = useState(1);
 
     const [otp, setOtp] = useState();
-    const user = useSelector(getUser);
+    const email = useSelector(getEmail);
 
     const startUpdatePassword = async () => {
         try {
             setLoading(true);
-            await sendOtp(user?.email);
+            await sendOtp(email);
             handleNext();
             dispatch(
                 setAlert({
@@ -91,7 +91,7 @@ const Password = () => {
                     showModel={step == 2}
                     handleEvent={() => setStep(1)}>
                     <VerifyOtp
-                        email={user?.email}
+                        email={email}
                         handleNext={handleNext}
                         setOtp={setOtp}
                     />
@@ -103,7 +103,7 @@ const Password = () => {
                         handleEvent={() => {
                             setStep(1);
                         }}
-                        email={user?.email}
+                        email={email}
                         otp={otp}
                         linkRedirect={`${routes.password}?updatePassword=true`}
                     />

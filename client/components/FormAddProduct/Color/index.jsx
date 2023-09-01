@@ -6,7 +6,7 @@ import { RiAddCircleLine } from 'react-icons/ri';
 import { BiDownArrowAlt, BiUpArrowAlt, BiReset } from 'react-icons/bi';
 
 import { useFormContext, useFieldArray, Controller } from 'react-hook-form';
-import SizeAndQuanitity from './SizeAndQuantity';
+import SizeAndQuantity from './SizeAndQuantity';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import clsx from 'clsx';
 const FormColor = () => {
@@ -21,25 +21,25 @@ const FormColor = () => {
     });
 
     const [indexForm, setIndexForm] = useState(fields.length);
-    console.log('🚀 ~ file: index.jsx:25 ~ FormColor ~ indexForm:', indexForm);
+
     const handleFocus = (index) => {
         if (index < 0) index = 0;
         setIndexForm(index);
     };
-    const hanleMoveUp = useCallback(() => {
+    const handleMoveUp = useCallback(() => {
         if (indexForm > 0) {
             move(indexForm, indexForm - 1);
             setIndexForm(Math.max(0, indexForm - 1));
         }
     }, [indexForm, fields]);
-    const hanleMoveDown = useCallback(() => {
+    const handleMoveDown = useCallback(() => {
         if (indexForm < fields.length - 1) {
             move(indexForm, indexForm + 1);
             setIndexForm(Math.min(fields.length - 1, indexForm + 1));
         }
     }, [indexForm, fields]);
     return (
-        <div className="p-5 rounded-xl bg-white">
+        <div className="rounded-xl bg-white">
             <p className="text-lg my-2 font-medium">Colors</p>
 
             <section className="inline-flex sticky top-0 bg-primary items-center my-2 justify-start z-header shadow-md px-3 py-2 rounded-xl ">
@@ -52,8 +52,8 @@ const FormColor = () => {
                         });
                     }}
                 />
-                <PrimaryButton icon={BiUpArrowAlt} onClick={hanleMoveUp} />
-                <PrimaryButton icon={BiDownArrowAlt} onClick={hanleMoveDown} />
+                <PrimaryButton icon={BiUpArrowAlt} onClick={handleMoveUp} />
+                <PrimaryButton icon={BiDownArrowAlt} onClick={handleMoveDown} />
                 <PrimaryButton
                     icon={BiReset}
                     onClick={() =>
@@ -118,7 +118,7 @@ const FormColor = () => {
                                     />
                                 </div>
 
-                                <SizeAndQuanitity
+                                <SizeAndQuantity
                                     indexColor={index}
                                     focusColor={index === indexForm}
                                     color={fields}

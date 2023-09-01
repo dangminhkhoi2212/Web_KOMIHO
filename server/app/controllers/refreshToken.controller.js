@@ -9,16 +9,17 @@ import 'dotenv/config.js';
 export const refreshToken = async (req, res, next) => {
     try {
         const refreshToken = req.body.refreshToken;
-        if (!refreshToken) next(new ApiError(401, "Don't find refresh token"));
+        if (!refreshToken)
+            return next(new ApiError(401, "Don't find refresh token"));
 
         const data = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
         const user = await User.findById(data.userId);
         if (!user) {
-            next(new ApiError(403, 'Invalid token.'));
+            return next(new ApiError(403, 'Invalid token.'));
         }
         if (user.refreshToken !== refreshToken) {
-            next(new ApiError(401, "Refresh token don't match"));
+            return next(new ApiError(401, "Refresh token don't match"));
         }
         const accessToken = createAccessToken(user._id);
         const newRefreshToken = createRefreshToken(user._id);

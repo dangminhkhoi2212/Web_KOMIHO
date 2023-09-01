@@ -17,30 +17,24 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, color }) => {
 
         formState: { errors },
     } = useFormContext();
-    console.log(
-        '🚀 ~ file: index.jsx:19 ~ FormSizeAndQuanitity ~ errors:',
-        errors,
-    );
+
     const { fields, append, remove, move } = useFieldArray({
         control,
         name: `${positionColor}.size`,
     });
     const [indexForm, setIndexForm] = useState(fields.length);
-    console.log(
-        '🚀 ~ file: index.jsx:30 ~ FormSizeAndQuanitity ~ indexForm:',
-        indexForm,
-    );
+
     const handleFocus = (index) => {
         if (index < 0) index = 0;
         setIndexForm(index);
     };
-    const hanleMoveUp = useCallback(() => {
+    const handleMoveUp = useCallback(() => {
         if (indexForm > 0) {
             move(indexForm, indexForm - 1);
             setIndexForm(Math.max(0, indexForm - 1));
         }
     }, [indexForm, fields]);
-    const hanleMoveDown = useCallback(() => {
+    const handleMoveDown = useCallback(() => {
         if (indexForm < fields.length - 1) {
             move(indexForm, indexForm + 1);
             setIndexForm(Math.min(fields.length - 1, indexForm + 1));
@@ -58,8 +52,8 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, color }) => {
                         });
                     }}
                 />
-                <PrimaryButton icon={BiUpArrowAlt} onClick={hanleMoveUp} />
-                <PrimaryButton icon={BiDownArrowAlt} onClick={hanleMoveDown} />
+                <PrimaryButton icon={BiUpArrowAlt} onClick={handleMoveUp} />
+                <PrimaryButton icon={BiDownArrowAlt} onClick={handleMoveDown} />
                 <PrimaryButton
                     icon={BiReset}
                     onClick={() =>

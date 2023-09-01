@@ -19,7 +19,7 @@ const layout = ({ params, children }) => {
             }
         };
         getUser();
-    }, [params.userId]);
+    }, [params]);
     return (
         <div className="flex flex-col gap-5">
             <div className="bg-white rounded-xl p-5">

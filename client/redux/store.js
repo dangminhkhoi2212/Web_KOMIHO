@@ -13,13 +13,12 @@ import storage from './storage';
 import userReducer from '@/components/Auth/authSlice';
 import alertReducer from '@/components/Alert/alertSlice';
 const persistConfig = {
-    key: 'root',
+    key: 'user',
     version: 1,
     storage,
 };
 
 const persistedReducerAdmin = persistReducer(persistConfig, userReducer);
-// const persistedReducerAlert = persistReducer(persistConfig, alertReducer);
 
 const store = configureStore({
     reducer: {

@@ -44,6 +44,21 @@ const avatarYup = yup
         }
         return true;
     });
+const originPriceYup = yup
+    .number()
+    .typeError('Origin must be a number')
+    .required('Origin price is required')
+    .min(0, 'Origin price cannot be negative')
+    .test('is-money', 'Invalid money format', (value) => {
+        // Test if the value is a valid money format (e.g., 1234.56)
+        return /^\d+(\.\d{1,2})?$/.test(value);
+    });
+const percentPriceYup = yup
+    .number()
+    .typeError('Percent must be a number')
+    .required('Discount percent is required')
+    .min(0, 'Discount percent cannot be negative')
+    .max(100, 'Discount percent cannot exceed 100');
 ////////////////////////////////////////////////////////////////////////
 export const emailSchema = yup.object({
     email: emailYup,
@@ -77,4 +92,52 @@ export const registerSchema = yup.object({
 });
 export const deleteAccountSchema = yup.object({
     password: passwordYup,
+});
+export const addProductSchema = yup.object({
+    name: nameYup,
+    price: yup
+        .object({
+            origin: originPriceYup,
+            percent: percentPriceYup,
+        })
+        .required('Price is required'),
+    color: yup.array().of(
+        yup.object({
+            name: yup.string().required('Color name is required'),
+            size: yup.array().of(
+                yup.object({
+                    type: yup.string().required('Type is required'),
+                    quantity: yup.string().required('Quantity is required'),
+                }),
+            ),
+        }),
+    ),
+    images: yup
+        .mixed()
+        .required('Please select at least one image')
+        .test('fileSize', 'File size is too large', (value) => {
+            if (!value.length) return true;
+            for (let i = 0; i < value.length; i++) {
+                return value[i].size <= FILE_SIZE;
+            }
+        })
+        .test('filetype', 'Unsupported file format', (value) => {
+            if (value && value.length > 0) {
+                for (let i = 0; i < value.length; i++) {
+                    if (
+                        value[i].type != 'image/png' &&
+                        value[i].type != 'image/jpg' &&
+                        value[i].type != 'image/jpeg'
+                    ) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        })
+        .test('fileRequired', 'You must provide 1 image.', (value) => {
+            if (value.length === 0) return false;
+            return true;
+        }),
+    // .min(1, 'At least 1 image is required')
 });

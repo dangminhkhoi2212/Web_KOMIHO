@@ -1,30 +1,34 @@
 import Image from 'next/image';
 import { TiDeleteOutline } from 'react-icons/ti';
 
-const ShowImage = ({ images, setImages }) => {
-    const handleDeleteImage = (id) => {
-        setImages((pre) => [...pre.filter((img) => img.id !== id)]);
+const ShowImage = ({ gallery, setImages, setGallery }) => {
+    const handleDeleteImage = (name, src) => {
+        URL.revokeObjectURL(src);
+        setGallery((pre) => pre.filter((img) => img.name !== name));
+        setImages((pre) => pre.filter((img) => img.name !== name));
     };
-    if (!images || images.length === 0) {
-        return null; // Return early if there are no images
+    if (!gallery || gallery.length === 0) {
+        return null; // Return early if there are no gallery
     }
     return (
-        <div className="flex gap-4 w-full flex-wrap justify-center items-center">
-            {images.map((img) => {
+        <div className="flex gap-4 w-full flex-wrap justify-center items-start my-3">
+            {gallery.map((img) => {
                 return (
-                    <div className="relative" key={img.src}>
+                    <div
+                        className="relative rounded-md overflow-hidden ring-2 ring-gray-100"
+                        key={img.src}>
                         <TiDeleteOutline
                             className="absolute right-0 text-3xl text-red-400 m-2 cursor-pointer border-4 border-primary rounded-full"
                             onClick={() => {
-                                handleDeleteImage(img.id);
+                                handleDeleteImage(img.name, img.src);
                             }}
                         />
                         <Image
                             src={img.src}
                             width={0}
                             height={0}
-                            alt={img.id}
-                            className="rounded-md w-72 h-96 object-center object-cover"
+                            alt={img.name}
+                            className="rounded-md h-80 w-52  object-center object-cover"
                         />
                     </div>
                 );

@@ -6,7 +6,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
 
 import { profileSchema } from '@/utils/validation';
-import { getUser } from '@/redux/selector';
+import {
+    getEmail,
+    getName,
+    getPhone,
+    getUserId,
+    getUrlAvatar,
+} from '@/redux/selector';
 import AvatarText from '@/components/Avatar';
 import { updateProfile } from '@/services/user.service';
 import { useDispatch } from 'react-redux';
@@ -16,13 +22,15 @@ import clsx from 'clsx';
 import { setAlert } from '@/components/Alert/alertSlice';
 
 const ProfileForm = () => {
-    const user = useSelector(getUser);
-    console.log('🚀 ~ file: index.jsx:20 ~ ProfileForm ~ user:', user);
+    const userId = useSelector(getUserId);
+    const name = useSelector(getName);
+    const email = useSelector(getEmail);
+    const phone = useSelector(getPhone);
+    const urlAvatar = useSelector(getUrlAvatar);
+
     const dispatch = useDispatch();
-    const [isPhone, setIsPhone] = useState(user?.phone ? true : false);
-    const [avtUrl, setAvtUrl] = useState(
-        user && user.avatar && user.avatar.url,
-    );
+    const [isPhone, setIsPhone] = useState(phone ? true : false);
+    const [avtUrl, setAvtUrl] = useState(urlAvatar);
     const inputFile = useRef(null);
     const [loading, setLoading] = useState(false);
     const [fileSize, setFileSize] = useState(null);
@@ -35,9 +43,9 @@ const ProfileForm = () => {
     } = useForm({
         resolver: yupResolver(profileSchema),
         defaultValues: {
-            name: user?.name,
-            email: user?.email,
-            phone: user?.phone || '',
+            name,
+            email,
+            phone: phone || '',
             avatar: {},
         },
     });
@@ -60,7 +68,7 @@ const ProfileForm = () => {
             }
             form.append('isUpdateAvatar', data.isUpdateAvatar);
 
-            const result = await updateProfile(user._id, form);
+            const result = await updateProfile(userId, form);
 
             if (result) {
                 //delete form after update
@@ -174,7 +182,7 @@ const ProfileForm = () => {
                                     />
                                 )}
                             />
-                            {user && !user.phone && (
+                            {phone && (
                                 <span
                                     className=" cursor-pointer flex-initial px-2 py-1  rounded-full bg-primary hover:bg-accent text-sm text-white ms-5 align-middle"
                                     onClick={() => {

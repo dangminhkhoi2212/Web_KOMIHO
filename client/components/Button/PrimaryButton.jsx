@@ -1,10 +1,10 @@
 import { createElement, memo } from 'react';
 import clsx from 'clsx';
 const PrimaryButton = ({ icon, text, onClick, style }) => {
-    console.log(
-        "🚀 ~ file: PrimaryButton.jsx:5 ~ PrimaryButton ~ 'button':",
-        'button',
-    );
+    // console.log(
+    //     "🚀 ~ file: PrimaryButton.jsx:5 ~ PrimaryButton ~ 'button':",
+    //     'button',
+    // );
     return (
         <button
             type="button"

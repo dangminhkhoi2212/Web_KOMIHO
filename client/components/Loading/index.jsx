@@ -5,7 +5,7 @@ const Loading = ({ loadingStatus, colorProp, sizeProp }) => {
     const size = sizeProp || 100;
 
     return (
-        <div className="flex justify-center items-center inset-0 fixed z-loading ">
+        <div className="flex justify-center items-center inset-0 absolute z-loading ">
             <HashLoader
                 color={color}
                 loading={loadingStatus}

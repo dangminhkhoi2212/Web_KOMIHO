@@ -11,7 +11,7 @@ import EmailImage from '@/public/images/enter_email.svg';
 import AccountTemplate from '@/components/Account/AccountTemplate';
 import Loading from '@/components/Loading';
 import { sendOtp } from '@/services/password/otp.service';
-import { getUser } from '@/redux/selector';
+import { getEmail, getUser, getUserId } from '@/redux/selector';
 import VerifyOtp from '@/components/Password/VerifyOtp';
 import routes from '@/routes';
 import Modal from '@/components/Modal';
@@ -31,8 +31,8 @@ const Password = () => {
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1);
 
-    const [otp, setOtp] = useState();
-    const user = useSelector(getUser);
+    const userId = useSelector(getUserId);
+    const email = useSelector(getEmail);
 
     const {
         control,
@@ -45,7 +45,7 @@ const Password = () => {
     const startDeleteAccount = async () => {
         try {
             setLoading(true);
-            await sendOtp(user?.email);
+            await sendOtp(email);
             handleNext();
             setLoading(false);
         } catch (error) {
@@ -73,7 +73,7 @@ const Password = () => {
             setMessage('');
             setLoading(true);
 
-            const result = await deleteUser(user?._id, data.password);
+            const result = await deleteUser(userId, data.password);
             if (result.status === 'success') {
                 localStorage.clear();
                 dispatch(setUser(null));
@@ -126,11 +126,7 @@ const Password = () => {
                     label={'Verify Otp'}
                     showModel={step === STEP_VERIFY_OTP}
                     handleEvent={() => setStep(1)}>
-                    <VerifyOtp
-                        email={user?.email}
-                        handleEvent={() => handleNext()}
-                        setOtp={setOtp}
-                    />
+                    <VerifyOtp email={email} handleEvent={() => handleNext()} />
                 </Modal>
             )}
             {step === STEP_DELETE_ACCOUNT && (

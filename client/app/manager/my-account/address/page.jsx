@@ -2,7 +2,13 @@
 import AccountTemplate from '@/components/Account/AccountTemplate';
 import AddressComponent from '@/components/Account/MyAccount/Address';
 import { useSelector } from 'react-redux';
-import { getUser } from '@/redux/selector';
+import {
+    getName,
+    getPhone,
+    getPickupAddress,
+    getStoreAddress,
+    getUserId,
+} from '@/redux/selector';
 import { FiEdit3 } from 'react-icons/fi';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useState } from 'react';
@@ -13,10 +19,15 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '@/components/Auth/authSlice';
 import { updateAddress } from '@/services/user.service';
 import Loading from '@/components/Loading';
-import Alert from '@/components/Alert';
 import { setAlert } from '@/components/Alert/alertSlice';
+
 const Address = () => {
-    const user = useSelector(getUser);
+    const userId = useSelector(getUserId);
+    const pickupAddress = useSelector(getPickupAddress);
+    const storeAddress = useSelector(getStoreAddress);
+    const name = useSelector(getName);
+    const phone = useSelector(getPhone);
+
     const [showEditPickup, setShowEditPickup] = useState(false);
     const [showEditStore, setShowEditStore] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -28,7 +39,7 @@ const Address = () => {
             if ('pickup' in data) setShowEditPickup(false);
             else setShowEditStore(false);
 
-            const result = await updateAddress(user._id, data);
+            const result = await updateAddress(userId, data);
             if (result) {
                 dispatch(
                     setAlert({
@@ -59,8 +70,8 @@ const Address = () => {
             setLoading(true);
             var result;
             if (type === 'pickup') {
-                result = await updateAddress(user._id, { pickup: {} });
-            } else result = await updateAddress(user._id, { store: {} });
+                result = await updateAddress(userId, { pickup: {} });
+            } else result = await updateAddress(userId, { store: {} });
             if (result) {
                 dispatch(setUser(result));
                 dispatch(
@@ -72,10 +83,6 @@ const Address = () => {
             }
             setLoading(false);
         } catch (error) {
-            console.log(
-                '🚀 ~ file: page.jsx:74 ~ handleDelete ~ error:',
-                error,
-            );
             dispatch(
                 setAlert({
                     status: 'failure',
@@ -102,20 +109,20 @@ const Address = () => {
                             <AddressComponent
                                 type={'pickup'}
                                 handleUpdate={handleUpdate}
-                                address={user?.address?.pickup}
+                                address={pickupAddress}
                             />
                         </Modal>
                     )}
-                    {user?.address?.pickup ? (
+                    {pickupAddress ? (
                         <div className="grid grid-cols-12 p-4 bg-secondary rounded-xl">
                             <div className="col-span-11">
                                 <div className="flex gap-3 font-medium">
-                                    <span>{user?.name}</span>
+                                    <span>{name}</span>
                                     <span className=" hidden h-5 w-px bg-slate-900/10 sm:block"></span>
-                                    <span>{user?.phone}</span>
+                                    <span>{phone}</span>
                                 </div>
-                                <p>{user?.address?.pickup?.sub}</p>
-                                <p>{user?.address?.pickup?.main}</p>
+                                <p>{pickupAddress?.sub}</p>
+                                <p>{pickupAddress?.main}</p>
                             </div>
                             <div className="col-span-1 flex items-center gap-3">
                                 <FiEdit3
@@ -152,20 +159,20 @@ const Address = () => {
                             <AddressComponent
                                 type={'store'}
                                 handleUpdate={handleUpdate}
-                                address={user?.address?.store}
+                                address={storeAddress}
                             />
                         </Modal>
                     )}
-                    {user?.address?.store ? (
+                    {storeAddress ? (
                         <div className="grid grid-cols-12 p-4 bg-secondary rounded-xl">
                             <div className="col-span-11">
                                 <div className="flex gap-3 font-medium">
-                                    <span>{user?.name}</span>
+                                    <span>{name}</span>
                                     <span className=" hidden h-5 w-px bg-slate-900/10 sm:block"></span>
-                                    <span>{user?.phone}</span>
+                                    <span>{phone}</span>
                                 </div>
-                                <p>{user?.address?.store?.sub}</p>
-                                <p>{user?.address?.store?.main}</p>
+                                <p>{storeAddress?.sub}</p>
+                                <p>{storeAddress?.main}</p>
                             </div>
                             <div className="col-span-1 flex items-center gap-3">
                                 <FiEdit3

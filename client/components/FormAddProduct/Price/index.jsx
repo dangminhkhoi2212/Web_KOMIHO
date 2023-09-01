@@ -18,7 +18,7 @@ const Price = () => {
     const [origin, setOrigin] = useState();
     const [percent, setPercent] = useState();
     useEffect(() => {
-        const handleCaculator = () => {
+        const handleCalculator = () => {
             var price = 0;
             if (origin && origin !== 0) {
                 if (percent) {
@@ -27,7 +27,7 @@ const Price = () => {
             }
             setPriceFinal(format(price));
         };
-        handleCaculator();
+        handleCalculator();
     }, [origin, percent]);
 
     const handleChangeOrigin = (e) => {
@@ -37,7 +37,7 @@ const Price = () => {
         setPercent(Number(e.target.value));
     };
     return (
-        <div className="bg-white rounded-xl p-5 ">
+        <div className="bg-white rounded-xl ">
             <p className="text-lg font-medium">Price</p>
             <div className="grid grid-cols-6 gap-x-5 content-start p-5">
                 <div className="col-span-2">

@@ -1,15 +1,15 @@
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-import { getUser } from '@/redux/selector';
 import { loginWithGoogle } from '@/services/auth.service';
 import { setUser } from '@/components/Auth/authSlice';
 import { setAlert } from '@/components/Alert/alertSlice';
 import Loading from '@/components/Loading';
+import { getUserId } from '@/redux/selector';
 const UserLogin = ({ children }) => {
-    const userId = useSelector((state) => state.user._id);
+    const userId = useSelector(getUserId);
     console.log('🚀 ~ file: index.jsx:13 ~ UserLogin ~ user:', userId);
     const { data: session, status } = useSession();
     const dispatch = useDispatch();

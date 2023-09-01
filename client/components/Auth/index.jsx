@@ -8,6 +8,7 @@ import ProviderStore from '@/redux/Provider';
 import UserLogin from './UserLogin';
 import Loading from '@/components/Loading';
 import ShowAlert from './ShowAlert';
+
 const Auth = ({ children }) => {
     return (
         <ProviderStore>

@@ -5,16 +5,16 @@ import clsx from 'clsx';
 import routes from '@/routes';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { getUser } from '@/redux/selector';
+import { getUserId } from '@/redux/selector';
 const Navigate = () => {
-    const user = useSelector(getUser);
-    const [navs, setNavs] = useState([
+    const userId = useSelector(getUserId);
+    const navs = [
         { name: 'Home', href: routes.home },
+        { name: 'New Items', href: routes.newItems },
         { name: 'Shirt', href: routes.shirt },
         { name: 'Pants', href: routes.pants },
-        { name: 'Add Product', href: routes.addProduct },
-        { name: 'My Store', href: `${routes.store}/${user?._id}` },
-    ]);
+    ];
+
     const pathname = usePathname();
     return (
         <div className="flex flex-row justify-center items-center gap-x-4 text-black ">
@@ -29,7 +29,7 @@ const Navigate = () => {
                             key={nav.name}
                             as={nav.href}
                             className={clsx(
-                                'text-base font-medium px-4 py-3 rounded-t-xl hover:bg-default ',
+                                'text-base font-medium px-4 py-2 rounded-t-xl hover:bg-default ',
                                 active,
                             )}>
                             <span>{nav.name}</span>
