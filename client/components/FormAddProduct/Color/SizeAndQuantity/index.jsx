@@ -82,7 +82,7 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, color }) => {
                 return (
                     <div
                         className={clsx(
-                            'grid grid-cols-3  justify-items-end items-center p-2 rounded-xl',
+                            'grid grid-cols-3 gap-3 justify-items-end items-center p-2 rounded-xl',
                             {
                                 'bg-blue-100':
                                     index === indexForm && focusColor,
@@ -136,7 +136,7 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, color }) => {
                                     <InputCustom
                                         id={`${item.id}-quantity`}
                                         label={'Quantity '}
-                                        type={'text'}
+                                        type={'number'}
                                         placeholder={'Quantity '}
                                         onFocus={() => handleFocus(index)}
                                         onChange={(e) => {

@@ -9,9 +9,11 @@ import { useFormContext, useFieldArray, Controller } from 'react-hook-form';
 import SizeAndQuantity from './SizeAndQuantity';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import clsx from 'clsx';
+
+import initValue from '../index';
 const FormColor = () => {
     const {
-        reset,
+        resetField,
         control,
         formState: { errors },
     } = useFormContext();
@@ -38,11 +40,12 @@ const FormColor = () => {
             setIndexForm(Math.min(fields.length - 1, indexForm + 1));
         }
     }, [indexForm, fields]);
-    return (
-        <div className="rounded-xl bg-white">
-            <p className="text-lg my-2 font-medium">Colors</p>
 
-            <section className="inline-flex sticky top-0 bg-primary items-center my-2 justify-start z-header shadow-md px-3 py-2 rounded-xl ">
+    return (
+        <div className="rounded-xl bg-white relative">
+            <p className="my-2 font-medium">Colors</p>
+
+            <section className="inline-flex sticky top-28 bg-primary items-center my-2 justify-start z-button shadow-md px-3 py-2 rounded-xl ">
                 <PrimaryButton
                     icon={RiAddCircleLine}
                     onClick={() => {
@@ -56,16 +59,7 @@ const FormColor = () => {
                 <PrimaryButton icon={BiDownArrowAlt} onClick={handleMoveDown} />
                 <PrimaryButton
                     icon={BiReset}
-                    onClick={() =>
-                        reset({
-                            color: [
-                                {
-                                    name: '',
-                                    size: [{ type: '', quantity: '' }],
-                                },
-                            ],
-                        })
-                    }
+                    onClick={() => resetField('color')}
                 />
             </section>
             <div className="flex flex-col gap-5">
@@ -124,11 +118,13 @@ const FormColor = () => {
                                     color={fields}
                                 />
                             </div>
-                            <div
-                                className="col-span-1 justify-self-center cursor-pointer"
-                                onClick={() => remove(index)}>
-                                <AiOutlineDelete className="text-md p-2 rounded-full bg-red-400 text-white hover:bg-red-500 w-10 h-10" />
-                            </div>
+                            {fields.length > 1 && (
+                                <div
+                                    className="col-span-1 justify-self-center cursor-pointer"
+                                    onClick={() => remove(index)}>
+                                    <AiOutlineDelete className="text-md p-2 rounded-full bg-red-400 text-white hover:bg-red-500 w-10 h-10" />
+                                </div>
+                            )}
                         </div>
                     );
                 })}

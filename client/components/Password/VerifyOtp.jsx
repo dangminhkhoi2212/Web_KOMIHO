@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -11,15 +11,11 @@ import Loading from '@/components/Loading';
 import TimeCountDown from './TimeCountDown';
 import { sendOtp } from '@/services/password/otp.service';
 import { VscSend } from 'react-icons/vsc';
-import Alert from '@/components/Alert';
 import InputCustom from '@/components/InputCustom';
 import { otpSchema } from '@/utils/validation';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 const VerifyCode = ({ handleEvent, email, setOtp }) => {
-    const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
-    const [messageAlert, setMessageAlert] = useState('');
-    const [stateAlert, setStateAlert] = useState('');
-
     const [updateCountDown, setUpdateCountDown] = useState(false);
 
     const {
@@ -30,42 +26,40 @@ const VerifyCode = ({ handleEvent, email, setOtp }) => {
         resolver: yupResolver(otpSchema),
     });
 
-    const resendOTP = async () => {
-        try {
-            setLoading(true);
-            setMessageAlert('');
+    const resendOtp = useMutation({
+        mutationFn: async () => {
             await sendOtp(email);
-            setStateAlert('success');
-            setMessageAlert('Sent OTP.');
+        },
+        onSuccess() {
+            toast.success('Sent OTP');
             setUpdateCountDown((pre) => !pre);
-            setLoading(false);
-        } catch (error) {
-            setLoading(false);
-            setStateAlert('error');
-            setMessageAlert('Can not send OTP');
-        }
-    };
-    const submitCode = async (data) => {
-        try {
-            setLoading(true);
+        },
+        onError() {
+            toast.error('Can not send OTP');
+        },
+    });
 
-            const result = await verifyOtp(email, data.otp);
-            setLoading(false);
-            if (result.otp) {
-                if (setOtp) setOtp(data.otp);
+    const submitCode = useMutation({
+        mutationFn: async (data) => {
+            if (setOtp) setOtp(data.otp);
+            return await verifyOtp(email, data.otp);
+        },
+        onSuccess(data) {
+            if (data.otp) {
                 if (handleEvent) handleEvent();
             }
-        } catch (error) {
-            setLoading(false);
-            setMessage(error.response.data.message || error.message);
-        }
-    };
+        },
+        onError(error) {
+            toast.error(
+                error.response?.data?.message ||
+                    error.message ||
+                    "Can't check OTP. Please try again later.",
+            );
+        },
+    });
 
     return (
         <div className="flex flex-col justify-center items-center ">
-            {messageAlert && (
-                <Alert status={stateAlert} message={messageAlert} />
-            )}
             <Image
                 src={VerifyCodeImg}
                 width={0}
@@ -76,7 +70,7 @@ const VerifyCode = ({ handleEvent, email, setOtp }) => {
             />
             <form
                 className="  flex flex-col  gap-3 "
-                onSubmit={handleSubmit(submitCode)}>
+                onSubmit={handleSubmit(submitCode.mutate)}>
                 <p className="">
                     Check the 5-digit <span className="font-bold">OTP</span> in
                     your email
@@ -102,26 +96,25 @@ const VerifyCode = ({ handleEvent, email, setOtp }) => {
                         />
                     )}
                 />
-                <span className="text-red-400">{message}</span>
                 <div className="w-md text-center">
                     Resend OTP
                     <button
                         type="button"
                         className="p-3 rounded-xl  mx-4 text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent"
-                        onClick={resendOTP}>
-                        <VscSend />
+                        onClick={resendOtp.mutate}>
+                        {resendOtp.isLoading ? (
+                            <Loading colorProp={'#ffffff'} sizeProp={20} />
+                        ) : (
+                            <VscSend />
+                        )}
                     </button>
                 </div>
 
                 <button
                     type="submit"
-                    className="h-12 rounded-full text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent relative">
-                    {loading ? (
-                        <Loading
-                            loadingStatus={loading}
-                            colorProp={'#ffffff'}
-                            sizeProp={20}
-                        />
+                    className="h-12 rounded-full text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent relative overflow-hidden">
+                    {submitCode.isLoading ? (
+                        <Loading colorProp={'#ffffff'} sizeProp={20} />
                     ) : (
                         'Next'
                     )}

@@ -6,6 +6,7 @@ import { FiUserPlus, FiUsers, FiUserCheck } from 'react-icons/fi';
 import { VscAdd } from 'react-icons/vsc';
 import { BsChatRightHeartFill, BsCartCheck } from 'react-icons/bs';
 import { LuStore } from 'react-icons/lu';
+import { ISOTimeToDate } from '@/utils/date';
 const StoreHeader = ({ user }) => {
     const backgroundImage = `url('${user?.avatar?.url || ''}')`;
     const listMiddle = [
@@ -16,7 +17,11 @@ const StoreHeader = ({ user }) => {
     const listRight = [
         { name: 'Rating', content: user?.name, icon: AiOutlineStar },
         { name: 'Sale', content: user?.name, icon: BsCartCheck },
-        { name: 'Joined', content: user?.name, icon: FiUserCheck },
+        {
+            name: 'Joined',
+            content: ISOTimeToDate(user?.createdAt),
+            icon: FiUserCheck,
+        },
     ];
     return (
         <div className="bg-white rounded-xl p-5">

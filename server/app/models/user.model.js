@@ -41,6 +41,7 @@ const UserSchema = new Schema(
         emailVerified: { type: Boolean, default: false },
         viaGoogle: { type: Boolean, default: false },
         refreshToken: { type: String },
+        productId: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
         typeUser: { type: String, required: true, trim: true, default: 'user' },
     },
     {
@@ -48,4 +49,5 @@ const UserSchema = new Schema(
         timestamps: true,
     },
 );
-export default mongoose.model('Users', UserSchema);
+const User = mongoose.model('Users', UserSchema);
+export default User;

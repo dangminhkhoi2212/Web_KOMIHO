@@ -11,7 +11,7 @@ const startDB = async () => {
         });
         console.log(`Connected to database ${URL_DB}`);
     } catch (error) {
-        console.log(error);
+        console.log('ERROR MONGODB:', error);
     }
 };
 export default startDB;

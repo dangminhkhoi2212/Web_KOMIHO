@@ -1,15 +1,19 @@
 'use client';
-import { useState, Suspense, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import EnterEmail from './EnterEmail';
 import VerifyOtp from './VerifyOtp';
 import UpdatePassword from './UpdatePassword';
 import { MdOutlineArrowBack } from 'react-icons/md';
 import routes from '@/routes';
+
+const STEP_INIT = 1;
+const STEP_OTP = 2;
+const STEP_PASSWORD = 3;
 const index = () => {
     const router = useRouter();
 
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useState(STEP_INIT);
     const [email, setEmail] = useState('');
     const [otp, setOtp] = useState('');
     const handleNext = () => {
@@ -36,24 +40,25 @@ const index = () => {
                         Update password
                     </p>
                     <div className="flex flex-col justify-center items-center">
-                        {step === 1 && (
+                        {step === STEP_INIT && (
                             <EnterEmail
                                 handleNext={handleNext}
                                 email={email}
                                 setEmail={setEmail}
                             />
                         )}
-                        {step === 2 && (
+                        {step === STEP_OTP && (
                             <VerifyOtp
-                                handleNext={handleNext}
+                                handleEvent={handleNext}
                                 email={email}
                                 otp={otp}
                                 setOtp={setOtp}
                             />
                         )}
-                        {step === 3 && (
+                        {step === STEP_PASSWORD && (
                             <UpdatePassword
-                                handleNext={handleNext}
+                                linkRedirect={routes.login}
+                                handleEvent={() => setStep(STEP_INIT)}
                                 email={email}
                                 otp={otp}
                             />

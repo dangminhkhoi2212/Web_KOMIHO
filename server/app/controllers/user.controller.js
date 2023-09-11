@@ -2,11 +2,14 @@ import bcrypt from 'bcrypt';
 import 'dotenv/config.js';
 
 import User from '../models/user.model.js';
+import Product from '../models/product.model.js';
 import ApiError from '../utils/apiError.js';
 import { sendMail } from '../utils/mailer.js';
 import {
     deleteFile,
     deleteFolder,
+    deleteResources,
+    getFolder,
     uploadToCloudinary,
 } from '../services/cloudinary.service.js';
 import { checkUserExisted } from './auth.controller.js';
@@ -88,22 +91,18 @@ const deleteUser = async (req, res, next) => {
         const password = req.body.password;
 
         const user = await User.findById(userId);
-        if (!user) next(new ApiError(404, 'User not found'));
-        const match = bcrypt.compare(password, user.password);
-        if (!match) {
-            next(new ApiError(403, "Password don't match"));
-            return;
+        if (!user) return next(new ApiError(404, 'User not found'));
+        if (user.password) {
+            const match = await bcrypt.compare(password, user.password);
+            if (!match) {
+                next(new ApiError(403, "Password don't match"));
+                return;
+            }
         }
-        //delete avatar
-        const avatar = user.avatar;
-        await deleteFile(avatar.public_id, 'image');
-        await deleteFolder(`komiho/users/${userId}`);
 
-        //delete product
-
-        //delete feedback
-
+        // delete on mongodb
         await User.findByIdAndDelete(userId);
+
         res.json({ message: `Deleted user ${userId}`, status: 'success' });
     } catch (error) {
         next(

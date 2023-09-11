@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Image from 'next/image';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,11 +7,11 @@ import UpdatePasswordImg from '@/public/images/update_password.svg';
 import { passwordSchema } from '@/utils/validation';
 import Loading from '@/components/Loading';
 import { updatePassword } from '@/services/password/password.service';
-import Alert from '@/components/Alert';
 import InputCustom from '../InputCustom';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 const UpdatePassword = ({ email, otp, linkRedirect, handleEvent }) => {
     const router = useRouter();
-
     const {
         control,
         formState: { errors },
@@ -21,32 +20,26 @@ const UpdatePassword = ({ email, otp, linkRedirect, handleEvent }) => {
         resolver: yupResolver(passwordSchema),
     });
 
-    const [loading, setLoading] = useState(false);
-    const [alert, setAlert] = useState(false);
-    const [message, setMessage] = useState('');
-
-    const submitPassword = async (data) => {
-        try {
-            setMessage('');
-            setLoading(true);
+    const submitPassword = useMutation({
+        mutationFn: async (data) => {
             await updatePassword(email, otp, data.password);
-            setLoading(false);
+        },
+        onSuccess() {
             if (handleEvent) handleEvent();
+            toast.success('Update password successfully.');
             router.push(linkRedirect);
-        } catch (error) {
-            console.log(
-                '🚀 ~ file: UpdatePassword.jsx:38 ~ submitPassword ~ error:',
-                error,
+        },
+        onError(error) {
+            toast.error(
+                error?.response?.data?.message ||
+                    error?.message ||
+                    'Update password failure.',
             );
-            setLoading(false);
-            setMessage(error?.response?.data?.message || error?.message);
-        }
-    };
+        },
+    });
 
     return (
         <div className="flex flex-col justify-center gap-3 items-center relative">
-            {message && <Alert status={'failure'} message={message} />}
-
             <Image
                 src={UpdatePasswordImg}
                 width={0}
@@ -57,7 +50,7 @@ const UpdatePassword = ({ email, otp, linkRedirect, handleEvent }) => {
             />
             <form
                 className="  flex flex-col  gap-3 "
-                onSubmit={handleSubmit(submitPassword)}>
+                onSubmit={handleSubmit(submitPassword.mutate)}>
                 <Controller
                     name="password"
                     control={control}
@@ -101,13 +94,9 @@ const UpdatePassword = ({ email, otp, linkRedirect, handleEvent }) => {
 
                 <button
                     type="submit"
-                    className="h-12 rounded-full text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent relative ">
-                    {loading ? (
-                        <Loading
-                            loadingStatus={loading}
-                            colorProp={'#ffffff'}
-                            sizeProp={20}
-                        />
+                    className="h-12 rounded-full text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent relative overflow-hidden ">
+                    {submitPassword.isLoading ? (
+                        <Loading colorProp={'#ffffff'} sizeProp={20} />
                     ) : (
                         'Update'
                     )}

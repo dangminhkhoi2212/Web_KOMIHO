@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
 
 import EmailImage from '@/public/images/enter_email.svg';
 import AccountTemplate from '@/components/Account/AccountTemplate';
@@ -13,44 +12,57 @@ import VerifyOtp from '@/components/Password/VerifyOtp';
 import UpdatePassword from '@/components/Password/UpdatePassword';
 import routes from '@/routes';
 import Modal from '@/components/Modal';
-import { setAlert } from '@/components/Alert/alertSlice';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 const STEP_INITIAL = 1;
 const STEP_VERIFY_OTP = 2;
 const STEP_UPDATE_PASSWORD = 3;
 
 const Password = () => {
-    const dispatch = useDispatch();
-
-    const [loading, setLoading] = useState(false);
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useState(STEP_INITIAL);
 
     const [otp, setOtp] = useState();
     const email = useSelector(getEmail);
 
-    const startUpdatePassword = async () => {
-        try {
-            setLoading(true);
+    const { mutate, isLoading } = useMutation({
+        mutationFn: async () => {
             await sendOtp(email);
+        },
+        onSuccess() {
             handleNext();
-            dispatch(
-                setAlert({
-                    status: 'success',
-                    message: 'Send OTP successfully. Please check your email.',
-                }),
+            toast.success('Send OTP successfully. Please check your email');
+        },
+        onError(error) {
+            toast.error(
+                error?.response?.data?.message ||
+                    'Send OTP failure. Please try again.',
             );
-            setLoading(false);
-        } catch (error) {
-            dispatch(
-                setAlert({
-                    status: 'failure',
-                    message:
-                        error?.response?.data?.message ||
-                        'Send OTP failure. Please try again.',
-                }),
-            );
-        }
-    };
+        },
+    });
+    // const startUpdatePassword = async () => {
+    //     try {
+    //         setLoading(true);
+    //         await sendOtp(email);
+    //         handleNext();
+    //         dispatch(
+    //             setAlert({
+    //                 status: 'success',
+    //                 message: 'Send OTP successfully. Please check your email.',
+    //             }),
+    //         );
+    //         setLoading(false);
+    //     } catch (error) {
+    //         dispatch(
+    //             setAlert({
+    //                 status: 'failure',
+    //                 message:
+    //                     error?.response?.data?.message ||
+    //                     'Send OTP failure. Please try again.',
+    //             }),
+    //         );
+    //     }
+    // };
 
     const handleNext = () => {
         setStep((pre) => Math.min(pre + 1, 3));
@@ -60,7 +72,7 @@ const Password = () => {
     };
 
     return (
-        <AccountTemplate title={'Password'}>
+        <AccountTemplate title={'PASSWORD'}>
             <div className="flex flex-col justify-center items-center">
                 <Image
                     src={EmailImage}
@@ -71,14 +83,10 @@ const Password = () => {
                     priority
                 />
                 <button
-                    onClick={startUpdatePassword}
-                    className="px-4 h-12 min-w-[80px] rounded-full text-sm text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent relative">
-                    {loading ? (
-                        <Loading
-                            loadingStatus={loading}
-                            colorProp={'#ffffff'}
-                            sizeProp={20}
-                        />
+                    onClick={mutate}
+                    className="px-4 h-12 min-w-[80px] rounded-full text-sm text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent relative overflow-hidden mb-2">
+                    {isLoading ? (
+                        <Loading colorProp={'#ffffff'} sizeProp={20} />
                     ) : (
                         'Start update password'
                     )}
@@ -92,7 +100,7 @@ const Password = () => {
                     handleEvent={() => setStep(1)}>
                     <VerifyOtp
                         email={email}
-                        handleNext={handleNext}
+                        handleEvent={handleNext}
                         setOtp={setOtp}
                     />
                 </Modal>

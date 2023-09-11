@@ -10,7 +10,7 @@ const Navigate = () => {
     const userId = useSelector(getUserId);
     const navs = [
         { name: 'Home', href: routes.home },
-        { name: 'New Items', href: routes.newItems },
+        { name: 'New ', href: routes.newItems },
         { name: 'Shirt', href: routes.shirt },
         { name: 'Pants', href: routes.pants },
     ];

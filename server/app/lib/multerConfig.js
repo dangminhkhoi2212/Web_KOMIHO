@@ -6,7 +6,7 @@ import ApiError from '../utils/apiError.js';
 const storage = multer.diskStorage({});
 const fileFilter = (req, file, cb) => {
     //use for update profile user
-    if (!req.body.isUpdateAvatar) {
+    if (!req.body.isUpdateAvatar && !file) {
         return cb(null, true);
     }
     let ext = path.extname(file.originalname);

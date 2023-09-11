@@ -18,7 +18,9 @@ import Modal from '@/components/Modal';
 import InputCustom from '@/components/InputCustom';
 import { deleteUser } from '@/services/user.service';
 import { deleteAccountSchema } from '@/utils/validation';
-import { setUser } from '@/components/Auth/authSlice';
+import { resetUser, setUser } from '@/components/Auth/authSlice';
+import { setAlert } from '@/components/Alert/alertSlice';
+import { signOut } from 'next-auth/react';
 
 const STEP_INITIAL = 1;
 const STEP_VERIFY_OTP = 2;
@@ -70,17 +72,20 @@ const Password = () => {
 
     const handleDeleteAccount = async (data) => {
         try {
-            setMessage('');
             setLoading(true);
 
             const result = await deleteUser(userId, data.password);
             if (result.status === 'success') {
                 localStorage.clear();
-                dispatch(setUser(null));
-                router.push(routes.home);
+                dispatch(resetUser());
+                signOut({ callbackUrl: routes.home });
             }
             setLoading(false);
         } catch (error) {
+            console.log(
+                '🚀 ~ file: page.jsx:85 ~ handleDeleteAccount ~ error:',
+                error,
+            );
             setLoading(false);
             dispatch(
                 setAlert({
@@ -95,7 +100,7 @@ const Password = () => {
 
     return (
         <AccountTemplate
-            title={'Delete Account'}
+            title={'DELETE ACCOUNT'}
             note={'All data will be deleted.'}>
             <div className="flex flex-col justify-center items-center">
                 <Image

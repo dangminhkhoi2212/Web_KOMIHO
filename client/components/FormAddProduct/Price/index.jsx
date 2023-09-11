@@ -1,46 +1,39 @@
-import { useEffect, useState } from 'react';
 import InputCustom from '@/components/InputCustom';
-import { useFormContext, Controller } from 'react-hook-form';
+import { useEffect } from 'react';
+import { useFormContext, Controller, useWatch } from 'react-hook-form';
 
 const Price = () => {
     const {
-        register,
         control,
+        getValues,
+        setValue,
         formState: { errors },
     } = useFormContext();
+    const final = useWatch({ control, name: 'price.final' });
     const format = (num) => {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
             currency: 'VND',
         }).format(num);
     };
-    const [priceFinal, setPriceFinal] = useState(format(0));
-    const [origin, setOrigin] = useState();
-    const [percent, setPercent] = useState();
-    useEffect(() => {
-        const handleCalculator = () => {
-            var price = 0;
-            if (origin && origin !== 0) {
-                if (percent) {
-                    price = origin * (1 - percent / 100);
-                } else price = origin;
-            }
-            setPriceFinal(format(price));
-        };
-        handleCalculator();
-    }, [origin, percent]);
 
-    const handleChangeOrigin = (e) => {
-        setOrigin(Number(e.target.value));
-    };
-    const handleChangePercent = (e) => {
-        setPercent(Number(e.target.value));
+    const handleCalculator = () => {
+        var price = 0;
+        const origin = getValues('price.origin');
+
+        const percent = getValues('price.percent');
+        if (origin && origin !== 0) {
+            if (percent) {
+                price = origin * (1 - percent / 100);
+            } else price = origin;
+        }
+        setValue('price.final', format(price));
     };
     return (
         <div className="bg-white rounded-xl ">
-            <p className="text-lg font-medium">Price</p>
-            <div className="grid grid-cols-6 gap-x-5 content-start p-5">
-                <div className="col-span-2">
+            <p className=" font-medium">Price</p>
+            <div className="grid grid-cols-2 gap-x-5 gap-y-3 content-start px-5">
+                <div className="col-span-1">
                     <Controller
                         name={'price.origin'}
                         control={control}
@@ -51,9 +44,10 @@ const Price = () => {
                                 type="number"
                                 min="0"
                                 onChange={(e) => {
-                                    handleChangeOrigin(e);
                                     field.onChange(e.target.value);
+                                    handleCalculator();
                                 }}
+                                value={field.value}
                                 helperText={errors.price?.origin?.message}
                                 color={
                                     errors.price?.origin?.message
@@ -64,7 +58,7 @@ const Price = () => {
                         )}
                     />
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-1 w-44">
                     <Controller
                         name={'price.percent'}
                         control={control}
@@ -76,9 +70,12 @@ const Price = () => {
                                 min="0"
                                 max="100"
                                 onChange={(e) => {
-                                    handleChangePercent(e);
-                                    field.onChange(e.target.value);
+                                    let value = e.target.value;
+                                    value = value > 100 ? 100 : value;
+                                    field.onChange(value);
+                                    handleCalculator();
                                 }}
+                                value={field.value}
                                 helperText={errors.price?.percent?.message}
                                 color={
                                     errors.price?.percent?.message
@@ -89,9 +86,9 @@ const Price = () => {
                         )}
                     />
                 </div>
-                <div className="col-span-2 flex flex-row gap-3 text-lg font-medium">
-                    <span>Price final:</span>
-                    <span>{priceFinal} VND</span>
+                <div className="flex flex-row gap-3  font-medium">
+                    <span> Final price:</span>
+                    <span>{final} VND</span>
                 </div>
             </div>
         </div>

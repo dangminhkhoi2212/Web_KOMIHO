@@ -1,7 +1,10 @@
+import AccountTemplate from '@/components/Account/AccountTemplate';
 import React from 'react';
 
 const MyPurchases = () => {
-    return <div>MyPurchases</div>;
+    return (
+        <AccountTemplate title={'MY PURCHASES'}>MyPurchases</AccountTemplate>
+    );
 };
 
 export default MyPurchases;

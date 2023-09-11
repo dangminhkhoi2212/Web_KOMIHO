@@ -1,9 +1,7 @@
 'use client';
-import { useEffect } from 'react';
 import Link from 'next/link';
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { FcGoogle } from 'react-icons/fc';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,13 +14,29 @@ import Loading from '@/components/Loading';
 import InputCustom from '@/components/InputCustom';
 import Logo from '../Logo';
 import routes from '@/routes';
-import Alert from '@/components/Alert';
-import { setAlert } from '../Alert/alertSlice';
+import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
+import { useMutation } from '@tanstack/react-query';
 const LoginForm = () => {
     const dispatch = useDispatch();
     const router = useRouter();
+    const { mutate, isLoading } = useMutation({
+        mutationFn: async ({ username, password }) => {
+            const result = await login(username, password);
+            return result;
+        },
+        onSuccess(data) {
+            dispatch(setUser(data));
+            Cookies.set('accessToken', data.accessToken);
+            Cookies.set('refreshToken', data.refreshToken);
+            router.push(routes.home);
+            toast.success('Login Success.');
+        },
+        onError(err) {
+            toast.error(err?.response?.data?.message || 'Login Error');
+        },
+    });
 
-    const [loading, setLoading] = useState(false);
     const {
         handleSubmit,
         formState: { errors },
@@ -31,32 +45,6 @@ const LoginForm = () => {
         resolver: yupResolver(loginSchema),
     });
 
-    const handleLogin = async ({ username, password }) => {
-        try {
-            setLoading(true);
-            const result = await login(username, password);
-
-            if (result) {
-                dispatch(setUser(result));
-                dispatch(
-                    setAlert({ status: 'success', message: 'Login Success.' }),
-                );
-                localStorage.setItem('accessToken', result.accessToken);
-                localStorage.setItem('refreshToken', result.refreshToken);
-                router.push(routes.home);
-            }
-            setLoading(false);
-        } catch (error) {
-            setLoading(false);
-
-            dispatch(
-                setAlert({
-                    status: 'failure',
-                    message: error?.response?.data?.message || error?.message,
-                }),
-            );
-        }
-    };
     return (
         <div className="flex flex-col justify-center gap-3 bg-white rounded-xl p-5 w-80 shadow-md ">
             <div className="  text-center">
@@ -65,7 +53,7 @@ const LoginForm = () => {
                 <p className="italic ">Login to continue.</p>
             </div>
             <form
-                onSubmit={handleSubmit(handleLogin)}
+                onSubmit={handleSubmit((data) => mutate(data))}
                 className="flex flex-col gap-3">
                 <div className="  flex flex-col gap-2">
                     <Controller
@@ -124,12 +112,8 @@ const LoginForm = () => {
                 <button
                     type="submit"
                     className="h-12 hover:bg-accent transition ease-in-out duration-500  cursor-pointer p-3 rounded-xl bg-primary shadow-sm shadow-accent font-bold text-white relative">
-                    {loading ? (
-                        <Loading
-                            loadingStatus={loading}
-                            colorProp={'#ffffff'}
-                            sizeProp={20}
-                        />
+                    {isLoading ? (
+                        <Loading colorProp={'#ffffff'} sizeProp={20} />
                     ) : (
                         'Login'
                     )}

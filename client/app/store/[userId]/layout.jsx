@@ -1,9 +1,10 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { getUserApi } from '@/services/user.service';
 import '@/app/globals.css';
 import StoreHeader from '@/components/Store/Header';
 import Navigation from '@/components/Store/Navigation';
+import Loading from './loading';
 const layout = ({ params, children }) => {
     const [user, setUser] = useState(null);
     useEffect(() => {
@@ -30,7 +31,7 @@ const layout = ({ params, children }) => {
                     <Navigation userId={params?.userId} />
                 </nav>
                 <section className="col-span-10 bg-white rounded-xl p-5 ">
-                    {children}
+                    <Suspense fallback={<Loading />}>{children}</Suspense>
                 </section>
             </div>
         </div>

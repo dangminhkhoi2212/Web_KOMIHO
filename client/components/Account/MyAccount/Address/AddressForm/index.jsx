@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 
 const PROVINCE_API = 'https://provinces.open-api.vn/api/';
-import SelectInput from '@/components/SelectCustom';
+import SelectInput from '@/components/Account/MyAccount/Address/AddressForm/SelectCustom';
 import { useDispatch } from 'react-redux';
 const AddressForm = ({ setValue }) => {
     const dispatch = useDispatch();

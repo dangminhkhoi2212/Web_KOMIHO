@@ -12,7 +12,7 @@ import userRouter from './app/routes/user.route.js';
 
 //Admin routers
 import statisticUserRouter from './app/routes/admin/statisticUser.route.js';
-import productRouter from './app/routes/admin/product.route.js';
+import productRouter from './app/routes/product.route.js';
 import adminRouter from './app/routes/admin/admin.route.js';
 import otpRouter from './app/routes/otp.route.js';
 //Shared
@@ -35,8 +35,8 @@ const io = new Server(httpServer, {
 });
 
 app.use(cors());
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 //User routes
 app.use('/api/user', userRouter);
@@ -44,7 +44,7 @@ app.use('/api/user', userRouter);
 //Admin routes
 app.use('/api/admin', adminRouter);
 app.use('/api/admin/statisticUser', statisticUserRouter);
-app.use('/api/admin/product', productRouter);
+app.use('/api/product', productRouter);
 
 //Shared
 app.use('/api/refreshToken', refreshTokenRouter);

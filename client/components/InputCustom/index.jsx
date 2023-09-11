@@ -32,15 +32,17 @@ const InputCustom = ({
     color,
     placeholder,
     onChange,
+    size,
+    maxLength,
     ...props
 }) => {
     const handleOnchangeKeyDown = (e) => {
         if (e.key === 'Enter') e.preventDefault();
     };
     return (
-        <div className="flex flex-col  gap-y-1 max-w-md z-container">
+        <div className="flex flex-col  gap-y-1 max-w-md  z-container">
             <Flowbite theme={{ theme: customTheme }}>
-                <Label htmlFor={id} value={label} />
+                <Label htmlFor={id} value={label} className="text-base" />
                 <div className="flex flex-col">
                     <TextInput
                         id={id}
@@ -50,6 +52,7 @@ const InputCustom = ({
                         value={value}
                         onChange={onChange}
                         placeholder={placeholder}
+                        maxLength={maxLength}
                         {...props}
                         onKeyDown={handleOnchangeKeyDown}
                     />

@@ -1,11 +1,9 @@
 'use client';
-import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FcGoogle } from 'react-icons/fc';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
 
 import InputCustom from '../InputCustom';
 import { registerSchema } from '@/utils/validation';
@@ -13,10 +11,10 @@ import Loading from '../Loading';
 import Link from 'next/link';
 import routes from '@/routes';
 import { register } from '@/services/auth.service';
-import { setAlert } from '@/components/Alert/alertSlice';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 const RegisterForm = () => {
     const router = useRouter();
-    const dispatch = useDispatch();
     const {
         control,
         handleSubmit,
@@ -24,45 +22,35 @@ const RegisterForm = () => {
     } = useForm({
         resolver: yupResolver(registerSchema),
     });
-    const [loading, setLoading] = useState(false);
-    const handleRegister = async (data) => {
-        try {
-            setLoading(true);
-            await register(
+
+    const { mutate, isLoading } = useMutation({
+        mutationFn: async (data) => {
+            return await register(
                 data?.name,
                 data?.email,
                 data?.phone,
                 data?.password,
             );
-            setLoading(false);
-            dispatch(
-                setAlert({
-                    status: 'warning',
-                    message: 'Please check your email to verify your account.',
-                }),
+        },
+        onSuccess(data) {
+            toast.warning('Please check your email to verify your account.');
+            router.push(routes.login);
+        },
+        onError(err) {
+            toast.error(
+                err?.response?.data?.message ||
+                    'Occurred error! Please try again. ',
             );
-            router.push(
-                `${routes.login}?notice=Please check your email to verify your account.`,
-            );
-        } catch (error) {
-            setLoading(false);
-            dispatch(
-                setAlert({
-                    status: 'failure',
-                    message:
-                        error?.response?.data?.message ||
-                        'Occurred error! Please try again. ',
-                }),
-            );
-        }
-    };
+        },
+    });
+
     return (
         <div className="flex flex-col justify-center items-center gap-3 bg-white rounded-xl p-5 shadow-md relative">
             <div className=" text-center">
                 <p className="text-2xl font-bold ">Register </p>
             </div>
             <form
-                onSubmit={handleSubmit(handleRegister)}
+                onSubmit={handleSubmit((data) => mutate(data))}
                 className=" flex flex-col gap-3">
                 <Controller
                     name="name"
@@ -154,13 +142,9 @@ const RegisterForm = () => {
 
                 <button
                     type="submit"
-                    className="h-12 hover:bg-accent transition ease-in-out duration-500  cursor-pointer p-3 rounded-xl bg-primary shadow-sm shadow-accent font-bold text-white relative">
-                    {loading ? (
-                        <Loading
-                            loadingStatus={loading}
-                            colorProp={'#ffffff'}
-                            sizeProp={20}
-                        />
+                    className="h-12 hover:bg-accent transition ease-in-out duration-500  cursor-pointer p-3 rounded-xl bg-primary shadow-sm shadow-accent font-bold text-white relative overflow-hidden">
+                    {isLoading ? (
+                        <Loading colorProp={'#ffffff'} sizeProp={20} />
                     ) : (
                         'Register'
                     )}

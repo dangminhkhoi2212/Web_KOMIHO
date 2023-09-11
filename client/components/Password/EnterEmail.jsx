@@ -9,6 +9,8 @@ import { sendOtp } from '@/services/password/otp.service';
 import Loading from '@/components/Loading';
 import InputCustom from '@/components/InputCustom';
 import { emailSchema } from '@/utils/validation';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 const EnterEmail = ({ handleNext, email, setEmail }) => {
     const {
         control,
@@ -17,23 +19,35 @@ const EnterEmail = ({ handleNext, email, setEmail }) => {
     } = useForm({
         resolver: yupResolver(emailSchema),
     });
-    const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
-    console.log('🚀 ~ file: EnterEmail.jsx:17 ~ EnterEmail ~ errors:', errors);
-    const submitEmail = async (data) => {
-        console.log('🚀 ~ file: EnterEmail.jsx:19 ~ submitEmail ~ data:', data);
-        try {
-            setLoading(true);
+
+    const submitEmail = useMutation({
+        mutationFn: async (data) => {
             await sendOtp(data.email);
-            setLoading(false);
+            return data;
+        },
+        onSuccess(data) {
             setEmail(data.email);
             handleNext();
-        } catch (error) {
-            setLoading(false);
+            toast.success('Send OTP successfully. Please check your email');
+        },
+        onError(error) {
+            toast.error('Sent OTP failed. Please reload page and try again');
+        },
+    });
+    // const submitEmail = async (data) => {
+    //     console.log('🚀 ~ file: EnterEmail.jsx:19 ~ submitEmail ~ data:', data);
+    //     try {
+    //         setLoading(true);
+    //         await sendOtp(data.email);
+    //         setLoading(false);
+    //         setEmail(data.email);
+    //         handleNext();
+    //     } catch (error) {
+    //         setLoading(false);
 
-            setMessage(error.response.data.message || error.message);
-        }
-    };
+    //         setMessage(error.response.data.message || error.message);
+    //     }
+    // };
     return (
         <div className="flex flex-col items-center justify-center gap-3">
             <Image
@@ -46,7 +60,7 @@ const EnterEmail = ({ handleNext, email, setEmail }) => {
             />
             <form
                 className="  flex flex-col gap-3 "
-                onSubmit={handleSubmit(submitEmail)}>
+                onSubmit={handleSubmit(submitEmail.mutate)}>
                 <p>A code will be sent in email</p>
                 <Controller
                     name="email"
@@ -65,16 +79,11 @@ const EnterEmail = ({ handleNext, email, setEmail }) => {
                         />
                     )}
                 />
-                <span className="text-red-400">{message}</span>
                 <button
                     type="submit"
-                    className="h-12 rounded-full text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent relative">
-                    {loading ? (
-                        <Loading
-                            loadingStatus={loading}
-                            colorProp={'#ffffff'}
-                            sizeProp={20}
-                        />
+                    className="h-12 rounded-full text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent relative overflow-hidden mb-2">
+                    {submitEmail.isLoading ? (
+                        <Loading colorProp={'#ffffff'} sizeProp={20} />
                     ) : (
                         'Next'
                     )}

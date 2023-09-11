@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import FormAddProduct from '@/components/FormAddProduct';
+import AccountTemplate from '@/components/Account/AccountTemplate';
 const AddProduct = () => {
     return (
-        <div>
+        <AccountTemplate title={'ADD PRODUCT'}>
             <FormAddProduct />
-        </div>
+        </AccountTemplate>
     );
 };
 

@@ -1,7 +1,5 @@
 import useApi from './apiConfig';
 const api = useApi();
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
-// const api = apiConfig(`/auth`);
 
 export const login = async (username, password) => {
     return (await api.post('/auth/login', { username, password })).data;

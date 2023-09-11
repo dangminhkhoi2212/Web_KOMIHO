@@ -1,5 +1,8 @@
 import cloudinary from '../lib/cloudinary.js';
 
+const getFolder = async (pathFolder) => {
+    return (await cloudinary.api.sub_folders(pathFolder)).folders;
+};
 const uploadToCloudinary = async (filePath, resourceType, folder) => {
     const result = await cloudinary.uploader.upload(filePath, {
         resource_type: resourceType,
@@ -15,9 +18,19 @@ const deleteFile = async (publicId, resource_type) => {
     return result;
 };
 const createFolder = async (userId) => {
-    await cloudinary.api.create_folder(userId);
+    return await cloudinary.api.create_folder(userId);
 };
 const deleteFolder = async (pathFolder) => {
-    await cloudinary.api.delete_folder(pathFolder);
+    return await cloudinary.api.delete_folder(pathFolder);
 };
-export { uploadToCloudinary, deleteFile, deleteFolder, createFolder };
+const deleteResources = async (pathFolder) => {
+    return await cloudinary.api.delete_resources_by_prefix(pathFolder);
+};
+export {
+    uploadToCloudinary,
+    deleteFile,
+    deleteFolder,
+    createFolder,
+    deleteResources,
+    getFolder,
+};

@@ -1,7 +1,13 @@
-import React from 'react';
+'use client';
+import routes from '@/routes';
+import { redirect } from 'next/navigation';
+import { useEffect } from 'react';
 
 const MyStore = () => {
-    return <div>MyStore</div>;
+    useEffect(() => {
+        redirect(routes.managerAllProducts);
+    }, []);
+    return <div>Redirect to all products...</div>;
 };
 
 export default MyStore;

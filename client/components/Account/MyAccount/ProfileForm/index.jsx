@@ -19,7 +19,8 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '@/components/Auth/authSlice';
 import Loading from '@/components/Loading';
 import clsx from 'clsx';
-import { setAlert } from '@/components/Alert/alertSlice';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 const ProfileForm = () => {
     const userId = useSelector(getUserId);
@@ -28,6 +29,12 @@ const ProfileForm = () => {
     const phone = useSelector(getPhone);
     const urlAvatar = useSelector(getUrlAvatar);
 
+    const initValue = {
+        name,
+        email,
+        phone: phone || '',
+        avatar: {},
+    };
     const dispatch = useDispatch();
     const [isPhone, setIsPhone] = useState(phone ? true : false);
     const [avtUrl, setAvtUrl] = useState(urlAvatar);
@@ -42,19 +49,11 @@ const ProfileForm = () => {
         reset,
     } = useForm({
         resolver: yupResolver(profileSchema),
-        defaultValues: {
-            name,
-            email,
-            phone: phone || '',
-            avatar: {},
-        },
+        defaultValues: initValue,
     });
 
-    const { ref } = register('avatar');
-
-    const handleUpdate = async (data) => {
-        try {
-            setLoading(true);
+    const { mutate, isLoading } = useMutation({
+        mutationFn: async (data) => {
             data.isUpdateAvatar = false;
 
             const form = new FormData();
@@ -64,48 +63,82 @@ const ProfileForm = () => {
             if (data.avatar.length > 0 && data.avatar[0]) {
                 data.avatar = data.avatar[0];
                 form.append('avatar', data.avatar);
+                URL.revokeObjectURL(avtUrl);
                 data.isUpdateAvatar = true;
             }
             form.append('isUpdateAvatar', data.isUpdateAvatar);
 
-            const result = await updateProfile(userId, form);
-
-            if (result) {
-                //delete form after update
-                if (data.avatar) if (avtUrl) URL.revokeObjectURL(avtUrl);
-                reset({
-                    name: form.get('name'),
-                    email: form.get('email'),
-                    phone: form.get('phone'),
-                    avatar: {},
-                });
-                for (var pair of form) {
-                    form.delete(pair[0]);
-                }
-
-                dispatch(setUser(result));
-                dispatch(
-                    setAlert({
-                        status: 'success',
-                        message: 'Your profile updated successfully.',
-                    }),
-                );
-
-                setFileSize('');
-            }
-            setLoading(false);
-        } catch (error) {
-            dispatch(
-                setAlert({
-                    status: 'failure',
-                    message:
-                        error?.response?.data?.message ||
-                        'Have an error. Please try again.',
-                }),
+            return await updateProfile(userId, form);
+        },
+        onSuccess(data) {
+            reset(initValue);
+            dispatch(setUser(data));
+            toast.success('Your profile updated successfully.');
+            setFileSize('');
+        },
+        onError(error) {
+            toast.error(
+                error?.response?.data?.message ||
+                    'Have an error. Please try again.',
             );
-            setLoading(false);
-        }
-    };
+        },
+    });
+    const { ref } = register('avatar');
+
+    // const handleUpdate = async (data) => {
+    //     try {
+    //         setLoading(true);
+    //         data.isUpdateAvatar = false;
+
+    //         const form = new FormData();
+    //         form.append('name', data.name);
+    //         form.append('email', data.email);
+    //         form.append('phone', data.phone);
+    //         if (data.avatar.length > 0 && data.avatar[0]) {
+    //             data.avatar = data.avatar[0];
+    //             form.append('avatar', data.avatar);
+    //             data.isUpdateAvatar = true;
+    //         }
+    //         form.append('isUpdateAvatar', data.isUpdateAvatar);
+
+    //         const result = await updateProfile(userId, form);
+
+    //         if (result) {
+    //             //delete form after update
+    //             if (data.avatar) if (avtUrl) URL.revokeObjectURL(avtUrl);
+    //             reset({
+    //                 name: form.get('name'),
+    //                 email: form.get('email'),
+    //                 phone: form.get('phone'),
+    //                 avatar: {},
+    //             });
+    //             for (var pair of form) {
+    //                 form.delete(pair[0]);
+    //             }
+
+    //             dispatch(setUser(result));
+    //             dispatch(
+    //                 setAlert({
+    //                     status: 'success',
+    //                     message: 'Your profile updated successfully.',
+    //                 }),
+    //             );
+
+    //             setFileSize('');
+    //         }
+    //         setLoading(false);
+    //     } catch (error) {
+    //         dispatch(
+    //             setAlert({
+    //                 status: 'failure',
+    //                 message:
+    //                     error?.response?.data?.message ||
+    //                     'Have an error. Please try again.',
+    //             }),
+    //         );
+    //         setLoading(false);
+    //     }
+    // };
     const handleChooseFile = () => {
         inputFile.current.click();
     };
@@ -121,9 +154,9 @@ const ProfileForm = () => {
     return (
         <div className=" ">
             <form
-                onSubmit={handleSubmit(handleUpdate)}
+                onSubmit={handleSubmit((data) => mutate(data))}
                 className="grid grid-cols-12 gap-3 ">
-                {loading && <Loading loadingStatus={loading} />}
+                {isLoading && <Loading />}
                 <div className="col-span-9 flex flex-col gap-3">
                     <Controller
                         name="name"
@@ -182,7 +215,7 @@ const ProfileForm = () => {
                                     />
                                 )}
                             />
-                            {phone && (
+                            {!phone && (
                                 <span
                                     className=" cursor-pointer flex-initial px-2 py-1  rounded-full bg-primary hover:bg-accent text-sm text-white ms-5 align-middle"
                                     onClick={() => {

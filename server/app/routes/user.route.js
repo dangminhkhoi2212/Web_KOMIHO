@@ -14,7 +14,7 @@ router
 router
     .route('/:id')
     .get(userController.getUser)
-    .post(verifyToken, userController.deleteUser)
+    .post(userController.deleteUser)
     .put(verifyToken, userController.updateUser);
 router
     .route('/')

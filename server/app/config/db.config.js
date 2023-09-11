@@ -1,4 +1,6 @@
+const url =
+    'mongodb+srv://kkhoi600:m7OrJVQYgoxKwSz1@komiho.ivk2eog.mongodb.net/komiho';
 const dbconfig = {
-    url: 'mongodb://127.0.0.1:27017/komiho',
+    url,
 };
 export default dbconfig;

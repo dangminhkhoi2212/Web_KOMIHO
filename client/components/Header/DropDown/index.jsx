@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getName, getUrlAvatar, getUserId } from '@/redux/selector';
 import { resetUser } from '@/components/Auth/authSlice';
 import routes from '@/routes';
+import Cookies from 'js-cookie';
 
 export default function DropdownItem() {
     const UrlAvatar = useSelector(getUrlAvatar);
@@ -20,13 +21,13 @@ export default function DropdownItem() {
 
     const dispatch = useDispatch();
     const [show, setShow] = useState(false);
-    const handleLogout = () => {
+    const handleLogout = async () => {
         dispatch(resetUser());
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        await signOut({ callbackUrl: routes.login });
+        Cookies.remove('accessToken');
+        Cookies.remove('refreshToken');
 
-        localStorage.removeItem('persist:root');
-        signOut({ callbackUrl: routes.login });
+        localStorage.removeItem('persist:user');
     };
     return (
         <>

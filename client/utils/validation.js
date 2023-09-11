@@ -94,7 +94,10 @@ export const deleteAccountSchema = yup.object({
     password: passwordYup,
 });
 export const addProductSchema = yup.object({
-    name: nameYup,
+    name: yup
+        .string()
+        .required('Name is required field')
+        .max(100, 'Name product maximum is 100 characters'),
     price: yup
         .object({
             origin: originPriceYup,
@@ -115,11 +118,8 @@ export const addProductSchema = yup.object({
     images: yup
         .mixed()
         .required('Please select at least one image')
-        .test('fileSize', 'File size is too large', (value) => {
-            if (!value.length) return true;
-            for (let i = 0; i < value.length; i++) {
-                return value[i].size <= FILE_SIZE;
-            }
+        .test('arrayFileLength', 'Maximum 9 photos', (value) => {
+            return Object.entries(value).length <= 9;
         })
         .test('filetype', 'Unsupported file format', (value) => {
             if (value && value.length > 0) {
@@ -132,12 +132,13 @@ export const addProductSchema = yup.object({
                         return false;
                     }
                 }
-                return true;
             }
+            return true;
         })
         .test('fileRequired', 'You must provide 1 image.', (value) => {
-            if (value.length === 0) return false;
+            if (Object.entries(value).length === 0) return false;
             return true;
         }),
-    // .min(1, 'At least 1 image is required')
+    type: yup.string().required('Type is a required field'),
+    tags: yup.string(),
 });

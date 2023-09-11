@@ -7,23 +7,18 @@ import { RiAddCircleLine } from 'react-icons/ri';
 import { BiDownArrowAlt, BiUpArrowAlt, BiReset } from 'react-icons/bi';
 
 const FromController = ({ indexForm = 0, setIndexForm }) => {
-    console.log(
-        '🚀 ~ file: index.jsx:10 ~ FromController ~ indexForm, setIndexForm:',
-        indexForm,
-        setIndexForm,
-    );
     const { control, reset } = useFormContext();
     const { append, remove, move } = useFieldArray({
         control,
         name: 'color',
     });
-    const hanleMoveUp = () => {
+    const handleMoveUp = () => {
         if (indexForm > 0) {
             move(indexForm, indexForm - 1);
             setIndexForm(Math.max(0, indexForm - 1));
         }
     };
-    const hanleMoveDown = () => {
+    const handleMoveDown = () => {
         if (indexForm < fields.length - 1) {
             move(indexForm, indexForm + 1);
             setIndexForm(Math.min(fields.length - 1, indexForm + 1));
@@ -40,10 +35,10 @@ const FromController = ({ indexForm = 0, setIndexForm }) => {
                     });
                 }}
             />
-            <PrimaryButton icon={BiUpArrowAlt} onClick={() => hanleMoveUp} />
+            <PrimaryButton icon={BiUpArrowAlt} onClick={() => handleMoveUp} />
             <PrimaryButton
                 icon={BiDownArrowAlt}
-                onClick={() => hanleMoveDown}
+                onClick={() => handleMoveDown}
             />
             <PrimaryButton
                 icon={BiReset}

@@ -52,7 +52,6 @@ export const loginWithGoogle = async (req, res, next) => {
             avatar: {
                 url: payload.picture,
             },
-            refreshToken,
         };
 
         const user = await User.create(newUser);
@@ -65,7 +64,7 @@ export const loginWithGoogle = async (req, res, next) => {
             .lean()
             .select(PROPERTIES_USER);
         result.accessToken = accessToken;
-        res.send(result, accessToken);
+        res.send({ ...result, accessToken });
     } catch (error) {
         console.log(
             '🚀 ~ file: google.controller.js:57 ~ loginWithGoogle ~ error:',

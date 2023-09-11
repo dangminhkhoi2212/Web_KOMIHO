@@ -20,6 +20,8 @@ import { setUser } from '@/components/Auth/authSlice';
 import { updateAddress } from '@/services/user.service';
 import Loading from '@/components/Loading';
 import { setAlert } from '@/components/Alert/alertSlice';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 const Address = () => {
     const userId = useSelector(getUserId);
@@ -33,72 +35,106 @@ const Address = () => {
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
 
-    const handleUpdate = async (data) => {
-        try {
-            setLoading(true);
+    const handleUpdateAddress = useMutation({
+        mutationFn: async (data) => {
             if ('pickup' in data) setShowEditPickup(false);
             else setShowEditStore(false);
 
-            const result = await updateAddress(userId, data);
-            if (result) {
-                dispatch(
-                    setAlert({
-                        status: 'success',
-                        message: 'Update successfully.',
-                    }),
-                );
-                dispatch(setUser(result));
-            }
-
-            setLoading(false);
-        } catch (error) {
-            dispatch(
-                setAlert({
-                    status: 'failure',
-                    message:
-                        error?.response?.data?.message ||
-                        'Update failed. Please try again.',
-                }),
+            return await updateAddress(userId, data);
+        },
+        onSuccess(data) {
+            dispatch(setUser(data));
+            toast.success('Successfully updated.');
+        },
+        onError(error) {
+            toast.error(
+                error?.response?.data?.message ||
+                    'Update failed. Please try again.',
             );
+        },
+    });
+    // const handleUpdate = async (data) => {
+    //     try {
+    //         setLoading(true);
+    //         if ('pickup' in data) setShowEditPickup(false);
+    //         else setShowEditStore(false);
 
-            setLoading(false);
-        }
-    };
+    //         const result = await updateAddress(userId, data);
+    //         if (result) {
+    //             dispatch(
+    //                 setAlert({
+    //                     status: 'success',
+    //                     message: 'Update successfully.',
+    //                 }),
+    //             );
+    //             dispatch(setUser(result));
+    //         }
 
-    const handleDelete = async (type) => {
-        try {
-            setLoading(true);
+    //         setLoading(false);
+    //     } catch (error) {
+    //         dispatch(
+    //             setAlert({
+    //                 status: 'failure',
+    //                 message:
+    //                     error?.response?.data?.message ||
+    //                     'Update failed. Please try again.',
+    //             }),
+    //         );
+
+    //         setLoading(false);
+    //     }
+    // };
+    const handleDeleteAddress = useMutation({
+        mutationFn: async (type) => {
             var result;
             if (type === 'pickup') {
                 result = await updateAddress(userId, { pickup: {} });
             } else result = await updateAddress(userId, { store: {} });
-            if (result) {
-                dispatch(setUser(result));
-                dispatch(
-                    setAlert({
-                        status: 'success',
-                        message: 'Delete successfully.',
-                    }),
-                );
-            }
-            setLoading(false);
-        } catch (error) {
-            dispatch(
-                setAlert({
-                    status: 'failure',
-                    message: 'Delete failed. Please try again.',
-                }),
-            );
-            setLoading(false);
-        }
-    };
+            return result;
+        },
+        onSuccess(data) {
+            dispatch(setUser(data));
+            toast.success('Delete successfully.');
+        },
+        onError(error) {
+            toast.error('Delete failed. Please try again.');
+        },
+    });
+    // const handleDelete = async (type) => {
+    //     try {
+    //         setLoading(true);
+    //         var result;
+    //         if (type === 'pickup') {
+    //             result = await updateAddress(userId, { pickup: {} });
+    //         } else result = await updateAddress(userId, { store: {} });
+    //         if (result) {
+    //             dispatch(setUser(result));
+    //             dispatch(
+    //                 setAlert({
+    //                     status: 'success',
+    //                     message: 'Delete successfully.',
+    //                 }),
+    //             );
+    //         }
+    //         setLoading(false);
+    //     } catch (error) {
+    //         dispatch(
+    //             setAlert({
+    //                 status: 'failure',
+    //                 message: 'Delete failed. Please try again.',
+    //             }),
+    //         );
+    //         setLoading(false);
+    //     }
+    // };
     return (
-        <div className="">
-            {loading && <Loading loadingStatus={loading} />}
+        <div className="overflow-hidden relative">
+            {(handleDeleteAddress.isLoading ||
+                handleUpdateAddress.isLoading) && <Loading />}
 
             <div>
                 <AccountTemplate
-                    title={'Pickup address'}
+                    title={'PICKUP ADDRESS'}
                     note={'Your order will be delivered to this address.'}
                     key={'pickup'}>
                     {showEditPickup && (
@@ -108,7 +144,7 @@ const Address = () => {
                             handleEvent={() => setShowEditPickup(false)}>
                             <AddressComponent
                                 type={'pickup'}
-                                handleUpdate={handleUpdate}
+                                handleUpdate={handleUpdateAddress.mutate}
                                 address={pickupAddress}
                             />
                         </Modal>
@@ -131,7 +167,9 @@ const Address = () => {
                                 />
                                 <AiOutlineDelete
                                     className="font-medium text-2xl cursor-pointer"
-                                    onClick={() => handleDelete('pickup')}
+                                    onClick={() =>
+                                        handleDeleteAddress.mutate('pickup')
+                                    }
                                 />
                             </div>
                         </div>
@@ -148,7 +186,7 @@ const Address = () => {
                     )}
                 </AccountTemplate>
                 <AccountTemplate
-                    title={'Store address'}
+                    title={'STORE ADDRESS'}
                     note={'Shippers will get goods from this address.'}
                     key={'store'}>
                     {showEditStore && (
@@ -158,7 +196,7 @@ const Address = () => {
                             handleEvent={() => setShowEditStore(false)}>
                             <AddressComponent
                                 type={'store'}
-                                handleUpdate={handleUpdate}
+                                handleUpdate={handleUpdateAddress.mutate}
                                 address={storeAddress}
                             />
                         </Modal>
@@ -181,7 +219,9 @@ const Address = () => {
                                 />
                                 <AiOutlineDelete
                                     className="font-medium text-2xl cursor-pointer"
-                                    onClick={() => handleDelete('store')}
+                                    onClick={() =>
+                                        handleDeleteAddress.mutate('store')
+                                    }
                                 />
                             </div>
                         </div>

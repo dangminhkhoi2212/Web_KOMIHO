@@ -1,9 +1,6 @@
 import axios from 'axios';
-
-const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-};
+import Cookies from 'js-cookie';
+const headers = { Accept: 'application/json' };
 const useApi = () => {
     const instance = axios.create({
         baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
@@ -12,13 +9,14 @@ const useApi = () => {
 
     instance.interceptors.request.use(
         (config) => {
-            if (!config.headers['Authorization']) {
-                const accessToken = localStorage.getItem('accessToken');
-                if (accessToken) {
-                    config.headers['Authorization'] = `Bearer ${accessToken}`;
-                }
+            const accessToken = Cookies.get('accessToken');
+            console.log(
+                '🚀 ~ file: apiConfig.js:13 ~ useApi ~ accessToken:',
+                accessToken,
+            );
+            if (accessToken && !config.headers['Authorization']) {
+                config.headers['Authorization'] = `Bearer ${accessToken}`;
             }
-            // console.log('🚀 ~ file: useApi.js:14 ~ CONFIG REQUEST:', config);
             return config;
         },
         (error) => {
@@ -28,22 +26,18 @@ const useApi = () => {
 
     instance.interceptors.response.use(
         (response) => {
-            // console.log(
-            //     '🚀 ~ file: useApi.js:34 ~ useApi ~ response:',
-            //     response,
-            // );
             return response;
         },
         async (error) => {
-            // console.log('🚀 ~ file: useApi.js:41 ~ CONFIG ERROR:', error);
             const { response, config } = error;
             const status = response?.status;
             if (
                 status === 403 &&
-                localStorage.getItem('refreshToken') &&
+                Cookies.get('refreshToken') &&
                 response.data.message === 'Invalid token'
             ) {
-                const refreshTokenLocal = localStorage.getItem('refreshToken');
+                const refreshTokenLocal = Cookies.get('refreshToken');
+
                 try {
                     const { accessToken, refreshToken } = (
                         await instance.post(`/refreshToken`, {
@@ -51,11 +45,10 @@ const useApi = () => {
                         })
                     ).data;
 
-                    localStorage.setItem('accessToken', accessToken);
-                    localStorage.setItem('refreshToken', refreshToken);
+                    Cookies.set('accessToken', accessToken);
+                    Cookies.set('refreshToken', refreshToken);
 
                     config.headers['Authorization'] = `Bearer ${accessToken}`;
-                    // console.log('🚀 ~ file: useApi.js:69 ~ config:', config);
 
                     return Promise.resolve(instance.request(config));
                 } catch (error) {

@@ -11,6 +11,7 @@ const initialState = {
     avatar: {
         url: null,
     },
+    createdAt: null,
 };
 const Slice = createSlice({
     name: 'user',
@@ -24,6 +25,7 @@ const Slice = createSlice({
             state.phone = data.phone;
             state.address = data.address;
             state.avatar = data.avatar;
+            state.createdAt = data.createdAt;
         },
         resetUser: (state, action) => {
             return initialState;

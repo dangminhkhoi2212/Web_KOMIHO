@@ -1,11 +1,12 @@
 'use client';
 
-import { Label, Select } from 'flowbite-react';
+import { Label, Select, Flowbite } from 'flowbite-react';
 
 export default function SelectInput({ label, options, setValue }) {
     const handleOnChange = (e) => {
         setValue(e.target.value);
     };
+
     return (
         <div className="max-w-md opacity-100 z-container" id="select">
             <div className="mb-2 block">

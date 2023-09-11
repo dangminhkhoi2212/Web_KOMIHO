@@ -8,26 +8,41 @@ import ProviderStore from '@/redux/Provider';
 import UserLogin from './UserLogin';
 import Loading from '@/components/Loading';
 import ShowAlert from './ShowAlert';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
+import {
+    useQuery,
+    useMutation,
+    useQueryClient,
+    QueryClient,
+    QueryClientProvider,
+} from '@tanstack/react-query';
+
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+const queryClient = new QueryClient();
 const Auth = ({ children }) => {
     return (
         <ProviderStore>
             <SessionProvider>
-                <UserLogin>
-                    <div className=" flex flex-col justify-between relative ">
-                        <Header />
-                        <div className="bg-default py-4 lg:px-20 min-h-[400px]   ">
-                            <ShowAlert>
+                <QueryClientProvider client={queryClient}>
+                    <UserLogin>
+                        <div className=" flex flex-col justify-between  ">
+                            <ToastContainer />
+                            <Header />
+                            <div className="bg-default py-4 lg:px-20 min-h-[400px]  relative z-container">
                                 <BreadCrumb />
                                 <Suspense
                                     fallback={<Loading loadingStatus={true} />}>
                                     {children}
                                 </Suspense>
-                            </ShowAlert>
+                            </div>
+                            <Footer />
                         </div>
-                        <Footer />
-                    </div>
-                </UserLogin>
+                    </UserLogin>
+                    <ReactQueryDevtools initialIsOpen={true} />
+                </QueryClientProvider>
             </SessionProvider>
         </ProviderStore>
     );

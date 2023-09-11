@@ -15,7 +15,10 @@ const childrenAccount = [
     { name: 'Address', link: routes.address },
     { name: 'Password', link: routes.password },
 ];
-const childrenStore = [{ name: 'Add Product', link: routes.addProduct }];
+const childrenStore = [
+    { name: 'All Products', link: routes.managerAllProducts },
+    { name: 'Add Product', link: routes.managerAddProduct },
+];
 const listParent = [
     {
         icon: AiOutlineUser,
@@ -48,16 +51,12 @@ const layout = ({ children }) => {
     const name = useSelector(getName);
 
     return (
-        <div className="grid grid-cols-12 gap-3 items-start xl:mx-20 my-5">
-            <div className="col-span-3 flex flex-col gap-3 justify-center items-center">
-                <div className="border-4 border-double py-3 w-full rounded-xl">
-                    <AvatarText
-                        name={name}
-                        src={UrlAvatar}
-                        text={'Edit profile'}
-                    />
+        <div className="grid grid-cols-12 gap-5 items-start xl:mx-20 my-5">
+            <div className="col-span-3 flex flex-col gap-5 justify-center items-center">
+                <div className="border-4 border-double py-3 w-full rounded-xl bg-white">
+                    <AvatarText name={name} src={UrlAvatar} text={'Manager'} />
                 </div>
-                <div className="flex flex-col  gap-2">
+                <div className="flex flex-col  gap-2 bg-secondary px-6 py-5 w-full rounded-xl">
                     {listParent.map((item) => (
                         <div key={item.name}>
                             <Link
@@ -84,7 +83,7 @@ const layout = ({ children }) => {
                     ))}
                 </div>
             </div>
-            <div className="col-span-9 xl:p-5  rounded-md bg-white relative min-h-[250px]">
+            <div className="col-span-9 xl:p-5  rounded-xl bg-white relative min-h-[250px]">
                 {children}
             </div>
         </div>

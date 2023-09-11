@@ -1,100 +1,114 @@
 import { useEffect, useRef, useState } from 'react';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import ShowImage from './ShowImage';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 const Upload = ({ id = '', label = '', type, placeholder = '' }) => {
+    const router = useRouter();
+
     const {
         register,
         control,
         formState: { errors },
-        getValues,
         setValue,
     } = useFormContext();
-    const [images, setImages] = useState([]);
-    const [gallery, setGallery] = useState([]);
-    console.log('🚀 ~ file: index.jsx:15 ~ Upload ~ gallery:', gallery);
 
-    console.log('🚀 ~ file: index.jsx:28 ~ handleChange ~ images:', images);
+    const images = useWatch({ control, name: 'images' });
+    const gallery = useWatch({ control, name: 'gallery' });
+
     const handleChange = (e) => {
         const data = e.target.files;
 
+        const existingImageNames = new Set(images.map((img) => img.name));
+
         for (let i = 0; i < data.length; i++) {
-            if (!images.some((img) => img.name === data[i].name)) {
+            if (images.length >= 9) break;
+            if (!existingImageNames.has(data[i].name)) {
                 const src = URL.createObjectURL(data[i]);
                 const file = { name: data[i].name, src };
-                setImages((pre) => [...pre, data[i]]);
-                setGallery((pre) => [...pre, file]);
+                images.push(data[i]);
+                gallery.push(file);
             }
         }
-
-        // const listImg = Array.from(data);
-        // console.log(
-        //     '🚀 ~ file: index.jsx:18 ~ handleChange ~ listImg:',
-        //     listImg,
-        // );
-
-        // const result = listImg.map((file) => {
-        //     console.log('🚀 ~ file: index.jsx:21 ~ result ~ file:', file);
-        //     return {
-        //         file,
-        //         src: URL.createObjectURL(file),
-        //     };
-        // });
-        // setImages((pre) => [...pre, ...result]);
-        // return () => {
-        //     if (images.length > 0) {
-        //         images.forEach((image) => URL.revokeObjectURL(image.src));
-        //     }
-        // };
+        setValue('images', images);
+        setValue('gallery', gallery);
     };
-    // useEffect(() => {
-    //     images.forEach((image) => {
-    //         if (!gallery.some((gal) => gal === image.name)) {
-    //             const src = URL.createObjectURL(image);
-    //             const file = { name: image.name, src };
-    //             setGallery((pre) => [...pre, file]);
-    //         }
-    //     });
 
-    //     return () => {
-    //         if (gallery.length) {
-    //             gallery.forEach((gal) => URL.revokeObjectURL(gal.src));
-    //         }
-    //     };
-    // }, [images]);
+    // remove all local url  to improve performance
+    const deleteURLImages = (e) => {
+        e.preventDefault();
+        if (gallery.length > 0)
+            gallery.forEach((url) => URL.revokeObjectURL(url));
+    };
+
+    useEffect(() => {
+        window.addEventListener('beforeunload', deleteURLImages);
+        return () => {
+            window.removeEventListener('beforeunload', deleteURLImages);
+        };
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            gallery.forEach((img) => URL.revokeObjectURL(img.src));
+        };
+    }, [router]);
+
+    const handelDeleteImage = (name, src) => {
+        URL.revokeObjectURL(src);
+        setValue(
+            'images',
+            images.filter((img) => img.name !== name),
+        );
+        setValue(
+            'gallery',
+            gallery.filter((img) => img.name !== name),
+        );
+    };
     return (
         <div className=" bg-white rounded-xl ">
-            <label
-                htmlFor={id}
-                className="inline-block mb-3 text-lg font-medium ">
-                {label}
-            </label>
-            <label
-                htmlFor={id}
-                className="max-w-[180px] p-3 cursor-pointer flex flex-col justify-center items-center rounded-lg border border-dashed border-slate-700">
-                <AiOutlineCloudUpload className="text-4xl" />
-                <span>Type is jpg or png.</span>
-            </label>
-            <input
-                type={type}
-                id={id}
-                placeholder={placeholder}
-                {...register('images', {
-                    onChange: (e) => {
-                        handleChange(e);
-                    },
-                })}
-                className="hidden"
-                multiple
-                accept="image/png, image/jpeg, image/jpg"
-            />
-            <span className="text-sm text-red-600">
-                {errors?.images?.message}
-            </span>
+            <div className="grid grid-cols-4 w-full">
+                <div className="col-span-1">
+                    <label
+                        htmlFor={id}
+                        className="inline-block mb-3 text-lg font-medium ">
+                        {label}
+                    </label>
+                    <label
+                        htmlFor={id}
+                        className="max-w-[180px] p-3 cursor-pointer flex flex-col justify-center items-center rounded-lg border border-dashed border-slate-700 text-sm">
+                        <AiOutlineCloudUpload className="text-4xl" />
+                        <span>Type is jpg or png.</span>
+                        <span>Maximum 9 photos.</span>
+                    </label>
+                    <input
+                        type={type}
+                        id={id}
+                        placeholder={placeholder}
+                        {...register('images', {
+                            onChange: (e) => {
+                                handleChange(e);
+                            },
+                        })}
+                        className="hidden"
+                        multiple
+                        accept="image/png, image/jpeg, image/jpg"
+                    />
+                    <span className="text-sm text-red-600">
+                        {errors?.images?.message}
+                    </span>
+                </div>
+                <div className="col-span-3 flex justify-center items-center">
+                    <span className="text-accent px-3 py-2 bg-secondary rounded-full">
+                        <b>Note:</b> The first image will use as the cover photo
+                    </span>
+                </div>
+            </div>
             <ShowImage
                 gallery={gallery}
-                setGallery={setGallery}
-                setImages={setImages}
+                callback={(name, src) => {
+                    handelDeleteImage(name, src);
+                }}
             />
         </div>
     );

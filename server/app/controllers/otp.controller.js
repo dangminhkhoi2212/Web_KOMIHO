@@ -5,6 +5,20 @@ import User from '../models/user.model.js';
 import { sendMail } from '../utils/mailer.js';
 import 'dotenv/config.js';
 const BCRYPT_HASH = Number(process.env.BCRYPT_HASH);
+
+User.watch().on('change', async (data) => {
+    try {
+        if (data.operationType === 'delete') {
+            const userId = data.documentKey._id.toString();
+            await Otp.deleteMany({ userId });
+        }
+    } catch (error) {
+        console.log(
+            '🚀 ~ file: otp.controller.js:16 ~ User.watch ~ error:',
+            error,
+        );
+    }
+});
 const createOtp = () => {
     const randomNumber = Math.floor(Math.random() * 90000) + 10000;
     return randomNumber;
@@ -13,12 +27,12 @@ export const sendOtp = async (req, res, next) => {
     try {
         const email = req.body.email;
         const otp = createOtp().toString();
-        const checkEmail = await User.findOne({ email });
-        if (!checkEmail)
+        const user = await User.findOne({ email });
+        if (!user)
             return next(new ApiError(403, 'This email is not registered.'));
         await sendMail(
             email,
-            'Code Verify of Komiho',
+            'Code Verify of KOMIHO',
             `<p>Code of you is ${otp}</p>`,
         );
         const emailExist = await Otp.findOne({ email });
@@ -27,10 +41,15 @@ export const sendOtp = async (req, res, next) => {
         if (emailExist) {
             result = await Otp.findOneAndUpdate(
                 { email },
-                { $set: { otp: hashOtp, used: false } },
+                { $set: { otp: hashOtp, used: false, userId: user._id } },
                 { new: true },
             );
-        } else result = await Otp.create({ email, otp: hashOtp });
+        } else
+            result = await Otp.create({
+                email,
+                otp: hashOtp,
+                userId: user._id,
+            });
 
         return res.send(result);
     } catch (error) {
