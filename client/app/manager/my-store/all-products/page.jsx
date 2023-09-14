@@ -1,43 +1,62 @@
 'use client';
-import AccountTemplate from '@/components/Account/AccountTemplate';
+import Link from 'next/link';
+import routes from '@/routes';
+import dynamic from 'next/dynamic';
 import { getUserId } from '@/redux/selector';
 import {
     deleteManyProducts,
     deleteProduct,
     getProductsByUserId,
 } from '@/services/product.service';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiEdit2 } from 'react-icons/fi';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { IoAddOutline } from 'react-icons/io5';
+import { LiaArrowsAltVSolid } from 'react-icons/lia';
+import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import { Button } from 'flowbite-react';
-import Link from 'next/link';
-import routes from '@/routes';
+import clsx from 'clsx';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
-import Loading from '@/components/Loading';
-import Modal from '@/components/Modal';
+import Search from '@/components/Header/Search';
+
+const AccountTemplate = dynamic(() =>
+    import('@/components/Account/AccountTemplate'),
+);
+const Loading = dynamic(() => import('@/components/Loading'));
+const Modal = dynamic(() => import('@/components/Modal'));
+const Pagination = dynamic(() => import('react-paginate'));
 
 const AllProduct = () => {
     const userId = useSelector(getUserId);
-
     const [showModal, setShowModel] = useState(false);
     const queryClient = useQueryClient();
 
     const [checked, setChecked] = useState(false);
     const [listChose, setListChose] = useState([]);
-    console.log('🚀 ~ file: page.jsx:28 ~ AllProduct ~ listChose:', listChose);
-
-    console.log('🚀 ~ file: page.jsx:26 ~ AllProduct ~ checked:', checked);
-    const getProducts = useQuery({
-        queryKey: ['products'],
-        queryFn: async () => {
-            return await getProductsByUserId({ userId });
-        },
+    const [filter, setFilter] = useState({
+        price: '',
+        store: '',
+        page: 1,
+        limit: 4,
     });
+    console.log('🚀 ~ file: page.jsx:38 ~ AllProduct ~ filter:', filter);
+
+    const getProducts = useQuery({
+        queryKey: ['products', filter],
+        queryFn: async () => {
+            return await getProductsByUserId({
+                userId,
+                ...filter,
+            });
+        },
+        refetchOnWindowFocus: false,
+    });
+
     const handleDeleteProduct = useMutation({
+        mutationKey: ['products', filter],
         mutationFn: async (productId) => {
             setShowModel(false);
             return await deleteProduct(productId);
@@ -45,7 +64,7 @@ const AllProduct = () => {
         onSuccess(data) {
             if (data.status == 'success') {
                 toast.success('Product deleted successfully.');
-                queryClient.invalidateQueries(['products']);
+                queryClient.invalidateQueries(['products', filter]);
             }
         },
         onError(error) {
@@ -64,11 +83,13 @@ const AllProduct = () => {
             setListChose((pre) => [...pre, productId]);
         }
     };
-
+    console.log(getProducts.data);
     useEffect(() => {
         if (checked) {
             console.log('chose');
-            setListChose(getProducts.data.map((product) => product._id));
+            setListChose(
+                getProducts?.data?.products.map((product) => product._id),
+            );
         } else {
             setListChose([]);
         }
@@ -102,12 +123,33 @@ const AllProduct = () => {
             );
         },
     });
+
+    const handleSearch = (data) => {
+        setFilter((pre) => {
+            return {
+                ...pre,
+                textSearch: data.textSearch,
+            };
+        });
+        queryClient.invalidateQueries(['products']);
+    };
+
+    const handlePageClick = (data) => {
+        setFilter((pre) => {
+            return {
+                ...pre,
+                page: data.selected + 1,
+            };
+        });
+        queryClient.invalidateQueries(['products']);
+    };
     return (
         <AccountTemplate
             title={'ALL PRODUCTS'}
             note={'Edit all your products'}
             button={
                 <div className="flex gap-5">
+                    <Search handleEvent={(data) => handleSearch(data)} />
                     <button
                         onClick={() => {
                             setShowModel({ deleteManyProducts: true });
@@ -126,6 +168,7 @@ const AllProduct = () => {
             }>
             {(handleDeleteProduct.isLoading ||
                 getProducts.isLoading ||
+                getProducts.isFetching ||
                 handelDeleteManyProducts.isLoading) && <Loading />}
 
             {showModal && (
@@ -173,7 +216,7 @@ const AllProduct = () => {
                 </Modal>
             )}
 
-            {getProducts.data?.length == 0 ? (
+            {getProducts.data?.products?.length == 0 ? (
                 <div className="flex flex-col gap-3 justify-center items-center">
                     <p className="text-center">You haven't any product.</p>
                     <Link
@@ -187,12 +230,12 @@ const AllProduct = () => {
                 <>
                     <table className="w-full table-auto flex flex-col gap-3">
                         <thead className="border-b-2 pb-2">
-                            <tr className="grid grid-cols-12">
+                            <tr className="grid grid-cols-12 place-items-center">
                                 <th className="col-span-1">
                                     <input
                                         type="checkbox"
                                         name="productId"
-                                        className="rounded-md w-5 h-5 mr-2"
+                                        className="rounded-md w-5 h-5 mr-2 checked:bg-primary checked:outline-primary"
                                         id="all"
                                         checked={checkAllChecked}
                                         onChange={() => {
@@ -201,20 +244,48 @@ const AllProduct = () => {
                                     />
                                     <label htmlFor="all">All</label>
                                 </th>
-                                <th className="col-span-6">ITEM</th>
-                                <th className="col-span-2">PRICE</th>
-                                <th className="col-span-1">STORE</th>
+                                <th className="col-span-6 ">ITEM</th>
+                                <th
+                                    className="col-span-2 flex gap-2 justify-center items-center hover:bg-primary rounded-md w-fit p-1 cursor-pointer"
+                                    onClick={() =>
+                                        setFilter((pre) => {
+                                            let price =
+                                                filter.price === 'asc'
+                                                    ? 'desc'
+                                                    : 'asc';
+                                            return { ...pre, price, store: '' };
+                                        })
+                                    }>
+                                    PRICE
+                                    <LiaArrowsAltVSolid />
+                                </th>
+                                <th
+                                    className="col-span-1 flex gap-2 justify-center items-center hover:bg-primary rounded-md w-fit p-1 cursor-pointer"
+                                    onClick={() =>
+                                        setFilter((pre) => {
+                                            let store =
+                                                filter.store === 'asc'
+                                                    ? 'desc'
+                                                    : 'asc';
+
+                                            return { ...pre, store, price: '' };
+                                        })
+                                    }>
+                                    STORE
+                                    <LiaArrowsAltVSolid />
+                                </th>
                                 <th className="col-span-2">ACTION</th>
                             </tr>
                         </thead>
                         <tbody className="flex flex-col gap-3">
-                            {getProducts.data?.map((product) => {
-                                return (
-                                    <tr
-                                        key={product._id}
-                                        className="grid grid-cols-12 place-items-center gap-4">
-                                        <td className="col-span-1">
-                                            <input
+                            {getProducts.data?.products.map(
+                                (product, index) => {
+                                    return (
+                                        <tr
+                                            key={product._id}
+                                            className="grid grid-cols-12 place-items-center gap-4">
+                                            <td className="col-span-1 flex gap-2 items-center">
+                                                {/* <input
                                                 type="checkbox"
                                                 checked={listChose.some(
                                                     (id) => id === product._id,
@@ -225,53 +296,102 @@ const AllProduct = () => {
                                                         product._id,
                                                     )
                                                 }
-                                                className="rounded-md w-5 h-5"
-                                            />
-                                        </td>
-                                        <td className=" col-span-6 flex gap-3 items-center place-self-start">
-                                            <div className="relative w-[60px] h-[60px] ">
-                                                <Image
-                                                    src={product.images[0].url}
-                                                    fill={true}
-                                                    alt={product.name}
-                                                    className="object-contain object-center rounded-md ring-1"
-                                                />
-                                            </div>
-                                            <div className="flex flex-col ">
-                                                <span className=" line-clamp-2 text-sm font-medium">
-                                                    {product.name}
-                                                </span>
-                                                <span className="text-sm font-light text-gray-500">
-                                                    ID: {product._id}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="col-span-2">
-                                            {product.price.final}
-                                        </td>
-                                        <td className="col-span-1">
-                                            {product.store}
-                                        </td>
-                                        <td className="col-span-2">
-                                            <div className="flex gap-3 items-start text-white">
-                                                <button>
-                                                    <FiEdit2 className="h-8 w-8  p-2 rounded-xl bg-green-400 shadow-md shadow-green-400 hover:shadow-lg hover:shadow-green-400" />
-                                                </button>
+                                                className="rounded-md w-5 h-5 hidden"
+                                            /> */}
                                                 <button
+                                                    className={clsx(
+                                                        'text-center py-1 rounded-md ring-1 w-8 ',
+                                                        listChose.some(
+                                                            (id) =>
+                                                                id ===
+                                                                product._id,
+                                                        )
+                                                            ? 'bg-primary text-white'
+                                                            : 'bg-white',
+                                                    )}
                                                     onClick={() =>
-                                                        setShowModel(
+                                                        handleSelectOneProduct(
                                                             product._id,
                                                         )
                                                     }>
-                                                    <AiOutlineDelete className="h-8 w-8 p-2 rounded-xl bg-red-400 shadow-md shadow-red-400 hover:shadow-lg hover:shadow-red-400" />
+                                                    {index + 1}
                                                 </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
+                                            </td>
+                                            <td className=" col-span-6 flex gap-3 items-center place-self-start">
+                                                <div className="relative w-[60px] h-[60px] ">
+                                                    <Image
+                                                        src={
+                                                            product.images[0]
+                                                                .url
+                                                        }
+                                                        fill={true}
+                                                        alt={product.name}
+                                                        className="object-contain object-center rounded-md ring-1"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col ">
+                                                    <span className=" line-clamp-2 text-sm font-medium">
+                                                        {product.name}
+                                                    </span>
+                                                    <span className="text-sm font-light text-gray-500">
+                                                        ID: {product._id}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="col-span-2">
+                                                {product.price.final}
+                                            </td>
+                                            <td className="col-span-1">
+                                                {product.store}
+                                            </td>
+                                            <td className="col-span-2">
+                                                <div className="flex gap-3 items-start text-white">
+                                                    <button>
+                                                        <FiEdit2 className="h-8 w-8  p-2 rounded-xl bg-green-400 shadow-md shadow-green-400 hover:shadow-lg hover:shadow-green-400" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            setShowModel(
+                                                                product._id,
+                                                            )
+                                                        }>
+                                                        <AiOutlineDelete className="h-8 w-8 p-2 rounded-xl bg-red-400 shadow-md shadow-red-400 hover:shadow-lg hover:shadow-red-400" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                },
+                            )}
                         </tbody>
                     </table>
+                    <div className="flex justify-center mt-5 border-t-2 py-1">
+                        <Pagination
+                            breakLabel="..."
+                            previousLabel={
+                                <div className="flex gap-2 justify-center items-center text-sm">
+                                    <BiLeftArrowAlt className="text-base" />
+                                    Previous
+                                </div>
+                            }
+                            nextLabel={
+                                <div className="flex gap-2 justify-center items-center text-sm">
+                                    Next
+                                    <BiRightArrowAlt className="text-base" />
+                                </div>
+                            }
+                            onPageChange={handlePageClick}
+                            pageRangeDisplayed={5}
+                            pageCount={parseInt(getProducts?.data?.pageCount)}
+                            renderOnZeroPageCount={null}
+                            className="flex gap-2 justify-center items-center"
+                            pageClassName="flex gap-"
+                            pageLinkClassName="hover:bg-third rounded-md w-8 h-8 flex items-center justify-center"
+                            previousClassName="hover:bg-third rounded-md p-2 "
+                            nextClassName="hover:bg-third rounded-md p-2 "
+                            activeLinkClassName="w-8 h-8 flex items-center justify-center rounded-md bg-accent text-white"
+                        />
+                    </div>
                 </>
             )}
         </AccountTemplate>

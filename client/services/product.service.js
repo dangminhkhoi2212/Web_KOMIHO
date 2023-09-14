@@ -12,12 +12,16 @@ export const addProduct = async (data) => {
 };
 export const getProductsByUserId = async ({
     userId = '',
+    page = 1,
+    limit = 5,
     type = '',
     textSearch = '',
+    price = '',
+    store = '',
 }) => {
     return (
         await api.get(
-            `/product/get-by-userId/${userId}?type=${type}&textSearch=${textSearch}`,
+            `/product/get-by-userId/${userId}?page=${page}&limit=${limit}&textSearch=${textSearch}&type=${type}&price=${price}&store=${store}`,
         )
     ).data;
 };

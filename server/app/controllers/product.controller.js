@@ -1,4 +1,4 @@
-import { query } from 'express';
+import mongoose from 'mongoose';
 import Product from '../models/product.model.js';
 import User from '../models/user.model.js';
 import {
@@ -187,18 +187,57 @@ const deleteAllProducts = async (req, res, next) => {
 };
 const getProductByUserId = async (req, res, next) => {
     try {
-        const userId = req.params.userId;
-        const textSearch = req.query.textSearch;
-        const type = req.query.type;
+        const { userId } = req.params;
 
-        const result = await Product.find({
-            ...(textSearch
-                ? { $or: [{ name: textSearch }, { tags: textSearch }] }
-                : {}),
-            ...(type ? { type } : {}),
+        const { textSearch, type, price, store } = req.query;
+        const page = parseInt(req.query.page);
+        const limit = parseInt(req.query.limit);
+
+        const skip = (page - 1) * limit;
+        console.log(
+            '🚀 ~ file: product.controller.js:192 ~ getProductByUserId ~ textSearch, type, price, store:',
+            { textSearch, type, price, store },
+        );
+
+        // Build the query conditions
+        const query = {
             userId,
-        });
-        res.send(result);
+        };
+
+        if (textSearch) {
+            var findById = { _id: undefined };
+            if (mongoose.isValidObjectId(textSearch)) findById._id = textSearch;
+
+            query.$or = [
+                findById,
+                { name: textSearch },
+                { tags: { $regex: textSearch, $options: 'i' } },
+            ];
+        }
+
+        if (type) {
+            query.type = type;
+        }
+
+        // Build the sort options
+        const sortOptions = {};
+
+        if (price) {
+            sortOptions['price.final'] = price === 'asc' ? 1 : -1;
+        } else if (store) {
+            sortOptions.store = store === 'asc' ? 1 : -1;
+        } else {
+            sortOptions.createdAt = -1;
+        }
+
+        // Find products with the constructed query and sort options
+        const [products, total] = await Promise.all([
+            Product.find(query).sort(sortOptions).skip(skip).limit(limit),
+            Product.countDocuments(query),
+        ]);
+        const pageCount = Math.ceil(total / limit);
+
+        res.send({ pageCount, total, products });
     } catch (error) {
         next(
             new ApiError(

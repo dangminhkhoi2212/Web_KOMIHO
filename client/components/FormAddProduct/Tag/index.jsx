@@ -24,6 +24,7 @@ const Tag = () => {
                         helperText={errors.feedback?.message}
                         color={errors.feedback?.message ? 'failure' : 'gray'}
                         onChange={(e) => field.onChange(e.target.value)}
+                        value={field.value}
                         rows={4}
                         className="w-full"
                     />
