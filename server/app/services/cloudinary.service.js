@@ -24,7 +24,9 @@ const deleteFolder = async (pathFolder) => {
     return await cloudinary.api.delete_folder(pathFolder);
 };
 const deleteResources = async (pathFolder) => {
-    return await cloudinary.api.delete_resources_by_prefix(pathFolder);
+    return await cloudinary.api.delete_resources_by_prefix(pathFolder, {
+        all: true,
+    });
 };
 export {
     uploadToCloudinary,

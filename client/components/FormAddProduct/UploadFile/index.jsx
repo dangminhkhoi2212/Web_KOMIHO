@@ -1,8 +1,11 @@
+'use client';
 import { useEffect, useRef, useState } from 'react';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import ShowImage from './ShowImage';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
+
+import { Badge } from 'flowbite-react';
 const Upload = ({ id = '', label = '', type, placeholder = '' }) => {
     const router = useRouter();
 
@@ -98,10 +101,15 @@ const Upload = ({ id = '', label = '', type, placeholder = '' }) => {
                         {errors?.images?.message}
                     </span>
                 </div>
-                <div className="col-span-3 flex justify-center items-center">
-                    <span className="text-accent px-3 py-2 bg-secondary rounded-full">
+                <div className="col-span-3 ms-3 flex flex-col gap-2 justify-center items-start">
+                    <Badge color="pink">
                         <b>Note:</b> The first image will use as the cover photo
-                    </span>
+                    </Badge>
+
+                    <Badge color="info">
+                        <b>Recommend:</b> You should choose photo with a 1:1
+                        ratio
+                    </Badge>
                 </div>
             </div>
             <ShowImage

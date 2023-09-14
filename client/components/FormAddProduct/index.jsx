@@ -44,8 +44,6 @@ const FormAddProduct = () => {
         defaultValues: initValue,
     });
 
-    const scrollRef = useRef();
-
     const {
         control,
         getValues,
@@ -94,10 +92,7 @@ const FormAddProduct = () => {
         },
         onSuccess(data) {
             if (data.status === 'success') {
-                scrollRef.current?.scrollTo({
-                    y: 0,
-                    animated: true,
-                });
+                window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
                 toast.success('Added new product successfully');
                 reset(initValue);
                 const gallery = getValues('gallery');
@@ -115,15 +110,14 @@ const FormAddProduct = () => {
         <FormProvider {...methods}>
             <form
                 onSubmit={handleSubmit((data) => handleAddProduct.mutate(data))}
-                className="p-5 relative overflow-hidden rounded-md"
-                ref={scrollRef}>
+                className="p-5 relative overflow-hidden rounded-md">
                 {handleAddProduct.isLoading && (
                     <Modal showModel={handleAddProduct.isLoading}>
                         <div className="w-20 h-20 flex flex-col justify-center items-center">
-                            <Loading />
+                            <Loading sizeProp={80} />
                         </div>
                         <p className="text-center mt-8">
-                            Please wait several minute...
+                            The upload process can take a few minutes...
                         </p>
                     </Modal>
                 )}

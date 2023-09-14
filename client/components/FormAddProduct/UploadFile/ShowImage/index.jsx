@@ -38,7 +38,7 @@ const ShowImage = ({ gallery, callback }) => {
                                 height={0}
                                 alt={img.name}
                                 loading="lazy"
-                                className="rounded-md h-[200px] w-[200px]  object-center object-cover"
+                                className="rounded-md h-[200px] w-[200px]  object-center object-contain"
                             />
                         </div>
                         {index === 0 && (

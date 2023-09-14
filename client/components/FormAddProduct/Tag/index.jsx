@@ -2,6 +2,7 @@ import TextareaCustom from '@/components/TextareaCustom';
 import React from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 
+import { Badge } from 'flowbite-react';
 const Tag = () => {
     const {
         control,
@@ -28,9 +29,9 @@ const Tag = () => {
                     />
                 )}
             />
-            <span className="text-sm italic block text-accent px-3 py-2 bg-secondary rounded-full">
+            <Badge color="info">
                 Leave a tag something to improve search results.
-            </span>
+            </Badge>
         </div>
     );
 };

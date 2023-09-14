@@ -24,6 +24,7 @@ User.watch().on('change', async (data) => {
         );
     }
 });
+
 const deleteOnCloudinary = async (userId) => {
     // delete on cloudinary
     const pathFolder = `komiho/users`;
@@ -81,6 +82,13 @@ const addProduct = async (req, res, next) => {
     }
 };
 
+const deleteProductOnCloudinary = async (public_id) => {
+    const path = public_id;
+    const index = path.lastIndexOf('/');
+    const folder = path.slice(0, index);
+    await deleteResources(folder);
+    await deleteFolder(folder);
+};
 const deleteProduct = async (req, res, next) => {
     try {
         const productId = req.params.productId;
@@ -107,6 +115,52 @@ const deleteProduct = async (req, res, next) => {
         );
     }
 };
+
+const deleteManyProducts = async (req, res, next) => {
+    try {
+        const ids = req.body.ids;
+
+        var folders = [];
+        if (ids?.length > 0) {
+            const manyProduct = await Product.find({ _id: { $in: ids } });
+            if (manyProduct.length === 0)
+                return next(new ApiError('402', "List product don't find"));
+            const manyImages = manyProduct.map((product) => product.images);
+
+            manyImages.forEach((listImage) => {
+                const path = listImage[0].public_id;
+                const index = path.lastIndexOf('/');
+                const folder = path.slice(0, index);
+                folders.push(folder);
+            });
+
+            if (folders.length > 0) {
+                await Promise.all(
+                    folders.map(
+                        async (folder) => await deleteResources(folder),
+                    ),
+                );
+                await Promise.all(
+                    folders.map(async (folder) => await deleteFolder(folder)),
+                );
+                await Product.deleteMany({ _id: { $in: ids } });
+                return res.send({
+                    title: `Deleted products have id ${ids}`,
+                    ok: true,
+                });
+            }
+        }
+        return next(new ApiError(402, 'List products empty'));
+    } catch (error) {
+        next(
+            new ApiError(
+                error.code || 500,
+                error.message || error.error.message,
+            ),
+        );
+    }
+};
+
 const deleteAllProducts = async (req, res, next) => {
     try {
         const listProduct = req.body.listProduct;
@@ -160,6 +214,6 @@ export default {
     addProduct,
     deleteProduct,
     deleteAllProducts,
-
+    deleteManyProducts,
     getProductByUserId,
 };

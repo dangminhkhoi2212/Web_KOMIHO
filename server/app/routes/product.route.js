@@ -8,6 +8,6 @@ router
     .route('/get-by-userId/:userId')
     .get(productController.getProductByUserId);
 router.route('/delete/:productId').delete(productController.deleteProduct);
-router.route('/delete').post(productController.deleteAllProducts);
+router.route('/delete-many').post(productController.deleteManyProducts);
 
 export default router;

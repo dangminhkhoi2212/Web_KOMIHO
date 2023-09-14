@@ -10,13 +10,13 @@ import { resetUser } from '@/components/Auth/authSlice';
 import routes from '@/routes';
 import Cookies from 'js-cookie';
 
+const listDropdown = [
+    { name: 'Manager Account', link: routes.profile },
+    { name: 'Manager Store', link: routes.managerAllProducts },
+];
 export default function DropdownItem() {
     const UrlAvatar = useSelector(getUrlAvatar);
     const userId = useSelector(getUserId);
-    const listDropdown = [
-        { name: 'Manager Account', link: routes.profile },
-        { name: 'Manager Store', link: routes.myStore },
-    ];
     const name = useSelector(getName);
 
     const dispatch = useDispatch();

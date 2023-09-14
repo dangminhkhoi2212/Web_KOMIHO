@@ -32,7 +32,7 @@ const All = ({ params }) => {
                     <p className="text-center">You haven't any product.</p>
                     <Link
                         href={routes.managerAddProduct}
-                        className="flex gap-3 px-3 py-2 border-2 border-solid border-secondary items-center hover:bg-secondary rounded-full">
+                        className="flex gap-3 px-2 py-1 border-2 border-solid border-secondary items-center hover:bg-secondary rounded-full">
                         <p>Add now</p>
                         <IoAddOutline className="h-8 w-8 rounded-full bg-accent text-white" />
                     </Link>

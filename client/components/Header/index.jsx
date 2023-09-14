@@ -34,7 +34,7 @@ const Header = () => {
             </div>
             <div className="col-span-1 flex flex-col justify-between ">
                 <div className="col-span-1 text-2xl justify-end flex gap-6">
-                    <Link href={routes.store(userId)}>
+                    <Link href={routes.storeAllProducts(userId)}>
                         <IoStorefrontOutline />
                     </Link>
                     <Link href={'/'}>

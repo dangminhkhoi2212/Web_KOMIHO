@@ -24,3 +24,6 @@ export const getProductsByUserId = async ({
 export const deleteProduct = async (productId) => {
     return (await api.delete(`/product/delete/${productId}`)).data;
 };
+export const deleteManyProducts = async (ids) => {
+    return (await api.post('/product/delete-many', { ids })).data;
+};

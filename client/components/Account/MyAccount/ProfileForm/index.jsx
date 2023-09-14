@@ -39,7 +39,6 @@ const ProfileForm = () => {
     const [isPhone, setIsPhone] = useState(phone ? true : false);
     const [avtUrl, setAvtUrl] = useState(urlAvatar);
     const inputFile = useRef(null);
-    const [loading, setLoading] = useState(false);
     const [fileSize, setFileSize] = useState(null);
     const {
         control,
@@ -152,157 +151,151 @@ const ProfileForm = () => {
         }
     };
     return (
-        <div className=" ">
-            <form
-                onSubmit={handleSubmit((data) => mutate(data))}
-                className="grid grid-cols-12 gap-3 ">
-                {isLoading && <Loading />}
-                <div className="col-span-9 flex flex-col gap-3">
-                    <Controller
-                        name="name"
-                        control={control}
-                        render={({ field }) => (
-                            <InputCustom
-                                id="name"
-                                label="Full name"
-                                placeholder={'Full name'}
-                                value={field.value}
-                                onChange={(e) => field.onChange(e.target.value)}
-                                helperText={errors?.name?.message}
-                                color={
-                                    errors?.name?.message ? 'failure' : 'gray'
-                                }
-                            />
-                        )}
-                    />
-                    <Controller
-                        name="email"
-                        control={control}
-                        render={({ field }) => (
-                            <InputCustom
-                                id="email"
-                                label="Email"
-                                placeholder={'Your email'}
-                                value={field.value}
-                                onChange={(e) => field.onChange(e.target.value)}
-                                helperText={errors?.email?.message}
-                                color={
-                                    errors?.email?.message ? 'failure' : 'gray'
-                                }
-                            />
-                        )}
-                    />
-                    {isPhone ? (
-                        <div className="flex items-end">
-                            <Controller
-                                name="phone"
-                                control={control}
-                                render={({ field }) => (
-                                    <InputCustom
-                                        id="phone"
-                                        label="Phone"
-                                        value={field.value}
-                                        placeholder={'(+84)'}
-                                        onChange={(e) =>
-                                            field.onChange(e.target.value)
-                                        }
-                                        helperText={errors?.phone?.message}
-                                        color={
-                                            errors?.phone?.message
-                                                ? 'failure'
-                                                : 'gray'
-                                        }
-                                    />
-                                )}
-                            />
-                            {!phone && (
-                                <span
-                                    className=" cursor-pointer flex-initial px-2 py-1  rounded-full bg-primary hover:bg-accent text-sm text-white ms-5 align-middle"
-                                    onClick={() => {
-                                        setIsPhone(false);
-                                    }}>
-                                    Cancel
-                                </span>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="flex items-center">
-                            <div>
-                                <p className="text-sm font-medium">Phone</p>
-                                <p className="text-xs text-rose-600 italic">
-                                    Please add phone number to order.
-                                </p>
-                            </div>
-                            <span
-                                className="cursor-pointer px-2 py-1 rounded-full bg-primary hover:bg-accent text-sm text-white ms-5"
-                                onClick={() => {
-                                    setIsPhone(true);
-                                }}>
-                                Add new phone
-                            </span>
-                        </div>
-                    )}
-                </div>
-                <div className="col-span-3 flex flex-col gap-3">
-                    <AvatarText
-                        src={avtUrl}
-                        size="lg"
-                        onClick={handleChooseFile}
-                        className="cursor-pointer"
-                    />
-
-                    <div>
-                        <div
-                            className="py-1 border-2 border-dashed rounded-md text-center cursor-pointer"
-                            onClick={handleChooseFile}>
-                            Select Image
-                        </div>
-
-                        <input
-                            type="file"
-                            {...register('avatar', {
-                                onChange: (e) => handleChange(e),
-                            })}
-                            name="avatar"
-                            ref={(e) => {
-                                ref(e);
-                                inputFile.current = e; // you can still assign to ref
-                            }}
-                            accept="image/png, image/jpeg,image/jpg"
-                            className="hidden "
+        <form
+            onSubmit={handleSubmit((data) => mutate(data))}
+            className="grid grid-cols-12 gap-3 ">
+            {isLoading && <Loading />}
+            <div className="col-span-9 flex flex-col gap-3">
+                <Controller
+                    name="name"
+                    control={control}
+                    render={({ field }) => (
+                        <InputCustom
+                            id="name"
+                            label="Full name"
+                            placeholder={'Full name'}
+                            value={field.value}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            helperText={errors?.name?.message}
+                            color={errors?.name?.message ? 'failure' : 'gray'}
                         />
-                    </div>
-                    <div className="text-sm text-gray-800">
-                        <p>File size : maximum 5 MBp</p>
-                        <p> File extension: .JPEG, .PNG</p>
-                    </div>
-                    {fileSize && (
-                        <div className="text-md font-medium">
-                            <p>File size of your choice: </p>
-                            <p
-                                className={clsx(
-                                    fileSize > 5
-                                        ? 'text-red-400'
-                                        : 'text-green-400',
-                                )}>
-                                {fileSize}Mb
-                            </p>
-                            {errors?.avatar && (
-                                <p className="bg-red-400 p-3 rounded-md">
-                                    {errors?.avatar?.message}. Please choose
-                                    other file.
-                                </p>
-                            )}
-                        </div>
                     )}
+                />
+                <Controller
+                    name="email"
+                    control={control}
+                    render={({ field }) => (
+                        <InputCustom
+                            id="email"
+                            label="Email"
+                            placeholder={'Your email'}
+                            value={field.value}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            helperText={errors?.email?.message}
+                            color={errors?.email?.message ? 'failure' : 'gray'}
+                        />
+                    )}
+                />
+                {isPhone ? (
+                    <div className="flex items-end">
+                        <Controller
+                            name="phone"
+                            control={control}
+                            render={({ field }) => (
+                                <InputCustom
+                                    id="phone"
+                                    label="Phone"
+                                    value={field.value}
+                                    placeholder={'(+84)'}
+                                    onChange={(e) =>
+                                        field.onChange(e.target.value)
+                                    }
+                                    helperText={errors?.phone?.message}
+                                    color={
+                                        errors?.phone?.message
+                                            ? 'failure'
+                                            : 'gray'
+                                    }
+                                />
+                            )}
+                        />
+                        {!phone && (
+                            <span
+                                className=" cursor-pointer flex-initial px-2 py-1  rounded-full bg-primary hover:bg-accent text-sm text-white ms-5 align-middle"
+                                onClick={() => {
+                                    setIsPhone(false);
+                                }}>
+                                Cancel
+                            </span>
+                        )}
+                    </div>
+                ) : (
+                    <div className="flex items-center">
+                        <div>
+                            <p className="text-sm font-medium">Phone</p>
+                            <p className="text-xs text-rose-600 italic">
+                                Please add phone number to order.
+                            </p>
+                        </div>
+                        <span
+                            className="cursor-pointer px-2 py-1 rounded-full bg-primary hover:bg-accent text-sm text-white ms-5"
+                            onClick={() => {
+                                setIsPhone(true);
+                            }}>
+                            Add new phone
+                        </span>
+                    </div>
+                )}
+            </div>
+            <div className="col-span-3 flex flex-col gap-3">
+                <AvatarText
+                    src={avtUrl}
+                    size="lg"
+                    onClick={handleChooseFile}
+                    className="cursor-pointer"
+                />
+
+                <div>
+                    <div
+                        className="py-1 border-2 border-dashed rounded-md text-center cursor-pointer"
+                        onClick={handleChooseFile}>
+                        Select Image
+                    </div>
+
+                    <input
+                        type="file"
+                        {...register('avatar', {
+                            onChange: (e) => handleChange(e),
+                        })}
+                        name="avatar"
+                        ref={(e) => {
+                            ref(e);
+                            inputFile.current = e; // you can still assign to ref
+                        }}
+                        accept="image/png, image/jpeg,image/jpg"
+                        className="hidden "
+                    />
                 </div>
-                <button
-                    type="submit"
-                    className="h-8 w-16 text-center rounded-full bg-primary hover:bg-accent text-white shadow-md transition-all duration-300 ease-in-out ">
-                    Save
-                </button>
-            </form>
-        </div>
+                <div className="text-sm text-gray-800">
+                    <p>File size : maximum 5 MBp</p>
+                    <p> File extension: .JPEG, .PNG</p>
+                </div>
+                {fileSize && (
+                    <div className="text-md font-medium">
+                        <p>File size of your choice: </p>
+                        <p
+                            className={clsx(
+                                fileSize > 5
+                                    ? 'text-red-400'
+                                    : 'text-green-400',
+                            )}>
+                            {fileSize}Mb
+                        </p>
+                        {errors?.avatar && (
+                            <p className="bg-red-400 p-3 rounded-md">
+                                {errors?.avatar?.message}. Please choose other
+                                file.
+                            </p>
+                        )}
+                    </div>
+                )}
+            </div>
+            <button
+                type="submit"
+                className="h-8 w-16 text-center rounded-full bg-primary hover:bg-accent text-white shadow-md transition-all duration-300 ease-in-out ">
+                Save
+            </button>
+        </form>
     );
 };
 
