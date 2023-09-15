@@ -70,7 +70,7 @@ const ProfileForm = () => {
             return await updateProfile(userId, form);
         },
         onSuccess(data) {
-            reset(initValue);
+            // reset(initValue);
             dispatch(setUser(data));
             toast.success('Your profile updated successfully.');
             setFileSize('');
