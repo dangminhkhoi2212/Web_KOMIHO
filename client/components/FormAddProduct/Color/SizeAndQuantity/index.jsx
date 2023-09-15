@@ -138,6 +138,7 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, color }) => {
                                         label={'Quantity '}
                                         type={'number'}
                                         placeholder={'Quantity '}
+                                        min={0}
                                         onFocus={() => handleFocus(index)}
                                         onChange={(e) => {
                                             field.onChange(e.target.value);

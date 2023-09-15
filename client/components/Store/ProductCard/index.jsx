@@ -1,16 +1,10 @@
 'use client';
+import { formatPrice } from '@/utils/format';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { FaStar } from 'react-icons/fa';
 
 const ProductCard = ({ product }) => {
-    const format = (num) => {
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-        }).format(num);
-    };
-
     if (!product) return;
     return (
         <div className="w-[200px] h-full rounded-md bg-white shadow-md hover:shadow-xl  transition-all duration-300 ease-in-out overflow-hidden relative">
@@ -43,11 +37,11 @@ const ProductCard = ({ product }) => {
                                 ? 'line-through italic text-black'
                                 : 'text-red-600 font-medium',
                         )}>
-                        {format(product?.price?.origin)}
+                        {formatPrice(product?.price?.origin)}
                     </span>
                     {product.price.percent !== 0 && (
                         <span className="text-red-600 font-medium">
-                            {product.price.final}
+                            {formatPrice(product.price.final)}
                         </span>
                     )}
                 </div>

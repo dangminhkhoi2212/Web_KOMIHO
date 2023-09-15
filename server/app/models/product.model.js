@@ -6,9 +6,9 @@ const ProductSchema = new Schema(
         userId: { type: Schema.Types.ObjectId, ref: 'users', required: true },
         name: { type: String, required: true, maxLength: 100 },
         price: {
-            origin: { type: Number, required: true },
+            origin: { type: Number, required: true, default: 0 },
             percent: { type: Number, default: 0 },
-            final: { type: String, required: true },
+            final: { type: Number, required: true, default: 0 },
         },
         color: [
             {

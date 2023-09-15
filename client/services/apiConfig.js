@@ -10,10 +10,7 @@ const useApi = () => {
     instance.interceptors.request.use(
         (config) => {
             const accessToken = Cookies.get('accessToken');
-            console.log(
-                '🚀 ~ file: apiConfig.js:13 ~ useApi ~ accessToken:',
-                accessToken,
-            );
+
             if (accessToken && !config.headers['Authorization']) {
                 config.headers['Authorization'] = `Bearer ${accessToken}`;
             }

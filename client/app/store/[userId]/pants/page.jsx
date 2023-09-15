@@ -5,44 +5,36 @@ import { getProductsByUserId } from '@/services/product.service';
 import { IoAddOutline } from 'react-icons/io5';
 import Link from 'next/link';
 import routes from '@/routes';
-const Pants = ({ params }) => {
-    const [products, setProducts] = useState([]);
+import { useQuery } from '@tanstack/react-query';
+const All = ({ params }) => {
+    const getProducts = useQuery({
+        queryKey: ['store-all'],
+        queryFn: () => {
+            return getProductsByUserId({
+                userId: params.userId,
+                type: 'pants',
+            });
+        },
+        refetchOnWindowFocus: false,
+    });
     useEffect(() => {
-        const getProducts = async () => {
-            try {
-                const result = await getProductsByUserId({
-                    userId: params.userId,
-                    type: 'pants',
-                });
-                if (result?.length > 0) {
-                    setProducts(result);
-                }
-            } catch (error) {
-                console.log(
-                    '🚀 ~ file: page.jsx:11 ~ getProduct ~ error:',
-                    error,
-                );
-            }
-        };
-        getProducts();
+        getProducts.mutate;
     }, [params]);
     return (
         <>
-            {products.length === 0 ? (
+            {getProducts?.data?.products?.length === 0 ? (
                 <div className="flex flex-col gap-3 justify-center items-center">
-                    <p className="text-center">
-                        You haven't any pants product.
-                    </p>
+                    <p className="text-center">You haven't any product.</p>
                     <Link
                         href={routes.managerAddProduct}
-                        className="flex gap-3 px-3 py-2 border-2 border-solid border-secondary items-center hover:bg-secondary rounded-full">
+                        className="flex gap-3 px-2 py-1 border-2 border-solid border-secondary items-center hover:bg-secondary rounded-full">
                         <p>Add now</p>
                         <IoAddOutline className="h-8 w-8 rounded-full bg-accent text-white" />
                     </Link>
                 </div>
             ) : (
                 <div className="grid grid-cols-5 auto-rows-max justify-items-center gap-3">
-                    {products.map((product) => (
+                    {getProducts?.data?.products?.map((product) => (
                         <div key={product._id} className="col-span-1">
                             <ProductCard product={product} key={product._id} />
                         </div>
@@ -53,4 +45,4 @@ const Pants = ({ params }) => {
     );
 };
 
-export default Pants;
+export default All;

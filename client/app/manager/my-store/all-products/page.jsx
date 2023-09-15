@@ -21,6 +21,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 import Search from '@/components/Header/Search';
+import { formatPrice } from '@/utils/format';
 
 const AccountTemplate = dynamic(() =>
     import('@/components/Account/AccountTemplate'),
@@ -42,7 +43,6 @@ const AllProduct = () => {
         page: 1,
         limit: 4,
     });
-    console.log('🚀 ~ file: page.jsx:38 ~ AllProduct ~ filter:', filter);
 
     const getProducts = useQuery({
         queryKey: ['products', filter],
@@ -73,7 +73,8 @@ const AllProduct = () => {
         },
     });
 
-    const checkAllChecked = listChose.length === getProducts.data?.length;
+    const checkAllChecked =
+        listChose.length === getProducts.data?.products?.length;
 
     const handleSelectOneProduct = (productId) => {
         const existed = listChose.some((id) => id === productId);
@@ -83,7 +84,6 @@ const AllProduct = () => {
             setListChose((pre) => [...pre, productId]);
         }
     };
-    console.log(getProducts.data);
     useEffect(() => {
         if (checked) {
             console.log('chose');
@@ -228,7 +228,7 @@ const AllProduct = () => {
                 </div>
             ) : (
                 <>
-                    <table className="w-full table-auto flex flex-col gap-3">
+                    <table className="w-full min-h-[300px] flex flex-col gap-3 ">
                         <thead className="border-b-2 pb-2">
                             <tr className="grid grid-cols-12 place-items-center">
                                 <th className="col-span-1">
@@ -339,7 +339,9 @@ const AllProduct = () => {
                                                 </div>
                                             </td>
                                             <td className="col-span-2">
-                                                {product.price.final}
+                                                {formatPrice(
+                                                    product.price.final,
+                                                )}
                                             </td>
                                             <td className="col-span-1">
                                                 {product.store}
@@ -382,7 +384,9 @@ const AllProduct = () => {
                             }
                             onPageChange={handlePageClick}
                             pageRangeDisplayed={5}
-                            pageCount={parseInt(getProducts?.data?.pageCount)}
+                            pageCount={
+                                parseInt(getProducts?.data?.pageCount) || 0
+                            }
                             renderOnZeroPageCount={null}
                             className="flex gap-2 justify-center items-center"
                             pageClassName="flex gap-"

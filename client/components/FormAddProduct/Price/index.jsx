@@ -2,6 +2,7 @@ import InputCustom from '@/components/InputCustom';
 import { useEffect } from 'react';
 import { useFormContext, Controller, useWatch } from 'react-hook-form';
 
+import { formatPrice } from '@/utils/format';
 const Price = () => {
     const {
         control,
@@ -10,12 +11,6 @@ const Price = () => {
         formState: { errors },
     } = useFormContext();
     const final = useWatch({ control, name: 'price.final' });
-    const format = (num) => {
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-        }).format(num);
-    };
 
     const handleCalculator = () => {
         var price = 0;
@@ -27,7 +22,7 @@ const Price = () => {
                 price = origin * (1 - percent / 100);
             } else price = origin;
         }
-        setValue('price.final', format(price));
+        setValue('price.final', price);
     };
     return (
         <div className="bg-white rounded-xl ">
@@ -88,7 +83,7 @@ const Price = () => {
                 </div>
                 <div className="flex flex-row gap-3  font-medium">
                     <span> Final price:</span>
-                    <span>{final} VND</span>
+                    <span>{formatPrice(final)} VND</span>
                 </div>
             </div>
         </div>
