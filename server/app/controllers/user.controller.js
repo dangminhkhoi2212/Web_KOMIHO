@@ -32,7 +32,7 @@ const getAllUsers = async (_req, res, next) => {
         next(new ApiError(error.code || 500, error.message));
     }
 };
-const updateUser = async (req, res, next) => {
+const updateProfile = async (req, res, next) => {
     try {
         const userId = req.params.userId;
         const data = req.body;
@@ -68,9 +68,7 @@ const updateUser = async (req, res, next) => {
                 'image',
                 `komiho/users/${userId}/public`,
             );
-            data.avatar = {};
-            data.avatar.public_id = avatar.public_id;
-            data.avatar.url = avatar.url;
+            data.avatar = { public_id: avatar.public_id, url: avatar.url };
         }
         await User.findByIdAndUpdate(userId, data);
         const result = await User.findById(userId).select(PROPERTIES_USER);
@@ -78,7 +76,7 @@ const updateUser = async (req, res, next) => {
         res.json(result);
     } catch (error) {
         console.log(
-            '🚀 ~ file: user.controller.js:85 ~ updateUser ~ error:',
+            '🚀 ~ file: user.controller.js:85 ~ updateProfile ~ error:',
             error,
         );
         next(new ApiError(error.code || 500, error.message));
@@ -101,7 +99,7 @@ const deleteUser = async (req, res, next) => {
         }
 
         // delete on mongodb
-        await User.findByIdAndDelete(userId);
+        await User.findByIdAndUpdate(userId, { isDeleted: true });
 
         res.json({ message: `Deleted user ${userId}`, status: 'success' });
     } catch (error) {
@@ -113,14 +111,7 @@ const deleteUser = async (req, res, next) => {
         );
     }
 };
-const deleteAllUsers = async (req, res, next) => {
-    try {
-        await User.deleteMany();
-        res.json({ message: 'All uers deleted successfully' });
-    } catch (error) {
-        next(new ApiError(500, error.message));
-    }
-};
+
 const updateAddress = async (req, res, next) => {
     try {
         const data = req.body;
@@ -158,8 +149,7 @@ export {
     PROPERTIES_USER,
     getAllUsers,
     getUser,
-    deleteAllUsers,
     deleteUser,
-    updateUser,
+    updateProfile,
     updateAddress,
 };

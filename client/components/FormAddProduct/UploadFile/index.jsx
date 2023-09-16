@@ -103,7 +103,8 @@ const Upload = ({ id = '', label = '', type, placeholder = '' }) => {
                 </div>
                 <div className="col-span-3 ms-3 flex flex-col gap-2 justify-center items-start">
                     <Badge color="pink">
-                        <b>Note:</b> The first image will use as the cover photo
+                        <b>Note:</b> The first image will use as the cover
+                        photo.
                     </Badge>
 
                     <Badge color="info">

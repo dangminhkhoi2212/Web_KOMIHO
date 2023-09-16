@@ -37,6 +37,7 @@ const ProfileForm = () => {
     };
     const dispatch = useDispatch();
     const [isPhone, setIsPhone] = useState(phone ? true : false);
+    console.log('🚀 ~ file: index.jsx:40 ~ ProfileForm ~ isPhone:', isPhone);
     const [avtUrl, setAvtUrl] = useState(urlAvatar);
     const inputFile = useRef(null);
     const [fileSize, setFileSize] = useState(null);
@@ -46,6 +47,7 @@ const ProfileForm = () => {
         formState: { errors },
         handleSubmit,
         reset,
+        setValue,
     } = useForm({
         resolver: yupResolver(profileSchema),
         defaultValues: initValue,
@@ -58,7 +60,7 @@ const ProfileForm = () => {
             const form = new FormData();
             form.append('name', data.name);
             form.append('email', data.email);
-            form.append('phone', data.phone);
+            if (isPhone) form.append('phone', data.phone);
             if (data.avatar.length > 0 && data.avatar[0]) {
                 data.avatar = data.avatar[0];
                 form.append('avatar', data.avatar);
@@ -67,11 +69,12 @@ const ProfileForm = () => {
             }
             form.append('isUpdateAvatar', data.isUpdateAvatar);
 
-            return await updateProfile(userId, form);
+            const res = await updateProfile(userId, form);
+            return { res, form };
         },
-        onSuccess(data) {
+        onSuccess({ res, form }) {
             // reset(initValue);
-            dispatch(setUser(data));
+            dispatch(setUser(res));
             toast.success('Your profile updated successfully.');
             setFileSize('');
         },
@@ -209,7 +212,7 @@ const ProfileForm = () => {
                                 />
                             )}
                         />
-                        {!phone && (
+                        {!isPhone && (
                             <span
                                 className=" cursor-pointer flex-initial px-2 py-1  rounded-full bg-primary hover:bg-accent text-sm text-white ms-5 align-middle"
                                 onClick={() => {

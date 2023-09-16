@@ -43,6 +43,7 @@ const UserSchema = new Schema(
         refreshToken: { type: String },
         productId: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
         typeUser: { type: String, required: true, trim: true, default: 'user' },
+        isDeleted: { type: Boolean, default: false },
     },
     {
         versionKey: false,

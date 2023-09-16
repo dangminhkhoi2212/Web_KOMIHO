@@ -4,11 +4,13 @@ import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import Avatar from '@/components/Avatar';
 import { useDispatch } from 'react-redux';
-import { setAdmin } from '@/redux/adminSlice';
+import { setAdmin, resetUser } from '@/redux/adminSlice';
 import { getAdminStore } from '@/redux/selector';
+import { signOut } from 'next-auth/react';
+
 const DropdownMenu = () => {
     const router = useRouter();
-    const dispacth = useDispatch();
+    const dispatch = useDispatch();
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const admin = useSelector(getAdminStore);
@@ -18,8 +20,8 @@ const DropdownMenu = () => {
     };
     const handleLogout = () => {
         localStorage.clear();
-        dispacth(setAdmin({}));
-        router.push('/login');
+        dispatch(resetUser());
+        signOut();
     };
     return (
         <div className="flex  justify-center items-center">

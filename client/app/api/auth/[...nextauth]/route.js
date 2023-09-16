@@ -1,7 +1,10 @@
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios';
-
+import { login } from '@/services/auth.service';
+import Cookies from 'js-cookie';
+import { cookies } from 'next/headers';
 const handler = NextAuth({
     providers: [
         GoogleProvider({
@@ -11,7 +14,7 @@ const handler = NextAuth({
     ],
     callbacks: {
         async jwt({ token, user, account }) {
-            if (account) {
+            if (account && user) {
                 token.id_token = account.id_token;
                 // Store the token expiration time
                 token.id_token_expires = account.expires_in + Date.now() / 1000;
@@ -40,12 +43,9 @@ const handler = NextAuth({
 
                     // Update the session with the new ID token
                     session.id_token = newTokenData.id_token;
-
-                    // Update the token expiration time
                     token.id_token_expires =
                         newTokenData.expires_in + Date.now() / 1000;
                 } catch (error) {
-                    // Handle token refresh error
                     console.error('Error refreshing ID token:', error);
                     // You can decide how to handle the error here, e.g., log the user out.
                     // For security reasons, you may not want to expose details of the error to the user.

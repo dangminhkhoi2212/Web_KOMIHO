@@ -27,9 +27,10 @@ export const loginWithGoogle = async (req, res, next) => {
         // Check if the user already exists
         const existingUser = await User.findOne({
             email: payload.email,
-        }).select(PROPERTIES_USER);
+        });
 
         if (existingUser) {
+            if (existingUser.isDeleted) return res.json({ isDeleted: true });
             const accessToken = createAccessToken(existingUser._id);
             const refreshToken = createRefreshToken(existingUser._id);
             const result = await User.findByIdAndUpdate(

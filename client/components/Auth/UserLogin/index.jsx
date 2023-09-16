@@ -1,18 +1,24 @@
-import { useSession } from 'next-auth/react';
+'use client';
+import { signOut, useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-
+import { Button } from 'flowbite-react';
 import { useCookies } from 'react-cookie';
+
 import { loginWithGoogle } from '@/services/auth.service';
-import { setUser } from '@/components/Auth/authSlice';
+import { resetUser, setUser } from '@/components/Auth/authSlice';
 import { setAlert } from '@/components/Alert/alertSlice';
 import Loading from '@/components/Loading';
 import { getUserId } from '@/redux/selector';
+import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
+import Modal from '@/components/Modal';
 const UserLogin = ({ children }) => {
     const [cookies, setCookie] = useCookies(['access_token', 'refresh_token']);
     const userId = useSelector(getUserId);
     const { data: session, status } = useSession();
+    const [showModal, setShowModal] = useState(false);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -25,7 +31,9 @@ const UserLogin = ({ children }) => {
                             '🚀 ~ file: index.jsx:23 ~ login ~ result:',
                             result,
                         );
-
+                        if (result.isDeleted) {
+                            setShowModal(true);
+                        }
                         dispatch(setUser(result));
                         dispatch(
                             setAlert({
@@ -36,23 +44,40 @@ const UserLogin = ({ children }) => {
                         setCookie('accessToken', result.accessToken);
                         setCookie('refreshToken', result.refreshToken);
                     }
-                    return;
                 }
-                return;
             } catch (error) {
-                dispatch(
-                    setAlert({
-                        status: 'failure',
-                        message:
-                            error?.response?.data?.message || 'Login failed.',
-                    }),
-                );
+                toast.error('Login error. Please try again later.');
+                signOut();
+                dispatch(resetUser());
             }
         };
         login();
     }, [session]);
     if (status === 'loading') return <Loading loadingStatus={true} />;
-    return <>{children}</>;
+    return (
+        <>
+            {showModal && (
+                <Modal label={'RECOVER ACCOUNT'}>
+                    <h1 className="text-center">
+                        Do you want recover this account?
+                    </h1>
+                    <div className="flex justify-center gap-4">
+                        <Button
+                            color="failure"
+                            onClick={() => {
+                                alert('yes');
+                            }}>
+                            Yes, I'm sure
+                        </Button>
+                        <Button color="gray" onClick={() => signOut()}>
+                            No, cancel
+                        </Button>
+                    </div>
+                </Modal>
+            )}
+            {children}
+        </>
+    );
 };
 
 export default UserLogin;

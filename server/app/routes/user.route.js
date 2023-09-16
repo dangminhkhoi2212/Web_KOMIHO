@@ -6,7 +6,7 @@ import { verifyToken } from '../middleware/verifyToken.js';
 
 router
     .route('/update/profile/:userId')
-    .put(verifyToken, multer.single('avatar'), userController.updateUser);
+    .put(verifyToken, multer.single('avatar'), userController.updateProfile);
 router
     .route('/update/address/:userId')
     .put(verifyToken, userController.updateAddress);
@@ -14,10 +14,6 @@ router
 router
     .route('/:id')
     .get(userController.getUser)
-    .post(userController.deleteUser)
-    .put(verifyToken, userController.updateUser);
-router
-    .route('/')
-    .get(userController.getAllUsers)
-    .delete(userController.deleteAllUsers);
+    .post(userController.deleteUser);
+router.route('/').get(userController.getAllUsers);
 export default router;

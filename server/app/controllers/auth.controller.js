@@ -21,6 +21,7 @@ export const login = async (req, res, next) => {
             $or: [{ email: username }, { phone: username }],
         });
         if (user) {
+            if (user.isDeleted) return res.json({ isDeleted: true });
             if (user.viaGoogle || !user.password)
                 return next(new ApiError(403, 'You must login via Google.'));
             const match = await bcrypt.compare(password, user.password);
