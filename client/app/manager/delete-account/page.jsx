@@ -21,6 +21,9 @@ import { deleteAccountSchema } from '@/utils/validation';
 import { resetUser, setUser } from '@/components/Auth/authSlice';
 import { setAlert } from '@/components/Alert/alertSlice';
 import { signOut } from 'next-auth/react';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import Cookies from 'js-cookie';
 
 const STEP_INITIAL = 1;
 const STEP_VERIFY_OTP = 2;
@@ -44,59 +47,65 @@ const Password = () => {
         resolver: yupResolver(deleteAccountSchema),
     });
 
-    const startDeleteAccount = async () => {
-        try {
-            setLoading(true);
-            await sendOtp(email);
+    const startDeleteAccount = useMutation({
+        mutationFn: () => {
+            sendOtp(email);
+        },
+        onSuccess() {
+            toast.success('Please check your email');
             handleNext();
-            setLoading(false);
-        } catch (error) {
-            setLoading(false);
-            dispatch(
-                setAlert({
-                    status: 'failure',
-                    message:
-                        error?.response?.data?.message ||
-                        'Send OTP failure. Please try again.',
-                }),
+        },
+        onError(error) {
+            toast.error(
+                error?.response?.data?.message ||
+                    'Send OTP failure. Please try again.',
             );
-        }
-    };
+        },
+    });
+    // const startDeleteAccount = async () => {
+    //     try {
+    //         setLoading(true);
+    //         await sendOtp(email);
+    //         handleNext();
+    //         setLoading(false);
+    //     } catch (error) {
+    //         setLoading(false);
+    //         dispatch(
+    //             setAlert({
+    //                 status: 'failure',
+    //                 message:
+    //                     error?.response?.data?.message ||
+    //                     'Send OTP failure. Please try again.',
+    //             }),
+    //         );
+    //     }
+    // };
 
     const handleNext = () => {
-        setStep((pre) => Math.min(pre + 1, 3));
+        setStep((pre) => Math.min(pre + 1, STEP_VERIFY_OTP));
     };
     const handleBack = () => {
         setStep((pre) => Math.max(pre - 1, 1));
     };
-
-    const handleDeleteAccount = async (data) => {
-        try {
-            setLoading(true);
-
-            const result = await deleteUser(userId, data.password);
-            if (result.status === 'success') {
-                localStorage.clear();
-                dispatch(resetUser());
-                signOut({ callbackUrl: routes.home });
-            }
-            setLoading(false);
-        } catch (error) {
-            console.log(
-                '🚀 ~ file: page.jsx:85 ~ handleDeleteAccount ~ error:',
-                error,
+    const handleDeleteAccount = useMutation({
+        mutationFn: () => {
+            return deleteUser(userId);
+        },
+        onSuccess() {
+            toast.success('Your account is deleted successfully');
+            localStorage.clear();
+            Cookies.remove('accessToken');
+            Cookies.remove('refreshToken');
+            dispatch(resetUser());
+            signOut({ callbackUrl: routes.home });
+        },
+        onError(error) {
+            toast.error(
+                error?.response?.data?.message ||
+                    'Occurred error. Please try again.',
             );
-            setLoading(false);
-            dispatch(
-                setAlert({
-                    status: 'failure',
-                    message:
-                        error?.response?.data?.message ||
-                        'Occurred error. Please try again.',
-                }),
-            );
-        }
-    };
+        },
+    });
 
     return (
         <AccountTemplate
@@ -112,29 +121,29 @@ const Password = () => {
                     priority
                 />
                 <button
-                    onClick={startDeleteAccount}
+                    onClick={startDeleteAccount.mutate}
                     className="px-4 h-12 min-w-[80px] rounded-full text-sm text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent relative">
-                    {loading ? (
-                        <Loading
-                            loadingStatus={loading}
-                            colorProp={'#ffffff'}
-                            sizeProp={20}
-                        />
+                    {startDeleteAccount.isLoading ? (
+                        <Loading colorProp={'#ffffff'} sizeProp={20} />
                     ) : (
                         'Start delete account'
                     )}
                 </button>
             </div>
 
-            {step === STEP_VERIFY_OTP && (
-                <Modal
-                    label={'Verify Otp'}
-                    showModel={step === STEP_VERIFY_OTP}
-                    handleEvent={() => setStep(1)}>
-                    <VerifyOtp email={email} handleEvent={() => handleNext()} />
-                </Modal>
-            )}
-            {step === STEP_DELETE_ACCOUNT && (
+            {step === STEP_VERIFY_OTP &&
+                startDeleteAccount.isLoading === false && (
+                    <Modal
+                        label={'Verify Otp'}
+                        showModel={step === STEP_VERIFY_OTP}
+                        handleEvent={() => setStep(STEP_INITIAL)}>
+                        <VerifyOtp
+                            email={email}
+                            handleEvent={() => handleDeleteAccount.mutate()}
+                        />
+                    </Modal>
+                )}
+            {/* {step === STEP_DELETE_ACCOUNT && (
                 <Modal
                     label={'Enter Password'}
                     showModel={step === STEP_DELETE_ACCOUNT}
@@ -178,7 +187,7 @@ const Password = () => {
                         </button>
                     </form>
                 </Modal>
-            )}
+            )} */}
         </AccountTemplate>
     );
 };

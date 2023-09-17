@@ -9,7 +9,7 @@ import { getName, getUrlAvatar, getUserId } from '@/redux/selector';
 import { resetUser } from '@/components/Auth/authSlice';
 import routes from '@/routes';
 import Cookies from 'js-cookie';
-
+import { resetAllReducers } from '@/redux/store';
 const listDropdown = [
     { name: 'Manager Account', link: routes.profile },
     { name: 'Manager Store', link: routes.managerAllProducts },
@@ -22,7 +22,7 @@ export default function DropdownItem() {
     const dispatch = useDispatch();
     const [show, setShow] = useState(false);
     const handleLogout = async () => {
-        dispatch(resetUser());
+        resetAllReducers();
         await signOut({ callbackUrl: routes.login });
         Cookies.remove('accessToken');
         Cookies.remove('refreshToken');

@@ -30,9 +30,15 @@ export const loginWithGoogle = async (req, res, next) => {
         });
 
         if (existingUser) {
-            if (existingUser.isDeleted) return res.json({ isDeleted: true });
             const accessToken = createAccessToken(existingUser._id);
             const refreshToken = createRefreshToken(existingUser._id);
+            console.log(
+                '🚀 ~ file: google.controller.js:36 ~ loginWithGoogle ~ !existingUser.password:',
+                existingUser.password,
+            );
+            if (!existingUser.password)
+                return res.json({ password: '', refreshToken, accessToken });
+            if (!existingUser.public) return res.json({ public: false });
             const result = await User.findByIdAndUpdate(
                 existingUser._id,
                 refreshToken,
@@ -40,6 +46,7 @@ export const loginWithGoogle = async (req, res, next) => {
             )
                 .select(PROPERTIES_USER)
                 .lean();
+            result.password = true;
             result.accessToken = accessToken;
             res.send(result);
             return;
@@ -56,16 +63,13 @@ export const loginWithGoogle = async (req, res, next) => {
         };
 
         const user = await User.create(newUser);
-        const accessToken = createAccessToken(user._id);
-        const refreshToken = createRefreshToken(user._id);
-        user.refreshToken = refreshToken;
         await user.save();
 
-        const result = await User.findById(user._id)
-            .lean()
-            .select(PROPERTIES_USER);
-        result.accessToken = accessToken;
-        res.send({ ...result, accessToken });
+        // const result = await User.findById(user._id)
+        //     .lean()
+        //     .select(PROPERTIES_USER);
+        // result.accessToken = accessToken;
+        res.send({ message: 'Register with google successfully' });
     } catch (error) {
         console.log(
             '🚀 ~ file: google.controller.js:57 ~ loginWithGoogle ~ error:',

@@ -31,3 +31,6 @@ export const deleteProduct = async (productId) => {
 export const deleteManyProducts = async (ids) => {
     return (await api.post('/product/delete-many', { ids })).data;
 };
+export const recoverAccount = async (email) => {
+    return (await api.put('/account/recover', email)).data;
+};

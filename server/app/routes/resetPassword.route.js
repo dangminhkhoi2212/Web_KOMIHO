@@ -1,8 +1,8 @@
 import express from 'express';
 const router = express.Router();
-import { verifyOtp } from '../middleware/verifyOtp.js';
+import { verifyToken } from '../middleware/verifyToken.js';
 import { updatePassword } from '../controllers/resetPassword.controller.js';
 
-router.route('/updatePassword').put(verifyOtp, updatePassword);
+router.route('/updatePassword').put(verifyToken, updatePassword);
 
 export default router;

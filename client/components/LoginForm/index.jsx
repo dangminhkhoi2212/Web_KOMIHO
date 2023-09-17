@@ -17,6 +17,7 @@ import routes from '@/routes';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import { useMutation } from '@tanstack/react-query';
+import { setEmailRecover } from '../RecoverAccount/recoverAccountSlice';
 const LoginForm = () => {
     const dispatch = useDispatch();
     const router = useRouter();
@@ -26,6 +27,10 @@ const LoginForm = () => {
             return result;
         },
         onSuccess(data) {
+            if (!data.public) {
+                dispatch(setEmailRecover(data.email));
+                return;
+            }
             dispatch(setUser(data));
             Cookies.set('accessToken', data.accessToken);
             Cookies.set('refreshToken', data.refreshToken);

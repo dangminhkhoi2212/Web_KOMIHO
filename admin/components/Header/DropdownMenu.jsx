@@ -21,6 +21,7 @@ const DropdownMenu = () => {
     const handleLogout = () => {
         localStorage.clear();
         dispatch(resetUser());
+        dispatch(resetEmailRecover());
         signOut();
     };
     return (

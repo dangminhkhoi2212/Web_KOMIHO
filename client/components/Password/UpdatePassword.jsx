@@ -10,7 +10,7 @@ import { updatePassword } from '@/services/password/password.service';
 import InputCustom from '../InputCustom';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-const UpdatePassword = ({ email, otp, linkRedirect, handleEvent }) => {
+const UpdatePassword = ({ email, linkRedirect, handleEvent }) => {
     const router = useRouter();
     const {
         control,
@@ -22,7 +22,7 @@ const UpdatePassword = ({ email, otp, linkRedirect, handleEvent }) => {
 
     const submitPassword = useMutation({
         mutationFn: async (data) => {
-            await updatePassword(email, otp, data.password);
+            await updatePassword(email, data.password);
         },
         onSuccess() {
             if (handleEvent) handleEvent();
@@ -30,6 +30,10 @@ const UpdatePassword = ({ email, otp, linkRedirect, handleEvent }) => {
             router.push(linkRedirect);
         },
         onError(error) {
+            console.log(
+                '🚀 ~ file: UpdatePassword.jsx:33 ~ onError ~ error:',
+                error,
+            );
             toast.error(
                 error?.response?.data?.message ||
                     error?.message ||

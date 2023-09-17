@@ -13,6 +13,10 @@ import {
     uploadToCloudinary,
 } from '../services/cloudinary.service.js';
 import { checkUserExisted } from './auth.controller.js';
+import {
+    createAccessToken,
+    createRefreshToken,
+} from '../services/token.service.js';
 const PROPERTIES_USER = process.env.PROPERTIES_USER;
 const BCRYPT_HASH = process.env.BCRYPT_HASH;
 const getUser = async (req, res, next) => {
@@ -99,7 +103,7 @@ const deleteUser = async (req, res, next) => {
         }
 
         // delete on mongodb
-        await User.findByIdAndUpdate(userId, { isDeleted: true });
+        await User.findByIdAndUpdate(userId, { public: false });
 
         res.json({ message: `Deleted user ${userId}`, status: 'success' });
     } catch (error) {
@@ -145,6 +149,33 @@ const updateAddress = async (req, res, next) => {
         next(new ApiError(error.code || 500, error.message));
     }
 };
+const recoverAccount = async (req, res, next) => {
+    try {
+        const email = req.body.email;
+        console.log(
+            '🚀 ~ file: user.controller.js:151 ~ recoverAccount ~ email:',
+            email,
+        );
+        const result = await User.findOneAndUpdate(
+            { email },
+            { public: true },
+            { new: true },
+        )
+            .select(PROPERTIES_USER)
+            .lean();
+
+        const accessToken = await createAccessToken(result._id);
+        const refreshToken = await createRefreshToken(result._id);
+        result.accessToken = accessToken;
+        result.refreshToken = refreshToken;
+        res.send(result);
+    } catch (error) {
+        console.log(
+            '🚀 ~ file: user.controller.js:158 ~ recoverAccount ~ error:',
+            error,
+        );
+    }
+};
 export {
     PROPERTIES_USER,
     getAllUsers,
@@ -152,4 +183,5 @@ export {
     deleteUser,
     updateProfile,
     updateAddress,
+    recoverAccount,
 };

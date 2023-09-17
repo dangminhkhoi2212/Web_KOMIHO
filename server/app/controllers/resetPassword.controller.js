@@ -16,7 +16,6 @@ export const updatePassword = async (req, res, next) => {
         );
         const hashPassword = await bcrypt.hash(password, BCRYPT_HASH);
         await User.findOneAndUpdate({ email }, { password: hashPassword });
-        await Otp.findOneAndUpdate({ email }, { used: true });
         res.json({ success: true, message: 'Password updated successfully' });
     } catch (error) {
         console.log(

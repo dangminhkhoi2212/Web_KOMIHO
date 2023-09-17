@@ -19,3 +19,6 @@ export const deleteUser = async (userId, password) => {
 export const getUserApi = async (userId) => {
     return (await api.get(`/user/${userId}`)).data;
 };
+export const recoverAccount = async (email) => {
+    return (await api.put('/user/recover-account', { email })).data;
+};

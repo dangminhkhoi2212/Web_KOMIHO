@@ -41,9 +41,8 @@ const UserSchema = new Schema(
         emailVerified: { type: Boolean, default: false },
         viaGoogle: { type: Boolean, default: false },
         refreshToken: { type: String },
-        productId: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
         typeUser: { type: String, required: true, trim: true, default: 'user' },
-        isDeleted: { type: Boolean, default: false },
+        public: { type: Boolean, default: true }, // role as delete or block
     },
     {
         versionKey: false,

@@ -7,7 +7,6 @@ import { Suspense } from 'react';
 import ProviderStore from '@/redux/Provider';
 import UserLogin from './UserLogin';
 import Loading from '@/components/Loading';
-import ShowAlert from './ShowAlert';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -20,6 +19,7 @@ import {
 } from '@tanstack/react-query';
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import RecoverAccount from '../RecoverAccount';
 
 const queryClient = new QueryClient();
 const Auth = ({ children }) => {
@@ -35,7 +35,7 @@ const Auth = ({ children }) => {
                                 <BreadCrumb />
                                 <Suspense
                                     fallback={<Loading loadingStatus={true} />}>
-                                    {children}
+                                    <RecoverAccount>{children}</RecoverAccount>
                                 </Suspense>
                             </div>
                             <Footer />

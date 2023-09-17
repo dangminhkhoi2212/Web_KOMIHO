@@ -11,7 +11,7 @@ import {
 } from 'redux-persist';
 import storage from './storage';
 import userReducer from '@/components/Auth/authSlice';
-import alertReducer from '@/components/Alert/alertSlice';
+import recoverAccountReducer from '@/components/RecoverAccount/recoverAccountSlice';
 const persistConfig = {
     key: 'user',
     version: 1,
@@ -23,7 +23,7 @@ const persistedReducerAdmin = persistReducer(persistConfig, userReducer);
 const store = configureStore({
     reducer: {
         user: persistedReducerAdmin,
-        alert: alertReducer,
+        recoverAccount: recoverAccountReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
@@ -39,6 +39,11 @@ const store = configureStore({
             },
         }),
 });
-
+export const resetAllReducers = () => {
+    const resetAction = {
+        type: 'RESET_ALL_REDUCERS',
+    };
+    store.dispatch(resetAction);
+};
 const persistor = persistStore(store);
 export { store, persistor };

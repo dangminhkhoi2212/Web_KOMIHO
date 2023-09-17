@@ -11,7 +11,6 @@ const FormElements = ({ label, showModel, handleEvent, children }) => {
     };
     return (
         <Modal
-            dismissible
             show={props.openModal === true}
             onClose={handleOnClose}
             className="z-drop-down">
