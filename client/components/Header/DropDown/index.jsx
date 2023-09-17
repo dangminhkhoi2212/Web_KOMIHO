@@ -21,11 +21,11 @@ export default function DropdownItem() {
 
     const dispatch = useDispatch();
     const [show, setShow] = useState(false);
-    const handleLogout = async () => {
+    const handleLogout = () => {
         resetAllReducers();
-        await signOut({ callbackUrl: routes.login });
         Cookies.remove('accessToken');
         Cookies.remove('refreshToken');
+        signOut({ callbackUrl: routes.login });
 
         localStorage.removeItem('persist:user');
     };

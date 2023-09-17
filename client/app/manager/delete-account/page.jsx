@@ -82,14 +82,14 @@ const Password = () => {
     // };
 
     const handleNext = () => {
-        setStep((pre) => Math.min(pre + 1, STEP_VERIFY_OTP));
+        setStep((pre) => Math.min(pre + 1, STEP_DELETE_ACCOUNT));
     };
     const handleBack = () => {
         setStep((pre) => Math.max(pre - 1, 1));
     };
     const handleDeleteAccount = useMutation({
-        mutationFn: () => {
-            return deleteUser(userId);
+        mutationFn: (data) => {
+            return deleteUser(userId, data.password);
         },
         onSuccess() {
             toast.success('Your account is deleted successfully');
@@ -139,17 +139,17 @@ const Password = () => {
                         handleEvent={() => setStep(STEP_INITIAL)}>
                         <VerifyOtp
                             email={email}
-                            handleEvent={() => handleDeleteAccount.mutate()}
+                            handleEvent={() => handleNext()}
                         />
                     </Modal>
                 )}
-            {/* {step === STEP_DELETE_ACCOUNT && (
+            {step === STEP_DELETE_ACCOUNT && (
                 <Modal
                     label={'Enter Password'}
                     showModel={step === STEP_DELETE_ACCOUNT}
-                    handleEvent={() => setStep(1)}>
+                    handleEvent={() => setStep(STEP_INITIAL)}>
                     <form
-                        onSubmit={handleSubmit(handleDeleteAccount)}
+                        onSubmit={handleSubmit(handleDeleteAccount.mutate)}
                         className="flex flex-col items-center gap-3">
                         <Controller
                             name="password"
@@ -187,7 +187,7 @@ const Password = () => {
                         </button>
                     </form>
                 </Modal>
-            )} */}
+            )}
         </AccountTemplate>
     );
 };

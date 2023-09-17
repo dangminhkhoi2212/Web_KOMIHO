@@ -28,14 +28,18 @@ const UserLogin = ({ children }) => {
                 if (session && session.id_token) {
                     if (!userId) {
                         const result = await loginWithGoogle(session.id_token);
+                        console.log(
+                            '🚀 ~ file: index.jsx:31 ~ login ~ result:',
+                            result,
+                        );
 
-                        if (!result.password) {
+                        if ('password' in result && !result.password) {
                             Cookies.set('accessToken', result.accessToken);
                             Cookies.set('refreshToken', result.refreshToken);
                             setShowModal(true);
                             return;
                         }
-                        if (!result.public) {
+                        if ('public' in result && !result.public) {
                             dispatch(setEmailRecover(session.user.email));
                             return;
                         }
