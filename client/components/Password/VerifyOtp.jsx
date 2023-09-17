@@ -96,11 +96,11 @@ const VerifyCode = ({ handleEvent, email, setOtp }) => {
                         />
                     )}
                 />
-                <div className="w-md text-center">
+                <div className="w-md text-center flex items-center justify-center gap-3">
                     Resend OTP
                     <button
                         type="button"
-                        className="p-3 rounded-xl  mx-4 text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent"
+                        className="inline-flex justify-center items-center rounded-xl h-8 w-8  text-white bg-primary hover:bg-accent transition ease-in-out duration-500 shadow-sm shadow-accent overflow-hidden relative"
                         onClick={resendOtp.mutate}>
                         {resendOtp.isLoading ? (
                             <Loading colorProp={'#ffffff'} sizeProp={20} />
