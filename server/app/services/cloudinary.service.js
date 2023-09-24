@@ -23,10 +23,8 @@ const createFolder = async (userId) => {
 const deleteFolder = async (pathFolder) => {
     return await cloudinary.api.delete_folder(pathFolder);
 };
-const deleteResources = async (pathFolder) => {
-    return await cloudinary.api.delete_resources_by_prefix(pathFolder, {
-        all: true,
-    });
+const deleteResources = async (images) => {
+    return await cloudinary.api.delete_resources(images);
 };
 export {
     uploadToCloudinary,

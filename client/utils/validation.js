@@ -116,29 +116,15 @@ export const addProductSchema = yup.object({
         }),
     ),
     images: yup
-        .mixed()
+        .array()
         .required('Please select at least one image')
         .test('arrayFileLength', 'Maximum 9 photos', (value) => {
-            return Object.entries(value).length <= 9;
+            return value.length <= 9;
         })
-        .test('filetype', 'Unsupported file format', (value) => {
-            if (value && value.length > 0) {
-                for (let i = 0; i < value.length; i++) {
-                    if (
-                        value[i].type != 'image/png' &&
-                        value[i].type != 'image/jpg' &&
-                        value[i].type != 'image/jpeg'
-                    ) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        })
+
         .test('fileRequired', 'You must provide 1 image.', (value) => {
-            if (Object.entries(value).length === 0) return false;
+            if (value.length === 0) return false;
             return true;
         }),
-    type: yup.string().required('Type is a required field'),
     tags: yup.string(),
 });

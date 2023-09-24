@@ -38,7 +38,7 @@ export const loginWithGoogle = async (req, res, next) => {
             if (!existingUser.public) return res.json({ public: false });
             const result = await User.findByIdAndUpdate(
                 existingUser._id,
-                refreshToken,
+                { refreshToken },
                 { new: true },
             )
                 .select(PROPERTIES_USER)
@@ -63,16 +63,10 @@ export const loginWithGoogle = async (req, res, next) => {
         const user = await User.create(newUser);
         const accessToken = createAccessToken(user._id);
         const refreshToken = createRefreshToken(user._id);
-        user.accessToken = accessToken;
-        user.accessToken = accessToken;
+        user.refreshToken = refreshToken;
 
         await user.save();
 
-        // const result = await User.findById(user._id)
-        //     .lean()
-        //     .select(PROPERTIES_USER +'passw');
-
-        // if (!user.password)
         return res.json({ password: '', refreshToken, accessToken });
     } catch (error) {
         console.log(

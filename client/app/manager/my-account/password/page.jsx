@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import EmailImage from '@/public/images/enter_email.svg';
 import AccountTemplate from '@/components/Account/AccountTemplate';
 import Loading from '@/components/Loading';
-import { sendOtp } from '@/services/password/otp.service';
+import { sendOtp } from '@/services/otp.service';
 import { getEmail } from '@/redux/selector';
 import VerifyOtp from '@/components/Password/VerifyOtp';
 import UpdatePassword from '@/components/Password/UpdatePassword';

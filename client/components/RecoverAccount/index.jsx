@@ -16,12 +16,15 @@ import Modal from '@/components/Modal';
 import VerifyCode from '@/components/Password/VerifyOtp';
 import { useMutation } from '@tanstack/react-query';
 import { sendMail } from '@/services/email.service';
-import { sendOtp } from '@/services/password/otp.service';
+import { sendOtp } from '@/services/otp.service';
 import { recoverAccount } from '@/services/user.service';
 import { setEmailRecover } from './recoverAccountSlice';
+import routes from '@/routes';
+import { useRouter } from 'next/navigation';
 const RecoverAccount = ({ children }) => {
     const email = useSelector(getEmailRecover);
-    console.log('🚀 ~ file: index.jsx:23 ~ RecoverAccount ~ email:', email);
+    const router = useRouter();
+    // console.log('🚀 ~ file: index.jsx:23 ~ RecoverAccount ~ email:', email);
     const [showModal, setShowModal] = useState({
         modalEmail: !!email || false,
         modalOtp: false,
@@ -59,6 +62,7 @@ const RecoverAccount = ({ children }) => {
 
             Cookies.set('accessToken', data.accessToken);
             Cookies.set('refreshToken', data.refreshToken);
+            router.push(routes.home);
         },
         onError(err) {
             setShowModal({ modalEmail: true, modalOtp: false });
@@ -77,7 +81,10 @@ const RecoverAccount = ({ children }) => {
             {showModal.modalEmail && (
                 <Modal
                     label={'RECOVER ACCOUNT'}
-                    handleEvent={() => setShowModal(false)}>
+                    handleEvent={() => {
+                        setShowModal(false);
+                        signOut();
+                    }}>
                     {handleSendEmail.isLoading && <Loading />}
                     <div className="flex flex-col justify-center item-center text-center text-xl mb-2">
                         <h1>Your account is deleted.</h1>

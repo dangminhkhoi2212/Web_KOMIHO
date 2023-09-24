@@ -12,6 +12,8 @@ import {
 import storage from './storage';
 import userReducer from '@/components/Auth/authSlice';
 import recoverAccountReducer from '@/components/RecoverAccount/recoverAccountSlice';
+import filterSearchReducer from './filterSearchSlice';
+import listDeletedImagesReducer from './listDeletedImages';
 const persistConfig = {
     key: 'user',
     version: 1,
@@ -24,6 +26,8 @@ const store = configureStore({
     reducer: {
         user: persistedReducerAdmin,
         recoverAccount: recoverAccountReducer,
+        filterSearch: filterSearchReducer,
+        listDeletedImages: listDeletedImagesReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

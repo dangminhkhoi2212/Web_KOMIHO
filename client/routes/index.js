@@ -27,5 +27,7 @@ const routes = {
     returnPolicy: '/supports/return-policy',
     privacyPolicy: '/supports/privacy-policy',
     termsOfService: '/supports/terms-of-service',
+
+    productDetail: (productId) => `/detail/${productId}`,
 };
 export default routes;

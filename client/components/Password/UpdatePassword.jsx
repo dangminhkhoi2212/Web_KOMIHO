@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import UpdatePasswordImg from '@/public/images/update_password.svg';
 import { passwordSchema } from '@/utils/validation';
 import Loading from '@/components/Loading';
-import { updatePassword } from '@/services/password/password.service';
+import { updatePassword } from '@/services/password.service';
 import InputCustom from '../InputCustom';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';

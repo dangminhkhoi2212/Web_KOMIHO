@@ -18,7 +18,6 @@ import { useRouter } from 'next/navigation';
 const UserLogin = ({ children }) => {
     const userId = useSelector(getUserId);
     const { data: session, status } = useSession();
-    console.log('🚀 ~ file: index.jsx:22 ~ UserLogin ~ session:', session);
     const [showModal, setShowModal] = useState(false);
     const dispatch = useDispatch();
 
@@ -46,9 +45,17 @@ const UserLogin = ({ children }) => {
                         dispatch(setUser(result));
                         toast.success('Login successfully.');
 
-                        Cookies.set('accessToken', result.accessToken);
-                        Cookies.set('refreshToken', result.refreshToken);
+                        Cookies.set('accessToken', result.accessToken, {
+                            expires: 100,
+                        });
+                        Cookies.set('refreshToken', result.refreshToken, {
+                            expires: 100,
+                        });
                     }
+                }
+                const accessToken = Cookies.get('accessToken');
+                if (!accessToken) {
+                    dispatch(resetUser());
                 }
             } catch (error) {
                 toast.error('Login error. Please try again later.');

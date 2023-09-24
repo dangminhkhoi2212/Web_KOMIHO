@@ -1,26 +1,25 @@
 'use client';
+import { useRef, useEffect, useState } from 'react';
 import { useForm, FormProvider, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
-
-import InputCustom from '@/components/InputCustom';
-import Loading from '@/components/Loading';
+import dynamic from 'next/dynamic';
 import { addProductSchema } from '@/utils/validation';
-import { useRef, useEffect, useState } from 'react';
-import UploadFile from './UploadFile';
-import Color from './Color';
-import Description from './Description';
-import Price from './Price';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { addProduct } from '@/services/product.service';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserId } from '@/redux/selector';
-import { setAlert } from '../Alert/alertSlice';
-import Type from './Type';
-import Tag from './Tag';
-import { current } from '@reduxjs/toolkit';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import Modal from '../Modal';
+
+const InputCustom = dynamic(() => import('@/components/InputCustom'));
+const Loading = dynamic(() => import('@/components/Loading'));
+const UploadFile = dynamic(() => import('./UploadFile'));
+const Color = dynamic(() => import('./Color'));
+const Description = dynamic(() => import('./Description'));
+const Price = dynamic(() => import('./Price'));
+const Tag = dynamic(() => import('./Tag'));
+const Modal = dynamic(() => import('@/components/Modal'));
+
 import { toast } from 'react-toastify';
 export const initValue = {
     images: [],
@@ -32,7 +31,6 @@ export const initValue = {
         final: '',
     },
     color: [{ name: '', size: [{ type: '', quantity: '' }] }],
-    type: '',
     tags: '',
     description: '',
 };
@@ -59,18 +57,15 @@ const FormAddProduct = () => {
 
         formData.append('price', JSON.stringify(data.price));
         formData.append('color', JSON.stringify(data.color));
-        formData.append('type', data.type);
         formData.append('tags', data.tags);
+        formData.append('images', JSON.stringify(data.images));
+
         if (data.description)
             formData.append(
                 'description',
                 draftToHtml(convertToRaw(data.description.getCurrentContent())),
             );
-        if (data.images.length > 0) {
-            for (let i = 0; i < data.images.length; i++) {
-                formData.append('images', data.images[i]);
-            }
-        }
+
         let store = 0;
         data.color.forEach((color) => {
             color.size.forEach((size) => {
@@ -95,8 +90,6 @@ const FormAddProduct = () => {
                 window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
                 toast.success('Added new product successfully');
                 reset(initValue);
-                const gallery = getValues('gallery');
-                gallery.forEach((img) => URL.revokeObjectURL(img.src));
             }
         },
         onError(error) {
@@ -122,11 +115,7 @@ const FormAddProduct = () => {
                     </Modal>
                 )}
                 <div className="flex flex-col gap-6">
-                    <UploadFile
-                        id={'upload-image'}
-                        type={'file'}
-                        label="Upload Images"
-                    />
+                    <UploadFile id={'upload-image'} label="Upload Images" />
                     <Controller
                         name="name"
                         control={control}
@@ -149,14 +138,8 @@ const FormAddProduct = () => {
                     />
                     <Price />
                     <Color />
-                    <div className="grid grid-cols-5">
-                        <div className="col-span-2">
-                            <Type />
-                        </div>
-                        <div className="col-span-3">
-                            <Tag />
-                        </div>
-                    </div>
+
+                    <Tag />
                     <Description />
                 </div>
                 <button

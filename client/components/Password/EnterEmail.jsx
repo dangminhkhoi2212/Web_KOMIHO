@@ -5,7 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Image from 'next/image';
 
 import EnterEmailImg from '@/public/images/enter_email.svg';
-import { sendOtp } from '@/services/password/otp.service';
+import { sendOtp } from '@/services/otp.service';
 import Loading from '@/components/Loading';
 import InputCustom from '@/components/InputCustom';
 import { emailSchema } from '@/utils/validation';

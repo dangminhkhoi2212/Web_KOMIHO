@@ -6,9 +6,16 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import { Badge } from 'flowbite-react';
-const Upload = ({ id = '', label = '', type, placeholder = '' }) => {
+import { useMutation } from '@tanstack/react-query';
+import { uploadImages, deleteImages } from '@/services/image.service';
+import { useSelector } from 'react-redux';
+import { getUserId } from '@/redux/selector';
+import { toast } from 'react-toastify';
+import Loading from '@/components/Loading';
+import Modal from '@/components/Modal';
+const Upload = ({ id = '', label = '', placeholder = '' }) => {
     const router = useRouter();
-
+    const userId = useSelector(getUserId);
     const {
         register,
         control,
@@ -17,59 +24,90 @@ const Upload = ({ id = '', label = '', type, placeholder = '' }) => {
     } = useFormContext();
 
     const images = useWatch({ control, name: 'images' });
-    const gallery = useWatch({ control, name: 'gallery' });
+    const [showModal, setShowModal] = useState(false);
+    const [lengthFile, setLengthFile] = useState([]);
+    const upload = useMutation({
+        mutationFn: (data) => {
+            return uploadImages(data);
+        },
+        onSuccess(data) {
+            setValue('images', [...images, ...data]);
+        },
+        onError(error) {
+            console.log('🚀 ~ file: index.jsx:34 ~ Upload ~ error:', error);
+            toast.error('Can not upload this images. Please try again.');
+        },
+    });
 
     const handleChange = (e) => {
         const data = e.target.files;
-
-        const existingImageNames = new Set(images.map((img) => img.name));
-
-        for (let i = 0; i < data.length; i++) {
-            if (images.length >= 9) break;
-            if (!existingImageNames.has(data[i].name)) {
-                const src = URL.createObjectURL(data[i]);
-                const file = { name: data[i].name, src };
-                images.push(data[i]);
-                gallery.push(file);
-            }
+        console.log('🚀 ~ file: index.jsx:45 ~ handleChange ~ data:', data);
+        const length = data.length;
+        const form = new FormData();
+        var count = images.length;
+        for (let i = 0; i < length; i++) {
+            console.log(
+                '🚀 ~ file: index.jsx:48 ~ handleChange ~ count:',
+                count,
+            );
+            if (count > 9) return;
+            const file = data[i];
+            count++;
+            form.append('images', file);
         }
-        setValue('images', images);
-        setValue('gallery', gallery);
+        form.append('userId', userId);
+
+        upload.mutate(form);
+
+        setLengthFile(Array(length).fill(0));
     };
 
     // remove all local url  to improve performance
-    const deleteURLImages = (e) => {
-        e.preventDefault();
-        if (gallery.length > 0)
-            gallery.forEach((url) => URL.revokeObjectURL(url));
+
+    const handleDeleteImages = useMutation({
+        mutationFn: (images) => {
+            return deleteImages(images);
+        },
+        onSuccess(data) {
+            if (data.ok) {
+                const oldImages = data.images;
+                const newImages = images.filter((img) => {
+                    return oldImages.some(
+                        (oldImg) => oldImg.public_id !== img.public_id,
+                    );
+                });
+                console.log(
+                    '🚀 ~ file: index.jsx:93 ~ newImages ~ newImages:',
+                    newImages,
+                );
+
+                setValue('images', newImages);
+            }
+        },
+    });
+
+    // useEffect(() => {
+    //     const handleReload = (e) => {
+    //         e.preventDefault();
+    //         setShowModal(true);
+    //         return (e.returnValue = '');
+    //     };
+    //     window.addEventListener('beforeunload', handleReload);
+    //     return () => {
+    //         if (images.length > 0) handleDeleteImages.mutate(images);
+    //         console.log('out');
+    //         window.removeEventListener('beforeunload', handleReload);
+    //     };
+    // }, []);
+
+    const handelDeleteOneImage = (img) => {
+        handleDeleteImages.mutate([img]);
     };
 
-    useEffect(() => {
-        window.addEventListener('beforeunload', deleteURLImages);
-        return () => {
-            window.removeEventListener('beforeunload', deleteURLImages);
-        };
-    }, []);
-
-    useEffect(() => {
-        return () => {
-            gallery.forEach((img) => URL.revokeObjectURL(img.src));
-        };
-    }, [router]);
-
-    const handelDeleteImage = (name, src) => {
-        URL.revokeObjectURL(src);
-        setValue(
-            'images',
-            images.filter((img) => img.name !== name),
-        );
-        setValue(
-            'gallery',
-            gallery.filter((img) => img.name !== name),
-        );
-    };
     return (
-        <div className=" bg-white rounded-xl ">
+        <div className=" bg-white rounded-xl relative">
+            {handleDeleteImages.isLoading && <Loading />}
+            {showModal && <Modal>Do you want to leave this page?</Modal>}
             <div className="grid grid-cols-4 w-full">
                 <div className="col-span-1">
                     <label
@@ -85,14 +123,12 @@ const Upload = ({ id = '', label = '', type, placeholder = '' }) => {
                         <span>Maximum 9 photos.</span>
                     </label>
                     <input
-                        type={type}
+                        type="file"
                         id={id}
                         placeholder={placeholder}
-                        {...register('images', {
-                            onChange: (e) => {
-                                handleChange(e);
-                            },
-                        })}
+                        onChange={(e) => {
+                            handleChange(e);
+                        }}
                         className="hidden"
                         multiple
                         accept="image/png, image/jpeg, image/jpg"
@@ -113,12 +149,22 @@ const Upload = ({ id = '', label = '', type, placeholder = '' }) => {
                     </Badge>
                 </div>
             </div>
-            <ShowImage
-                gallery={gallery}
-                callback={(name, src) => {
-                    handelDeleteImage(name, src);
-                }}
-            />
+            <div className="flex gap-4 w-full flex-wrap justify-start items-start my-3 ">
+                <ShowImage
+                    gallery={images}
+                    callback={(img) => {
+                        handelDeleteOneImage(img);
+                    }}
+                />
+                {upload.isLoading &&
+                    lengthFile.map((_, index) => (
+                        <div
+                            key={index}
+                            className="h-[200px] w-[200px] rounded-md bg-slate-100 relative">
+                            {upload.isLoading && <Loading sizeProp={50} />}
+                        </div>
+                    ))}
+            </div>
         </div>
     );
 };

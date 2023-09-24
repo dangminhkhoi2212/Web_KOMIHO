@@ -42,8 +42,8 @@ const useApi = () => {
                         })
                     ).data;
 
-                    Cookies.set('accessToken', accessToken);
-                    Cookies.set('refreshToken', refreshToken);
+                    Cookies.set('accessToken', accessToken, { expires: 100 });
+                    Cookies.set('refreshToken', refreshToken, { expires: 100 });
 
                     config.headers['Authorization'] = `Bearer ${accessToken}`;
 

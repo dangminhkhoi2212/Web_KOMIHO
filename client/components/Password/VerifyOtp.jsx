@@ -6,10 +6,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Image from 'next/image';
 
 import VerifyCodeImg from '@/public/images/verify_code.svg';
-import { verifyOtp } from '@/services/password/otp.service';
+import { verifyOtp } from '@/services/otp.service';
 import Loading from '@/components/Loading';
 import TimeCountDown from './TimeCountDown';
-import { sendOtp } from '@/services/password/otp.service';
+import { sendOtp } from '@/services/otp.service';
 import { VscSend } from 'react-icons/vsc';
 import InputCustom from '@/components/InputCustom';
 import { otpSchema } from '@/utils/validation';

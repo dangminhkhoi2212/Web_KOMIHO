@@ -26,7 +26,6 @@ const ProductSchema = new Schema(
             },
         ],
         rating: { type: String },
-        type: { type: String, required: true },
         tags: { type: String },
         description: { type: String },
         images: [{ url: { type: String }, public_id: { type: String } }],

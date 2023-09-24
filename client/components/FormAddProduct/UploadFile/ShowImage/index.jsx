@@ -1,12 +1,13 @@
+import Loading from '@/components/Loading';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useEffect } from 'react';
 import { TiDeleteOutline } from 'react-icons/ti';
 
-const ShowImage = ({ gallery, callback }) => {
-    const handleCallback = (name, src) => {
+const ShowImage = ({ gallery = [], callback, isLoading }) => {
+    const handleCallback = (img) => {
         if (callback) {
-            callback(name, src);
+            callback(img);
         }
     };
 
@@ -14,31 +15,33 @@ const ShowImage = ({ gallery, callback }) => {
         return null; // Return early if there are no gallery
     }
     return (
-        <div className="flex gap-4 w-full flex-wrap justify-start items-start my-3 ">
+        <>
             {gallery.map((img, index) => {
                 return (
-                    <div className="flex flex-col items-center" key={img.name}>
+                    <div
+                        className="flex flex-col items-center relative"
+                        key={img.public_id}>
                         <div
                             className={clsx(
-                                'relative rounded-md overflow-hidden ring-2 ring-gray-100',
+                                'relative rounded-md overflow-hidden ring-2 ring-gray-100 h-[200px] w-[200px]',
                                 {
                                     'border-2 border-dashed border-accent':
                                         index === 0,
                                 },
                             )}>
                             <TiDeleteOutline
-                                className="absolute right-0 text-2xl text-white ring-1 m-2 cursor-pointer hover:bg-red-500 rounded-full"
+                                className="absolute right-0 text-2xl z-[2] text-white ring-1 m-2 cursor-pointer hover:bg-red-500 rounded-full"
                                 onClick={() => {
-                                    handleCallback(img.name, img.src);
+                                    handleCallback(img);
                                 }}
                             />
                             <Image
-                                src={img.src}
-                                width={0}
-                                height={0}
-                                alt={img.name}
+                                src={img.url}
+                                fill={true}
+                                alt={img.url}
                                 loading="lazy"
-                                className="rounded-md h-[200px] w-[200px]  object-center object-contain"
+                                sizes="(max-width: 768px) 100px, (max-width: 1200px) 200px"
+                                className="rounded-md z-[1]  object-center object-contain"
                             />
                         </div>
                         {index === 0 && (
@@ -47,7 +50,7 @@ const ShowImage = ({ gallery, callback }) => {
                     </div>
                 );
             })}
-        </div>
+        </>
     );
 };
 

@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import EmailImage from '@/public/images/enter_email.svg';
 import AccountTemplate from '@/components/Account/AccountTemplate';
 import Loading from '@/components/Loading';
-import { sendOtp } from '@/services/password/otp.service';
+import { sendOtp } from '@/services/otp.service';
 import { getEmail, getUser, getUserId } from '@/redux/selector';
 import VerifyOtp from '@/components/Password/VerifyOtp';
 import routes from '@/routes';

@@ -1,12 +1,13 @@
+import { memo } from 'react';
 import { HashLoader } from 'react-spinners';
 
 const Loading = ({ colorProp, sizeProp }) => {
     let color = colorProp || '#8fb3ff';
-    const size = sizeProp || 100;
+    const size = sizeProp || 80;
 
     return (
         <>
-            <div className="inset-0 absolute z-loading bg-black/10 opacity-50 rounded-md"></div>
+            <div className="inset-0 absolute z-backdrop bg-white/30 rounded-md backdrop-blur-sm"></div>
             <HashLoader
                 color={color}
                 loading={true}
@@ -27,4 +28,4 @@ const Loading = ({ colorProp, sizeProp }) => {
     );
 };
 
-export default Loading;
+export default memo(Loading);

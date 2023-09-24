@@ -38,57 +38,52 @@ const deleteOnCloudinary = async (userId) => {
     }
 };
 const addProduct = async (req, res, next) => {
-    const data = req.body;
     try {
-        const files = req.files;
+        var { userId, name, price, color, images, tags, description, store } =
+            req.body;
+        console.log(
+            '🚀 ~ file: product.controller.js:44 ~ addProduct ~ req.body:',
+            req.body,
+        );
 
-        if (files && files.length > 0) {
-            // Wait for all the file upload promises to resolve
-            const time = new Date().toISOString();
-            const uploadPromises = await Promise.all(
-                files.map((file) => {
-                    return uploadToCloudinary(
-                        file.path,
-                        'image',
-                        `komiho/users/${data.userId}/products/${data.name}-${time}`,
-                    );
-                }),
-            );
-            data.images = uploadPromises.map((image) => {
-                let result = {
-                    url: image.url,
-                    public_id: image.public_id,
-                };
-                return result;
-            });
-        }
-        if ('price' in data) {
-            data.price = JSON.parse(data.price);
-        }
-        if ('color' in data) {
-            data.color = JSON.parse(data.color);
-        }
+        // if (price) {
+        //     price = JSON.parse(price);
+        // }
+        // if (color) {
+        //     color = JSON.parse(color);
+        // }
+        // if (images) {
+        //     images = JSON.parse(images);
+        // }
 
-        await Product.create(data);
+        await Product.create({
+            userId,
+            name,
+            price,
+            color,
+            images,
+            tags,
+            description,
+            store,
+        });
 
-        res.send({ title: 'Add Product', status: 'success' });
+        res.send({ message: 'Add successfully', ok: true });
     } catch (error) {
+        console.log(
+            '🚀 ~ file: product.controller.js:72 ~ addProduct ~ error:',
+            error,
+        );
         next(
             new ApiError(
                 error.code || 500,
-                error.message || error.error.message,
+                error.message ||
+                    error.error.message ||
+                    'Server error while add product.',
             ),
         );
     }
 };
 
-const deleteProductOnCloudinary = async (public_id) => {
-    const path = public_id;
-    const index = path.lastIndexOf('/');
-    const folder = path.slice(0, index);
-    await deleteResources(folder);
-    await deleteFolder(folder);
-};
 const deleteProduct = async (req, res, next) => {
     try {
         const productId = req.params.productId;
@@ -96,11 +91,6 @@ const deleteProduct = async (req, res, next) => {
 
         if (!product) return next(new ApiError(405, 'Product not found'));
 
-        const path = product.images[0].public_id;
-        const index = path.lastIndexOf('/');
-        const folder = path.slice(0, index);
-        await deleteResources(folder);
-        await deleteFolder(folder);
         await Product.findByIdAndDelete(productId);
         res.json({
             title: `Delete product '${product.name}'`,
@@ -120,35 +110,16 @@ const deleteManyProducts = async (req, res, next) => {
     try {
         const ids = req.body.ids;
 
-        var folders = [];
         if (ids?.length > 0) {
             const manyProduct = await Product.find({ _id: { $in: ids } });
             if (manyProduct.length === 0)
                 return next(new ApiError('402', "List product don't find"));
-            const manyImages = manyProduct.map((product) => product.images);
 
-            manyImages.forEach((listImage) => {
-                const path = listImage[0].public_id;
-                const index = path.lastIndexOf('/');
-                const folder = path.slice(0, index);
-                folders.push(folder);
+            await Product.deleteMany({ _id: { $in: ids } });
+            return res.send({
+                title: `Deleted products have id ${ids}`,
+                ok: true,
             });
-
-            if (folders.length > 0) {
-                await Promise.all(
-                    folders.map(
-                        async (folder) => await deleteResources(folder),
-                    ),
-                );
-                await Promise.all(
-                    folders.map(async (folder) => await deleteFolder(folder)),
-                );
-                await Product.deleteMany({ _id: { $in: ids } });
-                return res.send({
-                    title: `Deleted products have id ${ids}`,
-                    ok: true,
-                });
-            }
         }
         return next(new ApiError(402, 'List products empty'));
     } catch (error) {
@@ -189,14 +160,14 @@ const getProductByUserId = async (req, res, next) => {
     try {
         const { userId } = req.params;
 
-        const { textSearch, type, price, store } = req.query;
+        const { textSearch, price, store } = req.query;
         const page = parseInt(req.query.page);
         const limit = parseInt(req.query.limit);
 
         const skip = (page - 1) * limit;
         console.log(
             '🚀 ~ file: product.controller.js:192 ~ getProductByUserId ~ textSearch, type, price, store:',
-            { textSearch, type, price, store },
+            { textSearch, price, store },
         );
 
         // Build the query conditions
@@ -213,10 +184,6 @@ const getProductByUserId = async (req, res, next) => {
                 { name: textSearch },
                 { tags: { $regex: textSearch, $options: 'i' } },
             ];
-        }
-
-        if (type) {
-            query.type = type;
         }
 
         // Build the sort options
@@ -249,10 +216,69 @@ const getProductByUserId = async (req, res, next) => {
         );
     }
 };
+
+export const getProductByProductId = async (req, res, next) => {
+    try {
+        const productId = req.params.productId;
+        const result = await Product.findById(productId);
+        res.send(result);
+    } catch (error) {
+        next(
+            new ApiError(
+                error.code || 500,
+                error.message || error.error.message || 'Can not find product',
+            ),
+        );
+    }
+};
+
+const updateProduct = async (req, res, next) => {
+    try {
+        const productId = req.params.productId;
+        const { name, price, store, images, color, tags, description } =
+            req.body;
+        console.log(
+            '🚀 ~ file: product.controller.js:281 ~ updateProduct ~ req.body:',
+            req.body.name,
+        );
+
+        const result = await Product.findByIdAndUpdate(
+            productId,
+            {
+                name,
+                price,
+                store,
+                images,
+                color,
+                tags,
+                description,
+            },
+            { new: true },
+        );
+        console.log(
+            '🚀 ~ file: product.controller.js:295 ~ updateProduct ~ result:',
+            result,
+        );
+
+        res.send({ message: 'Update successfully.', ok: true });
+    } catch (error) {
+        next(
+            new ApiError(
+                error.code || 500,
+                error.message ||
+                    error.error.message ||
+                    'Can not update this product',
+            ),
+        );
+    }
+};
+
 export default {
     addProduct,
     deleteProduct,
     deleteAllProducts,
     deleteManyProducts,
     getProductByUserId,
+    getProductByProductId,
+    updateProduct,
 };

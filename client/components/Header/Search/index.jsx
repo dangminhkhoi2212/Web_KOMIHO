@@ -13,15 +13,15 @@ const Search = ({ handleEvent }) => {
     return (
         <form
             onSubmit={handleSubmit(submit)}
-            className="flex flex-row rounded-ss-xl h-10 rounded-ee-xl overflow-hidden border border-slate-400">
+            className=" flex flex-row  h-10 my-2">
             <input
                 type="search"
-                className=" px-4 py-1 border-0  text-md border-transparent focus:border-transparent focus:ring-0 outline-none "
+                className=" px-4 py-1  text-md rounded-ss-xl  focus:border-accent focus:ring-0 border-2 border-slate-400 outline-none "
                 {...register('textSearch')}
                 placeholder="Search"
             />
             <button>
-                <TfiSearch className="bg-accent  h-10 flex-grow text-white  text-5xl px-3 " />
+                <TfiSearch className="bg-accent  h-10 flex-grow text-white  text-5xl px-3 rounded-ee-xl  " />
             </button>
         </form>
     );

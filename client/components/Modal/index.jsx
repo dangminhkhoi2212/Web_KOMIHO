@@ -2,7 +2,13 @@
 import { useState, memo } from 'react';
 import { Button, Checkbox, Label, Modal, TextInput } from 'flowbite-react';
 
-const FormElements = ({ label, showModel, handleEvent, children }) => {
+const FormElements = ({
+    label,
+    showModel,
+    handleEvent,
+    children,
+    size = 'md',
+}) => {
     const [openModal, setOpenModal] = useState(showModel || true);
     const props = { openModal, setOpenModal };
     const handleOnClose = () => {
@@ -12,8 +18,9 @@ const FormElements = ({ label, showModel, handleEvent, children }) => {
     return (
         <Modal
             show={props.openModal === true}
-            onClose={handleOnClose}
-            className="z-drop-down">
+            onClose={() => handleOnClose()}
+            size={size}
+            className="z-drop-down relative overflow-hidden">
             {label && <Modal.Header>{label}</Modal.Header>}
             <Modal.Body>{children}</Modal.Body>
         </Modal>

@@ -1,13 +1,17 @@
 'use client';
+import routes from '@/routes';
 import { formatPrice } from '@/utils/format';
 import clsx from 'clsx';
 import Image from 'next/image';
+import Link from 'next/link';
 import { FaStar } from 'react-icons/fa';
 
 const ProductCard = ({ product }) => {
     if (!product) return;
     return (
-        <div className="w-[200px] h-full rounded-md bg-white shadow-md hover:shadow-xl  transition-all duration-300 ease-in-out overflow-hidden relative">
+        <Link
+            href={routes.productDetail(product._id)}
+            className="w-[200px] h-full rounded-md bg-white shadow-md hover:shadow-xl  transition-all duration-300 ease-in-out overflow-hidden relative">
             {product?.price?.percent !== 0 && (
                 <span className="inline-block absolute top-0 z-container right-0 text-red-500  text-sm font-medium  bg-[#ffd839] px-2 py-1 rounded-bl-md">
                     {product?.price?.percent}% OFF
@@ -47,7 +51,7 @@ const ProductCard = ({ product }) => {
                 </div>
                 <span>{product?.sold} sold</span>
             </div>
-        </div>
+        </Link>
     );
 };
 

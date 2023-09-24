@@ -32,10 +32,10 @@ const LoginForm = () => {
                 return;
             }
             dispatch(setUser(data));
-            Cookies.set('accessToken', data.accessToken);
-            Cookies.set('refreshToken', data.refreshToken);
-            router.push(routes.home);
+            Cookies.set('accessToken', data.accessToken, { expires: 100 });
+            Cookies.set('refreshToken', data.refreshToken, { expires: 100 });
             toast.success('Login Success.');
+            router.push(routes.home);
         },
         onError(err) {
             toast.error(err?.response?.data?.message || 'Login Error');
