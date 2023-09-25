@@ -18,3 +18,8 @@ export const getTextSearchFilter = (state) => state.filterSearch.textSearch;
 export const getListDeletedImages = (state) => state.listDeletedImages.list;
 export const getAllowDeletedImages = (state) =>
     state.listDeletedImages.allowDeleted;
+// choose product to edit or delete
+export const getChooseProduct = (state) => state.chooseProduct.product;
+export const getChooseStatus = (state) => state.chooseProduct.status;
+// select products in table
+export const getSelectProductInTable = (state) => state.selectProductInTable;

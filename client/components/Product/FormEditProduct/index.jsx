@@ -12,35 +12,27 @@ import { addProduct, updateProduct } from '@/services/product.service';
 import { useDispatch, useSelector } from 'react-redux';
 import { getListDeletedImages, getUserId } from '@/redux/selector';
 
-const InputCustom = dynamic(() => import('@/components/InputCustom'));
-const Loading = dynamic(() => import('@/components/Loading'));
-const UploadFile = dynamic(() =>
-    import('@/components/Product/FormComponent/UploadFile'),
-);
-const Color = dynamic(() => import('@/components/Product/FormComponent/Color'));
-const Description = dynamic(() =>
-    import('@/components/Product/FormComponent/Description'),
-);
-const Price = dynamic(() => import('@/components/Product/FormComponent/Price'));
-const Tag = dynamic(() => import('@/components/Product/FormComponent/Tag'));
-const Name = dynamic(() => import('@/components/Product/FormComponent/Name'));
-const Modal = dynamic(() => import('@/components/Modal'));
+import Loading from '@/components/Loading';
+import UploadFile from '@/components/Product/FormComponent/UploadFile';
+import Color from '@/components/Product/FormComponent/Color';
+import Description from '@/components/Product/FormComponent/Description';
+import Price from '@/components/Product/FormComponent/Price';
+import Tag from '@/components/Product/FormComponent/Tag';
+import Name from '@/components/Product/FormComponent/Name';
+import Modal from '@/components/Modal';
 
 import { toast } from 'react-toastify';
-import { images } from '@/next.config';
 import { deleteImages } from '@/services/image.service';
 import {
     addDeletedImages,
     removeDeletedImages,
     resetListDeletedImages,
 } from '@/redux/listDeletedImages';
+import { removeChooseProduct } from '@/redux/chooseProductSlice';
 
-const FormAddProduct = ({ product }) => {
+const FormEditProduct = ({ product }) => {
     const listDeletedImages = useSelector(getListDeletedImages);
-    console.log(
-        '🚀 ~ file: index.jsx:31 ~ FormAddProduct ~ listDeletedImages:',
-        listDeletedImages,
-    );
+
     const [initValue, setInitValue] = useState({
         originImages: product.images || [],
         images: product.images || [],
@@ -53,10 +45,11 @@ const FormAddProduct = ({ product }) => {
         color: product.color || [
             { name: '', size: [{ type: '', quantity: '' }] },
         ],
+        store: 0,
         tags: product.tags || '',
         description:
             EditorState.createWithContent(stateFromHTML(product.description)) ||
-            '',
+            EditorState.createWithContent(stateFromHTML('')),
     });
     useEffect(() => {
         dispatch(resetListDeletedImages());
@@ -102,9 +95,11 @@ const FormAddProduct = ({ product }) => {
             dispatch(resetListDeletedImages());
         },
     });
-    const handleAddProduct = useMutation({
+    const addProductMutation = useMutation({
         mutationFn: (data) => {
-            return updateProduct(product._id, handleData(data));
+            const dataUpdate = handleData(data);
+
+            return updateProduct(product._id, dataUpdate);
         },
         onSuccess(data) {
             if (data.ok) {
@@ -114,10 +109,10 @@ const FormAddProduct = ({ product }) => {
                 toast.success('Update successfully');
 
                 queryClient.invalidateQueries(['products']);
+                dispatch(removeChooseProduct());
             }
         },
         onError(error) {
-            console.log('🚀 ~ file: index.jsx:97 ~ onError ~ error:', error);
             toast.error(
                 'Update product failure. Please reload the page and try again',
             );
@@ -128,36 +123,38 @@ const FormAddProduct = ({ product }) => {
         const originImages = getValues('originImages');
         const images = getValues('images');
         // listDeleted use to save list deleted images while case list deleted images don't update in time
-        var listDeleted = listDeletedImages || [];
-        console.log(
-            '🚀 ~ file: index.jsx:125 ~ handleDeleteImages ~ listDeleted:',
-            listDeleted,
-        );
-        originImages.forEach((origin) => {
-            const check = images.some(
-                (img) => img.public_id !== origin.public_id,
-            );
-            //if old image don't exist in new images
-            // put it into list deleted images
-            if (!check) {
-                dispatch(addDeletedImages(origin));
-                listDeleted.push(origin);
-            }
-        });
+        var listDeleted = Array.from(listDeletedImages) || [];
 
-        listDeletedImages.forEach((deletedImage) => {
-            const check = images.some(
-                (img) => img.public_id === deletedImage.public_id,
-            );
-            // if list deleted images exist in new images
-            // remove it from list deleted images
-            if (check) {
-                dispatch(removeDeletedImages(deletedImage));
-                listDeleted = listDeleted.filter(
-                    (img) => img.public_id !== deletedImage.public_id,
+        if (originImages.length)
+            originImages.forEach((origin) => {
+                const check = images.some(
+                    (img) => img.public_id !== origin.public_id,
                 );
-            }
-        });
+                //if old image don't exist in new images
+                // put it into list deleted images
+                console.log(
+                    '🚀 ~ file: index.jsx:144 ~ originImages.forEach ~ check:',
+                    check,
+                );
+                if (!check) {
+                    dispatch(addDeletedImages(origin));
+                    listDeleted = [...listDeleted, origin];
+                }
+            });
+        if (listDeletedImages.length)
+            listDeletedImages.forEach((deletedImage) => {
+                const check = images.some(
+                    (img) => img.public_id === deletedImage.public_id,
+                );
+                // if list deleted images exist in new images
+                // remove it from list deleted images
+                if (check) {
+                    dispatch(removeDeletedImages(deletedImage));
+                    listDeleted = listDeleted.filter(
+                        (img) => img.public_id !== deletedImage.public_id,
+                    );
+                }
+            });
 
         deleteImagesMutation.mutate(listDeleted);
     };
@@ -165,10 +162,12 @@ const FormAddProduct = ({ product }) => {
     return (
         <FormProvider {...methods}>
             <form
-                onSubmit={handleSubmit((data) => handleAddProduct.mutate(data))}
+                onSubmit={handleSubmit((data) =>
+                    addProductMutation.mutate(data),
+                )}
                 className="p-5 relative overflow-hidden rounded-md">
-                {handleAddProduct.isLoading && (
-                    <Modal showModel={handleAddProduct.isLoading}>
+                {addProductMutation.isLoading && (
+                    <Modal showModel={addProductMutation.isLoading}>
                         <div className="w-20 h-20 flex flex-col justify-center items-center">
                             <Loading sizeProp={80} />
                         </div>
@@ -194,4 +193,4 @@ const FormAddProduct = ({ product }) => {
     );
 };
 
-export default FormAddProduct;
+export default FormEditProduct;

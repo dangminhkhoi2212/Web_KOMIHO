@@ -22,6 +22,7 @@ const Price = () => {
                 price = origin * (1 - percent / 100);
             } else price = origin;
         }
+        price = Math.ceil(price);
         setValue('price.final', price);
     };
     return (

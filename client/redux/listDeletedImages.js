@@ -9,15 +9,20 @@ const listDeletedImages = createSlice({
     reducers: {
         addDeletedImages: (state, action) => {
             const image = action.payload;
-            if (Object.entries(image).length !== 0) {
-                const check = state.list.some(
+            console.log(
+                '🚀 ~ file: listDeletedImages.js:12 ~ image: add',
+                image,
+            );
+            if (image.url && image.public_id) {
+                const isAlreadyInList = state.list.some(
                     (img) => img.public_id === image.public_id,
                 );
-                if (!check)
+                if (!isAlreadyInList) {
                     state.list.push({
                         url: image.url,
                         public_id: image.public_id,
                     });
+                }
             }
         },
         removeDeletedImages: (state, action) => {

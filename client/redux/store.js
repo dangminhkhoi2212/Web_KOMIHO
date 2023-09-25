@@ -14,6 +14,9 @@ import userReducer from '@/components/Auth/authSlice';
 import recoverAccountReducer from '@/components/RecoverAccount/recoverAccountSlice';
 import filterSearchReducer from './filterSearchSlice';
 import listDeletedImagesReducer from './listDeletedImages';
+import chooseProductReducer from './chooseProductSlice';
+import selectProductInTableReducer from './selectProductInTable';
+
 const persistConfig = {
     key: 'user',
     version: 1,
@@ -28,6 +31,8 @@ const store = configureStore({
         recoverAccount: recoverAccountReducer,
         filterSearch: filterSearchReducer,
         listDeletedImages: listDeletedImagesReducer,
+        chooseProduct: chooseProductReducer,
+        selectProductInTable: selectProductInTableReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

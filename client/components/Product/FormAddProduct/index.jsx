@@ -16,23 +16,10 @@ import {
     getUserId,
 } from '@/redux/selector';
 
-// const Loading = dynamic(() => import('@/components/Loading'));
-// const UploadFile = dynamic(() =>
-//     import('@/components/Product/FormComponent/UploadFile'),
-// );
-// const Color = dynamic(() => import('@/components/Product/FormComponent/Color'));
-const Description = dynamic(
-    () => import('@/components/Product/FormComponent/Description'),
-    { ssr: false },
-);
-// const Price = dynamic(() => import('@/components/Product/FormComponent/Price'));
-// const Tag = dynamic(() => import('@/components/Product/FormComponent/Tag'));
-// const Name = dynamic(() => import('@/components/Product/FormComponent/Name'));
-// const Modal = dynamic(() => import('@/components/Modal'));
 import Loading from '@/components/Loading';
 import UploadFile from '@/components/Product/FormComponent/UploadFile';
 import Color from '@/components/Product/FormComponent/Color';
-// import Description from '@/components/Product/FormComponent/Description';
+import Description from '@/components/Product/FormComponent/Description';
 import Price from '@/components/Product/FormComponent/Price';
 import Tag from '@/components/Product/FormComponent/Tag';
 import Name from '@/components/Product/FormComponent/Name';
@@ -116,7 +103,7 @@ const FormAddProduct = () => {
             if (data.ok) {
                 window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
                 handleDeleteImages();
-
+                reset(initValue);
                 toast.success('Add product successfully');
 
                 queryClient.invalidateQueries(['products']);
@@ -134,50 +121,42 @@ const FormAddProduct = () => {
         const originImages = getValues('originImages');
         const images = getValues('images');
         // listDeleted use to save list deleted images while case list deleted images don't update in time
-        var listDeleted = listDeletedImages || [];
+        var listDeleted = Array.from(listDeletedImages) || [];
 
-        originImages.forEach((origin) => {
-            const check = images.some(
-                (img) => img.public_id !== origin.public_id,
-            );
-            //if old image don't exist in new images
-            // put it into list deleted images
-            if (!check) {
-                dispatch(addDeletedImages(origin));
-                listDeleted.push(origin);
-            }
-        });
-
-        listDeletedImages.forEach((deletedImage) => {
-            const check = images.some(
-                (img) => img.public_id === deletedImage.public_id,
-            );
-            // if list deleted images exist in new images
-            // remove it from list deleted images
-            if (check) {
-                dispatch(removeDeletedImages(deletedImage));
-                listDeleted = listDeleted.filter(
-                    (img) => img.public_id !== deletedImage.public_id,
+        if (originImages.length)
+            originImages.forEach((origin) => {
+                const check = images.some(
+                    (img) => img.public_id !== origin.public_id,
                 );
-            }
-        });
+                //if old image don't exist in new images
+                // put it into list deleted images
+                console.log(
+                    '🚀 ~ file: index.jsx:144 ~ originImages.forEach ~ check:',
+                    check,
+                );
+                if (!check) {
+                    dispatch(addDeletedImages(origin));
+                    listDeleted = [...listDeleted, origin];
+                }
+            });
+        if (listDeletedImages.length)
+            listDeletedImages.forEach((deletedImage) => {
+                const check = images.some(
+                    (img) => img.public_id === deletedImage.public_id,
+                );
+                // if list deleted images exist in new images
+                // remove it from list deleted images
+                if (check) {
+                    dispatch(removeDeletedImages(deletedImage));
+                    listDeleted = listDeleted.filter(
+                        (img) => img.public_id !== deletedImage.public_id,
+                    );
+                }
+            });
 
         deleteImagesMutation.mutate(listDeleted);
     };
     const allowDeleted = useSelector(getAllowDeletedImages);
-    console.log(
-        '🚀 ~ file: index.jsx:162 ~ return ~ allowDeleted:',
-        allowDeleted,
-    );
-    console.log(
-        '🚀 ~ file: index.jsx:164 ~ return ~ listDeletedImages:',
-        listDeletedImages,
-    );
-    const alertUser = () => {
-        const reload = confirm('HELLO');
-        console.log('🚀 ~ file: index.jsx:169 ~ alertUser ~ reload:', reload);
-        return reload;
-    };
 
     window.onbeforeunload = () => {
         if (allowDeleted) {
