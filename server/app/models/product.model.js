@@ -10,10 +10,10 @@ const ProductSchema = new Schema(
             percent: { type: Number, default: 0 },
             final: { type: Number, required: true, default: 0 },
         },
-        color: [
+        colors: [
             {
                 name: { type: String, required: true },
-                size: [
+                sizes: [
                     {
                         type: { type: String, required: true },
                         quantity: {
@@ -35,7 +35,6 @@ const ProductSchema = new Schema(
     },
     {
         timestamps: true,
-        versionKey: false,
     },
 );
 const Product = mongoose.model('Product', ProductSchema);

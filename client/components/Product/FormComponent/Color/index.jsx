@@ -18,7 +18,7 @@ const FormColor = () => {
     } = useFormContext();
     const { fields, append, remove, move } = useFieldArray({
         control,
-        name: 'color',
+        name: 'colors',
     });
 
     const [indexForm, setIndexForm] = useState(fields.length);
@@ -50,7 +50,7 @@ const FormColor = () => {
                     onClick={() => {
                         append({
                             name: '',
-                            size: [{ type: '', quantity: '' }],
+                            sizes: [{ type: '', quantity: '' }],
                         });
                     }}
                 />
@@ -78,10 +78,10 @@ const FormColor = () => {
                                 <div className=" w-1/3 ">
                                     <Controller
                                         control={control}
-                                        name={`color.${index}.name`}
+                                        name={`colors.${index}.name`}
                                         render={({ field }) => (
                                             <InputCustom
-                                                id={`color.${item.id}`}
+                                                id={`colors.${item.id}`}
                                                 label={'Color Name'}
                                                 placeholder={'Product colors '}
                                                 onFocus={() => {
@@ -95,14 +95,14 @@ const FormColor = () => {
                                                 }}
                                                 helperText={
                                                     errors &&
-                                                    errors.color &&
-                                                    errors?.color[index]?.name
+                                                    errors.colors &&
+                                                    errors?.colors[index]?.name
                                                         ?.message
                                                 }
                                                 color={
                                                     errors &&
-                                                    errors.color &&
-                                                    errors.color[index]?.name
+                                                    errors.colors &&
+                                                    errors.colors[index]?.name
                                                         ?.message
                                                         ? 'failure'
                                                         : 'gray'
@@ -115,7 +115,7 @@ const FormColor = () => {
                                 <SizeAndQuantity
                                     indexColor={index}
                                     focusColor={index === indexForm}
-                                    color={fields}
+                                    colors={fields}
                                 />
                             </div>
                             {fields.length > 1 && (

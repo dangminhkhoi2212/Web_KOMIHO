@@ -39,28 +39,18 @@ const deleteOnCloudinary = async (userId) => {
 };
 const addProduct = async (req, res, next) => {
     try {
-        var { userId, name, price, color, images, tags, description, store } =
+        var { name, userId, price, colors, images, tags, description, store } =
             req.body;
         console.log(
             '🚀 ~ file: product.controller.js:44 ~ addProduct ~ req.body:',
             req.body,
         );
 
-        // if (price) {
-        //     price = JSON.parse(price);
-        // }
-        // if (color) {
-        //     color = JSON.parse(color);
-        // }
-        // if (images) {
-        //     images = JSON.parse(images);
-        // }
-
         await Product.create({
-            userId,
             name,
+            userId,
             price,
-            color,
+            colors,
             images,
             tags,
             description,
@@ -69,10 +59,6 @@ const addProduct = async (req, res, next) => {
 
         res.send({ message: 'Add successfully', ok: true });
     } catch (error) {
-        console.log(
-            '🚀 ~ file: product.controller.js:72 ~ addProduct ~ error:',
-            error,
-        );
         next(
             new ApiError(
                 error.code || 500,
@@ -156,19 +142,18 @@ const deleteAllProducts = async (req, res, next) => {
         );
     }
 };
-const getProductByUserId = async (req, res, next) => {
-    try {
-        const { userId } = req.params;
 
-        const { textSearch, price, store } = req.query;
-        const page = parseInt(req.query.page);
-        const limit = parseInt(req.query.limit);
+const getProducts = async (req, res, next) => {
+    try {
+        const { userId, textSearch, price, store } = req.query;
+        console.log(
+            '🚀 ~ file: product.controller.js:143 ~ getProducts ~ userId, textSearch, price, store:',
+            { userId, textSearch, price, store },
+        );
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 50;
 
         const skip = (page - 1) * limit;
-        console.log(
-            '🚀 ~ file: product.controller.js:192 ~ getProductByUserId ~ textSearch, type, price, store:',
-            { textSearch, price, store },
-        );
 
         // Build the query conditions
         const query = {
@@ -189,13 +174,13 @@ const getProductByUserId = async (req, res, next) => {
         // Build the sort options
         const sortOptions = {};
 
-        if (price) {
-            sortOptions['price.final'] = price === 'asc' ? 1 : -1;
-        } else if (store) {
-            sortOptions.store = store === 'asc' ? 1 : -1;
-        } else {
-            sortOptions.createdAt = -1;
-        }
+        // if (price) {
+        //     sortOptions['price.final'] = price === 'asc' ? 1 : -1;
+        // } else if (store) {
+        //     sortOptions.store = store === 'asc' ? 1 : -1;
+        // } else {
+        //     sortOptions.createdAt = -1;
+        // }
 
         // Find products with the constructed query and sort options
         const [products, total] = await Promise.all([
@@ -235,7 +220,7 @@ export const getProductByProductId = async (req, res, next) => {
 const updateProduct = async (req, res, next) => {
     try {
         const productId = req.params.productId;
-        const { name, price, store, images, color, tags, description } =
+        const { name, price, store, images, colors, tags, description } =
             req.body;
         console.log(
             '🚀 ~ file: product.controller.js:281 ~ updateProduct ~ req.body:',
@@ -249,7 +234,7 @@ const updateProduct = async (req, res, next) => {
                 price,
                 store,
                 images,
-                color,
+                colors,
                 tags,
                 description,
             },
@@ -278,7 +263,7 @@ export default {
     deleteProduct,
     deleteAllProducts,
     deleteManyProducts,
-    getProductByUserId,
+    getProducts,
     getProductByProductId,
     updateProduct,
 };

@@ -17,10 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const ShowImage = ({ gallery = [] }) => {
     const allowDeleted = useSelector(getAllowDeletedImages);
-    console.log(
-        '🚀 ~ file: index.jsx:20 ~ ShowImage ~ allowDeleted:',
-        allowDeleted,
-    );
+
     const dispatch = useDispatch();
     const { control, setValue } = useFormContext();
 
@@ -44,10 +41,6 @@ const ShowImage = ({ gallery = [] }) => {
     });
 
     useEffect(() => {
-        // const checkInImages = originImages.some(
-        //     (img) => img.public_id === deletedImage.public_id,
-        // );
-        // if (checkInImages) {
         setValue(
             'images',
             images.filter(
@@ -55,7 +48,6 @@ const ShowImage = ({ gallery = [] }) => {
             ),
         );
         dispatch(addDeletedImages(deletedImage));
-        // } else deleteImagesMutation.mutate([deletedImage]);
     }, [deletedImage]);
 
     if (!gallery || gallery.length === 0) {

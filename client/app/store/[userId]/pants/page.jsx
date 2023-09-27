@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import ProductCard from '@/components/Store/ProductCard';
-import { getProductsByUserId } from '@/services/product.service';
+import { getProducts } from '@/services/product.service';
 import { IoAddOutline } from 'react-icons/io5';
 import Link from 'next/link';
 import routes from '@/routes';
@@ -10,7 +10,7 @@ const All = ({ params }) => {
     const getProducts = useQuery({
         queryKey: ['store-all'],
         queryFn: () => {
-            return getProductsByUserId({
+            return getProducts({
                 userId: params.userId,
                 type: 'pants',
             });

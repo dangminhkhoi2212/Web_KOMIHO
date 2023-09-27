@@ -20,7 +20,7 @@ const Loading = ({ colorProp, sizeProp }) => {
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
                     opacity: 1,
-                    zIndex: 60,
+                    zIndex: 2000,
                 }}
                 speedMultiplier={1.6}
             />

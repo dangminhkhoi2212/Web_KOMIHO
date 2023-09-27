@@ -7,17 +7,17 @@ export const addProduct = async (data) => {
 export const updateProduct = async (productId, data) => {
     return (await api.put(`/product/update/${productId}`, data)).data;
 };
-export const getProductsByUserId = async ({
+export const getProducts = async ({
     userId = '',
     page = 1,
-    limit = 5,
+    limit = 50,
     textSearch = '',
     price = '',
     store = '',
 }) => {
     return (
         await api.get(
-            `/product/get-by-userId/${userId}?page=${page}&limit=${limit}&textSearch=${textSearch}&price=${price}&store=${store}`,
+            `/product?userId=${userId}&page=${page}&limit=${limit}&textSearch=${textSearch}&price=${price}&store=${store}`,
         )
     ).data;
 };

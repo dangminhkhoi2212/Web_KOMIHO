@@ -22,11 +22,12 @@ module.exports = {
                 carousel: '600px',
             },
             zIndex: {
-                header: '100',
-                'drop-down': '1000',
+                header: '1000',
+                'drop-down': '1500',
                 container: '50',
                 loading: '2000',
                 alert: '5000',
+                backdrop: '1600',
             },
             colors: {
                 border: '#2954AD',
@@ -40,7 +41,7 @@ module.exports = {
                     foreground: 'hsl(var(--primary-foreground))',
                 },
                 secondary: {
-                    DEFAULT: '#d9ecff',
+                    DEFAULT: '#CEEFFD',
                     foreground: 'hsl(var(--secondary-foreground))',
                 },
                 destructive: {

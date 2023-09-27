@@ -1,29 +1,22 @@
 'use client';
-import { memo, useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import ShowImage from './ShowImage';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
 
 import { Badge } from 'flowbite-react';
 import { useMutation } from '@tanstack/react-query';
-import { uploadImages, deleteImages } from '@/services/image.service';
+import { uploadImages } from '@/services/image.service';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    getAllowDeletedImages,
-    getListDeletedImages,
-    getUserId,
-} from '@/redux/selector';
+import { getAllowDeletedImages, getUserId } from '@/redux/selector';
 import { toast } from 'react-toastify';
 import Loading from '@/components/Loading';
-import Modal from '@/components/Modal';
 import {
     addDeletedImages,
     removeDeletedImages,
     setAllowDeleted,
 } from '@/redux/listDeletedImages';
 const Upload = ({ id = '', label = '', placeholder = '' }) => {
-    const router = useRouter();
     const dispatch = useDispatch();
     const userId = useSelector(getUserId);
     const {
@@ -34,9 +27,7 @@ const Upload = ({ id = '', label = '', placeholder = '' }) => {
     } = useFormContext();
 
     const images = useWatch({ control, name: 'images' });
-    console.log('🚀 ~ file: index.jsx:27 ~ Upload ~ images:', images);
     const [lengthFile, setLengthFile] = useState([]);
-    const listDeletedImages = useSelector(getListDeletedImages);
     const allowDeleted = useSelector(getAllowDeletedImages);
     const upload = useMutation({
         mutationFn: (data) => {
@@ -49,7 +40,6 @@ const Upload = ({ id = '', label = '', placeholder = '' }) => {
             setValue('images', [...images, ...data]);
         },
         onError(error) {
-            console.log('🚀 ~ file: index.jsx:34 ~ Upload ~ error:', error);
             toast.error('Can not upload this images. Please try again.');
         },
     });

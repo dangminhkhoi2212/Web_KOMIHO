@@ -5,35 +5,31 @@ import dynamic from 'next/dynamic';
 import {
     getChooseProduct,
     getChooseStatus,
-    getFilter,
     getLimitFilter,
     getPageFilter,
     getPriceFilter,
     getSelectProductInTable,
     getStoreFilter,
+    getTextSearchFilter,
     getUserId,
 } from '@/redux/selector';
 import {
     deleteManyProducts,
     deleteProduct,
-    getProductsByUserId,
+    getProducts,
 } from '@/services/product.service';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { IoAddOutline } from 'react-icons/io5';
-import { Button } from 'flowbite-react';
+import { BiRefresh } from 'react-icons/bi';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-const ProductTemplate = dynamic(() =>
-    import('@/components/Product/ProductTemplateTable'),
-);
 
-const AccountTemplate = dynamic(() =>
-    import('@/components/Account/AccountTemplate'),
-);
+import AccountTemplate from '@/components/Account/AccountTemplate';
 const Loading = dynamic(() => import('@/components/Loading'));
 const Modal = dynamic(() => import('@/components/Modal'));
+import ButtonModal from '@/components/Modal/ButtonModal';
 
 import { Payment, columns } from '@/components/Shadcn/Table/columns';
 import { DataTable } from '@/components/Shadcn/Table/data-table';
@@ -42,16 +38,17 @@ import FormEditProduct from '@/components/Product/FormEditProduct';
 import Image from 'next/image';
 import { removeChooseProduct } from '@/redux/chooseProductSlice';
 import { resetSelectProductInTable } from '@/redux/selectProductInTable';
+import Search from '@/components/Header/Search';
+import { setTextSearch } from '@/redux/filterSearchSlice';
 const AllProduct = () => {
     const userId = useSelector(getUserId);
     const queryClient = useQueryClient();
-    const [showModal, setShowModal] = useState(false);
-    const [listChose, setListChose] = useState([]);
 
     const price = useSelector(getPriceFilter);
     const store = useSelector(getStoreFilter);
     const page = useSelector(getPageFilter);
     const limit = useSelector(getLimitFilter);
+    const textSearch = useSelector(getTextSearchFilter);
 
     const chooseProduct = useSelector(getChooseProduct);
     const chooseStatus = useSelector(getChooseStatus);
@@ -59,12 +56,16 @@ const AllProduct = () => {
     const [modalDeleteMany, setShowModalDeleteMany] = useState(false);
     const dispatch = useDispatch();
 
-    const getProducts = useQuery({
-        queryKey: ['products'],
+    const getProductsMutation = useQuery({
+        queryKey: [
+            'products',
+            { userId, price, textSearch, store, page, limit },
+        ],
         queryFn: () => {
-            return getProductsByUserId({
+            return getProducts({
                 userId,
                 price,
+                textSearch,
                 store,
                 page,
                 limit,
@@ -73,22 +74,13 @@ const AllProduct = () => {
         refetchOnWindowFocus: false,
     });
 
-    const handleDeleteProduct = useMutation({
-        mutationKey: ['products'],
-        mutationFn: (productId) => {
-            return deleteProduct(productId);
-        },
-        onSuccess(data) {
-            if (data.status == 'success') {
-                toast.success('Product deleted successfully.');
-                setShowModal(false);
-                queryClient.invalidateQueries(['products']);
-            }
-        },
-        onError(error) {
-            toast.error('Product delete failed. Please try again.');
-        },
-    });
+    useEffect(() => {
+        console.log(
+            '🚀 ~ file: page.jsx:78 ~ AllProduct ~ textSearch:',
+            textSearch,
+        );
+        queryClient.invalidateQueries(['products']);
+    }, [textSearch]);
 
     const deleteManyProductsMutation = useMutation({
         mutationFn: (productIds) => {
@@ -118,11 +110,20 @@ const AllProduct = () => {
     const handleButtonDeleteMany = () => {
         if (!selectProductInTable.length) {
             toast.warning('You do not choose product.');
+            setShowModalDeleteMany(false);
             return;
         }
         deleteManyProductsMutation.mutate(selectProductInTable);
     };
-    const dataTable = getProducts?.data?.products;
+
+    const handleSearch = ({ textSearch }) => {
+        dispatch(setTextSearch(textSearch));
+    };
+
+    const handleRefresh = () => {
+        dispatch(setTextSearch(''));
+    };
+    const dataTable = getProductsMutation?.data?.products;
     if (!dataTable) return;
     return (
         <AccountTemplate
@@ -132,7 +133,11 @@ const AllProduct = () => {
                 <div className="flex gap-5">
                     <button
                         onClick={() => {
-                            setShowModalDeleteMany(true);
+                            if (!selectProductInTable.length) {
+                                toast.warning(
+                                    'You have not selected any product yet.',
+                                );
+                            } else setShowModalDeleteMany(true);
                         }}
                         className="flex gap-3 px-2 py-1 border-2 border-solid border-secondary items-center hover:bg-red-200 hover:border-red-200 rounded-full shadow-md">
                         <span className="text-sm">Delete many</span>
@@ -146,48 +151,6 @@ const AllProduct = () => {
                     </Link>
                 </div>
             }>
-            {/* //     {(handleDeleteProduct.isLoading ||
-        //         getProducts.isLoading ||
-        //         getProducts.isFetching ||
-        //         deleteManyProductsMutation.isLoading) && <Loading />}
-
-        //     {showModal && (
-        //         <Modal
-        //             label={'DELETE MANY'}
-        //             handleEvent={() => setShowModal(false)}>
-        //             {deleteManyProductsMutation.isLoading && (
-        //                 <Loading sizeProp={60} />
-        //             )}
-        //             <div className="text-center">
-        //                 <h3 className=" my-2">
-        //                     <span>
-        //                         Do you want to delete products you have
-        //                         selected?{' '}
-        //                     </span>
-        //                 </h3>
-        //                 <div className="flex justify-center gap-4">
-        //                     <Button
-        //                         color="failure"
-        //                         onClick={() => {
-        //                             deleteManyProductsMutation.mutate(listChose);
-        //                         }}>
-        //                         Yes, I'm sure
-        //                     </Button>
-        //                     <Button
-        //                         color="gray"
-        //                         onClick={() => setShowModal(false)}>
-        //                         No, cancel
-        //                     </Button>
-        //                 </div>
-        //             </div>
-        //         </Modal>
-        //     )}
-        //     {getProducts.data?.products && (
-        //         <ProductTemplate
-        //             listChose={listChose}
-        //             setListChose={setListChose}
-        //         />
-        //     )} */}
             {chooseProduct && chooseStatus === 'edit' && (
                 <Modal
                     label={'UPDATE'}
@@ -198,6 +161,9 @@ const AllProduct = () => {
             )}
             {chooseProduct && chooseStatus === 'delete' && (
                 <Modal label={'UPDATE'} handleEvent={() => handleCancel()}>
+                    {deleteManyProductsMutation.isLoading && (
+                        <Loading sizeProp={60} />
+                    )}
                     <div className="flex flex-col gap-3 justify-center items-center">
                         <h1>Do you want delete this product?</h1>
                         <div className="flex gap-3 items-center">
@@ -210,25 +176,30 @@ const AllProduct = () => {
                                     className="object-contain object-center rounded-md ring-1"
                                 />
                             </div>
-                            <span>{chooseProduct.name}</span>
+                            <span className="max-w-[200px]">
+                                {chooseProduct.name}
+                            </span>
                         </div>
-                        <div className="flex justify-center gap-4">
-                            <Button
-                                color="failure"
-                                onClick={() => {
-                                    deleteManyProductsMutation.mutate([
-                                        chooseProduct._id,
-                                    ]);
-                                }}>
-                                Yes, I'm sure
-                            </Button>
-                            <Button color="gray" onClick={() => handleCancel()}>
-                                No, cancel
-                            </Button>
-                        </div>
+
+                        <ButtonModal
+                            handleYes={() => {
+                                deleteManyProductsMutation.mutate([
+                                    chooseProduct._id,
+                                ]);
+                            }}
+                            handleNo={() => handleCancel()}
+                        />
                     </div>
                 </Modal>
             )}
+            <div className="flex justify-between items-center">
+                <button
+                    className="p-1 rounded-full bg-accent"
+                    onClick={() => handleRefresh()}>
+                    <BiRefresh className="text-2xl text-white" />
+                </button>
+                <Search handleEvent={(data) => handleSearch(data)} />
+            </div>
             {modalDeleteMany && (
                 <Modal
                     label={'DELETE MANY'}
@@ -238,26 +209,18 @@ const AllProduct = () => {
                             Do you want delete {selectProductInTable.length}{' '}
                             products ?
                         </h1>
-                        <div className="flex justify-center gap-4">
-                            <Button
-                                color="failure"
-                                onClick={() => {
-                                    handleButtonDeleteMany();
-                                }}>
-                                Yes, I'm sure
-                            </Button>
-                            <Button
-                                color="gray"
-                                onClick={() => {
-                                    setShowModalDeleteMany(false);
-                                }}>
-                                No, cancel
-                            </Button>
-                        </div>
+                        <ButtonModal
+                            handleYes={() => {
+                                handleButtonDeleteMany();
+                            }}
+                            handleNo={() => {
+                                setShowModalDeleteMany(false);
+                            }}
+                        />
                     </div>
                 </Modal>
             )}
-            <div className="container mx-auto">
+            <div className="">
                 <DataTable columns={columns} data={dataTable} />
             </div>
         </AccountTemplate>

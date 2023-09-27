@@ -22,6 +22,7 @@ const ProductCard = ({ product }) => {
                     src={product?.images[0]?.url}
                     alt={product?.name}
                     fill={true}
+                    sizes="200px"
                     className="object-cover object-center"
                 />
             </div>

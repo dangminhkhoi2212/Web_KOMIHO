@@ -8,8 +8,8 @@ import { BiDownArrowAlt, BiUpArrowAlt, BiReset } from 'react-icons/bi';
 
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import clsx from 'clsx';
-const FormSizeAndQuanitity = ({ indexColor, focusColor, color }) => {
-    const positionColor = `color.${indexColor}`;
+const FormSizeAndQuanitity = ({ indexColor, focusColor, colors }) => {
+    const positionColor = `colors.${indexColor}`;
 
     const {
         control,
@@ -20,7 +20,7 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, color }) => {
 
     const { fields, append, remove, move } = useFieldArray({
         control,
-        name: `${positionColor}.size`,
+        name: `${positionColor}.sizes`,
     });
     const [indexForm, setIndexForm] = useState(fields.length);
 
@@ -58,11 +58,11 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, color }) => {
                     icon={BiReset}
                     onClick={() =>
                         reset({
-                            color: color.map((color, index) => {
+                            colors: colors.map((color, index) => {
                                 if (index === indexColor) {
                                     return {
                                         ...color,
-                                        size: [
+                                        sizes: [
                                             {
                                                 type: '',
                                                 quantity: '',
@@ -92,7 +92,7 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, color }) => {
                         onClick={() => handleFocus(index)}>
                         <div className="col-span-1 flex">
                             <Controller
-                                name={`${positionColor}.size.${index}.type`}
+                                name={`${positionColor}.sizes.${index}.type`}
                                 control={control}
                                 render={({ field }) => (
                                     <InputCustom
@@ -107,19 +107,19 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, color }) => {
                                         }}
                                         helperText={
                                             errors &&
-                                            errors.color &&
-                                            errors.color[indexColor] &&
-                                            errors.color[indexColor].size &&
-                                            errors.color[indexColor]?.size[
+                                            errors.colors &&
+                                            errors.colors[indexColor] &&
+                                            errors.colors[indexColor].sizes &&
+                                            errors.colors[indexColor]?.sizes[
                                                 index
                                             ]?.type?.message
                                         }
                                         color={
                                             errors &&
-                                            errors.color &&
-                                            errors.color[indexColor] &&
-                                            errors.color[indexColor].size &&
-                                            errors.color[indexColor]?.size[
+                                            errors.colors &&
+                                            errors.colors[indexColor] &&
+                                            errors.colors[indexColor].sizes &&
+                                            errors.colors[indexColor]?.sizes[
                                                 index
                                             ]?.type?.message
                                                 ? 'failure'
@@ -131,7 +131,7 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, color }) => {
                         </div>
                         <div className="flex flex-col items-center">
                             <Controller
-                                name={`${positionColor}.size.${index}.quantity`}
+                                name={`${positionColor}.sizes.${index}.quantity`}
                                 control={control}
                                 render={({ field }) => (
                                     <InputCustom
@@ -147,19 +147,19 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, color }) => {
                                         }}
                                         helperText={
                                             errors &&
-                                            errors.color &&
-                                            errors.color[indexColor] &&
-                                            errors.color[indexColor].size &&
-                                            errors.color[indexColor]?.size[
+                                            errors.colors &&
+                                            errors.colors[indexColor] &&
+                                            errors.colors[indexColor].sizes &&
+                                            errors.colors[indexColor]?.sizes[
                                                 index
                                             ]?.quantity?.message
                                         }
                                         color={
                                             errors &&
-                                            errors.color &&
-                                            errors.color[indexColor] &&
-                                            errors.color[indexColor].size &&
-                                            errors.color[indexColor]?.size[
+                                            errors.colors &&
+                                            errors.colors[indexColor] &&
+                                            errors.colors[indexColor].sizes &&
+                                            errors.colors[indexColor]?.sizes[
                                                 index
                                             ]?.quantity?.message
                                                 ? 'failure'

@@ -22,7 +22,7 @@ const FormElements = ({
             size={size}
             className="z-drop-down relative overflow-hidden">
             {label && <Modal.Header>{label}</Modal.Header>}
-            <Modal.Body>{children}</Modal.Body>
+            <Modal.Body className="relative z-container">{children}</Modal.Body>
         </Modal>
     );
 };

@@ -14,7 +14,6 @@ const OtpSchema = new Schema(
     },
     {
         timestamps: true,
-        versionKey: false,
     },
 );
 export default mongoose.model('Otp', OtpSchema);

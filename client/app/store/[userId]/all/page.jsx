@@ -1,29 +1,30 @@
 'use client';
 import { useState, useEffect } from 'react';
 import ProductCard from '@/components/Store/ProductCard';
-import { getProductsByUserId } from '@/services/product.service';
+import { getProducts } from '@/services/product.service';
 import { IoAddOutline } from 'react-icons/io5';
 import Link from 'next/link';
 import routes from '@/routes';
 import { useQuery } from '@tanstack/react-query';
 const All = ({ params }) => {
-    const [products, setProducts] = useState([]);
+    if (!params?.userId) return;
+    const [product, setProduct] = useState(null);
 
-    const getProducts = useQuery({
+    const getProductsQuery = useQuery({
         queryKey: ['store-all'],
         queryFn: () => {
-            return getProductsByUserId({
+            return getProducts({
                 userId: params.userId,
             });
         },
         refetchOnWindowFocus: false,
     });
     useEffect(() => {
-        getProducts.mutate;
-    }, [params]);
+        setProduct(getProductsQuery?.data);
+    }, [getProductsQuery]);
     return (
         <>
-            {getProducts?.data?.products?.length === 0 ? (
+            {getProductsQuery?.data?.products?.length === 0 ? (
                 <div className="flex flex-col gap-3 justify-center items-center">
                     <p className="text-center">You haven't any product.</p>
                     <Link
@@ -35,7 +36,7 @@ const All = ({ params }) => {
                 </div>
             ) : (
                 <div className="grid grid-cols-5 auto-rows-max justify-items-center gap-3">
-                    {getProducts?.data?.products?.map((product) => (
+                    {getProductsQuery?.data?.products?.map((product) => (
                         <div key={product._id} className="col-span-1">
                             <ProductCard product={product} key={product._id} />
                         </div>

@@ -45,7 +45,6 @@ const UserSchema = new Schema(
         public: { type: Boolean, default: true }, // role as delete or block
     },
     {
-        versionKey: false,
         timestamps: true,
     },
 );

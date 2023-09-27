@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --primary-color: '#8FB3FF';
+}
 @layer base {
     :root {
         --background: 0 0% 100%;
@@ -54,4 +57,41 @@
 .DraftEditor-editorContainer {
     position: relative !important;
     z-index: 0 !important;
+}
+
+/* .slick-dots.slick-thumb {
+    position: relative;
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 20px;
+    padding: 0;
+    inset: 0;
+    display: flex !important;
+    justify-content: center;
+} */
+.slick-dots {
+    position: relative !important;
+    inset: 0;
+}
+.slick-dots.slick-thumb {
+    overflow: auto;
+    display: flex !important;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+.slick-dots.slick-thumb li {
+    width: 80px !important;
+    height: 80px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0.2rem;
+}
+.DropdownMenuItem:hover {
+    background: #cbd9f9 !important;
+    /* color: var(--white); */
 }

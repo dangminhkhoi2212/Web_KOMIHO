@@ -87,26 +87,6 @@ const Price = () => {
                                 }
                                 customInput={InputCustom}
                             />
-                            // <InputCustom
-                            //     label="Discount percent (%)"
-                            //     id="percent"
-                            //     type="number"
-                            //     min="0"
-                            //     max="100"
-                            //     onChange={(e) => {
-                            //         let value = e.target.value;
-                            //         value = value > 100 ? 100 : value;
-                            //         field.onChange(value);
-                            //         handleCalculator();
-                            //     }}
-                            //     value={field.value}
-                            //     helperText={errors.price?.percent?.message}
-                            //     color={
-                            //         errors.price?.percent?.message
-                            //             ? 'failure'
-                            //             : 'gray'
-                            //     }
-                            // />
                         )}
                     />
                 </div>

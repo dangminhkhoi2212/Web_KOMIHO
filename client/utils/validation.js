@@ -97,17 +97,17 @@ export const addProductSchema = yup.object({
     name: yup
         .string()
         .required('Name is required field')
-        .max(100, 'Name product maximum is 100 characters'),
+        .max(200, 'Name product maximum is 100 characters'),
     price: yup
         .object({
             origin: originPriceYup,
             percent: percentPriceYup,
         })
         .required('Price is required'),
-    color: yup.array().of(
+    colors: yup.array().of(
         yup.object({
             name: yup.string().required('Color name is required'),
-            size: yup.array().of(
+            sizes: yup.array().of(
                 yup.object({
                     type: yup.string().required('Type is required'),
                     quantity: yup.string().required('Quantity is required'),
@@ -127,4 +127,13 @@ export const addProductSchema = yup.object({
             return true;
         }),
     tags: yup.string(),
+});
+export const addToCartSchema = yup.object({
+    color: yup.string().required('Please choose product color.'),
+    size: yup.string().required('Please choose product size.'),
+    quantity: yup
+        .number()
+        .required('Please choose product quantity.')
+        .min(1, 'Minimum is 1 product')
+        .max(100, 'Maximum is 100 products'),
 });

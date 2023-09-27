@@ -42,8 +42,8 @@ const FormEditProduct = ({ product }) => {
             percent: '',
             final: '',
         },
-        color: product.color || [
-            { name: '', size: [{ type: '', quantity: '' }] },
+        colors: product.colors || [
+            { name: '', sizes: [{ type: '', quantity: '' }] },
         ],
         store: 0,
         tags: product.tags || '',
@@ -61,14 +61,11 @@ const FormEditProduct = ({ product }) => {
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
     const {
-        control,
-        getValues,
-        reset,
         formState: { errors },
         handleSubmit,
     } = methods;
 
-    // console.log('🚀 ~ file: index.jsx:67 ~ FormAddProduct ~ errors:', errors);
+    console.log('🚀 ~ file: index.jsx:67 ~ FormAddProduct ~ errors:', errors);
 
     const handleData = (data) => {
         if (data.description)
@@ -76,8 +73,8 @@ const FormEditProduct = ({ product }) => {
                 convertToRaw(data.description.getCurrentContent()),
             );
 
-        data.color.forEach((color) => {
-            color.size.forEach((size) => {
+        data.colors.forEach((color) => {
+            color.sizes.forEach((size) => {
                 data.store += Number(size.quantity);
             });
         });
@@ -97,6 +94,10 @@ const FormEditProduct = ({ product }) => {
     });
     const addProductMutation = useMutation({
         mutationFn: (data) => {
+            console.log(
+                '🚀 ~ file: index.jsx:100 ~ FormEditProduct ~ data:',
+                data,
+            );
             const dataUpdate = handleData(data);
 
             return updateProduct(product._id, dataUpdate);
@@ -113,6 +114,7 @@ const FormEditProduct = ({ product }) => {
             }
         },
         onError(error) {
+            console.log('🚀 ~ file: index.jsx:116 ~ onError ~ error:', error);
             toast.error(
                 'Update product failure. Please reload the page and try again',
             );
@@ -127,33 +129,29 @@ const FormEditProduct = ({ product }) => {
 
         if (originImages.length)
             originImages.forEach((origin) => {
-                const check = images.some(
-                    (img) => img.public_id !== origin.public_id,
-                );
+                images.forEach((img) => {
+                    if (img.public_id !== origin.public_id) {
+                        dispatch(addDeletedImages(origin));
+                        listDeleted = [...listDeleted, origin];
+                    }
+                });
+
                 //if old image don't exist in new images
                 // put it into list deleted images
-                console.log(
-                    '🚀 ~ file: index.jsx:144 ~ originImages.forEach ~ check:',
-                    check,
-                );
-                if (!check) {
-                    dispatch(addDeletedImages(origin));
-                    listDeleted = [...listDeleted, origin];
-                }
             });
         if (listDeletedImages.length)
             listDeletedImages.forEach((deletedImage) => {
-                const check = images.some(
-                    (img) => img.public_id === deletedImage.public_id,
-                );
+                images.forEach((img) => {
+                    if (img.public_id === deletedImage.public_id) {
+                        dispatch(removeDeletedImages(deletedImage));
+                        listDeleted = listDeleted.filter(
+                            (img) => img.public_id !== deletedImage.public_id,
+                        );
+                    }
+                });
+
                 // if list deleted images exist in new images
                 // remove it from list deleted images
-                if (check) {
-                    dispatch(removeDeletedImages(deletedImage));
-                    listDeleted = listDeleted.filter(
-                        (img) => img.public_id !== deletedImage.public_id,
-                    );
-                }
             });
 
         deleteImagesMutation.mutate(listDeleted);
