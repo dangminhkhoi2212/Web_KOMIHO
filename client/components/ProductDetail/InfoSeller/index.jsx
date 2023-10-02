@@ -4,9 +4,12 @@ import AvatarText from '@/components/Avatar';
 import { AiOutlineStar } from 'react-icons/ai';
 import { FiUserPlus, FiUsers, FiUserCheck } from 'react-icons/fi';
 import { VscAdd } from 'react-icons/vsc';
-import { BsChatRightHeartFill, BsCartCheck } from 'react-icons/bs';
+import { BsChatRightHeartFill, BsCartCheck, BsShop } from 'react-icons/bs';
 import { LuStore } from 'react-icons/lu';
 import { ISOTimeToDate } from '@/utils/date';
+import { HiOutlineChatAlt2 } from 'react-icons/hi';
+import Link from 'next/link';
+import routes from '@/routes';
 const StoreHeader = ({ user }) => {
     const backgroundImage = `url('${user?.avatar?.url || ''}')`;
     const listMiddle = [
@@ -25,24 +28,27 @@ const StoreHeader = ({ user }) => {
     ];
     return (
         <div className="grid grid-cols-3 gap-3 place-items-center">
-            <div className="row-span-1 flex gap-3 items-center ring-1 rounded-xl shadow-lg px-4 py-3">
+            <div className="col-span-1 ring-1 rounded-xl shadow-lg px-4 py-3">
                 <AvatarText
                     src={user?.avatar?.url}
-                    key={user?._id}
                     name={user?.name}
+                    size="lg"
                     text={
-                        <div className="row-span-1  flex gap-3 justify-center items-center text-gray-500">
-                            <button className="px-3 py-2 rounded-md bg-white ring-1 flex gap-2 items-center hover:bg-primary/20">
-                                <VscAdd className="font-medium stroke-1" />
-                                <span>FOLLOW</span>
+                        <div className="flex gap-2">
+                            <button
+                                color="light"
+                                className="px-3 py-2 rounded-md bg-white ring-1 flex gap-2 items-center hover:bg-primary/20">
+                                <HiOutlineChatAlt2 />
+                                <span className="text-sm">Chat</span>
                             </button>
-                            <button className="px-3 py-2 rounded-md bg-white ring-1 flex gap-2 items-center hover:bg-primary/20">
-                                <BsChatRightHeartFill />
-                                <span>CHAT</span>
-                            </button>
+
+                            <Link
+                                className="px-3 py-2 rounded-md bg-white ring-1 flex gap-2 items-center hover:bg-primary/20"
+                                href={routes.store(user?._id)}>
+                                <BsShop /> View
+                            </Link>
                         </div>
                     }
-                    size="lg"
                 />
             </div>
             <div className="col-span-1 p-5 flex flex-col gap-3 ">

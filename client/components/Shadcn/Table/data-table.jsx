@@ -18,23 +18,23 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import Pagination from '@/components/Shadcn/Table/Pagination';
-import { useDispatch, useSelector } from 'react-redux';
+import Pagination from '@/components/Pagination';
+import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import {
     resetSelectProductInTable,
     setSelectProductInTable,
 } from '@/redux/selectProductInTable';
-import { getSelectProductInTable } from '@/redux/selector';
-export function DataTable({ columns, data }) {
+import { setPage } from '@/redux/filterSearchSlice';
+import Loading from '@/components/Loading';
+export function DataTable({ columns, data, pageCount, isLoading }) {
     const [rowSelection, setRowSelection] = useState({});
     const [sorting, setSorting] = useState([]);
     const table = useReactTable({
-        data,
+        data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
+
         onRowSelectionChange: setRowSelection,
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
@@ -57,10 +57,18 @@ export function DataTable({ columns, data }) {
         return () => {
             dispatch(resetSelectProductInTable());
         };
-    }, [table.getFilteredSelectedRowModel().rows.length]);
+    }, [table.getFilteredSelectedRowModel().rows.length || []]);
+    const handlePageClick = (page) => {
+        console.log(
+            '🚀 ~ file: data-table.jsx:61 ~ handlePageClick ~ page:',
+            page,
+        );
+        dispatch(setPage(page + 1));
+    };
 
     return (
         <div>
+            {isLoading && <Loading />}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -113,7 +121,10 @@ export function DataTable({ columns, data }) {
                 </Table>
             </div>
 
-            <Pagination table={table} />
+            <Pagination
+                pageCount={pageCount}
+                handleEvent={(data) => handlePageClick(data)}
+            />
         </div>
     );
 }

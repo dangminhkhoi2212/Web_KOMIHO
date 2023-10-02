@@ -13,15 +13,15 @@ const routes = {
     storeShirt: (userId) => `/store/${userId}/shirt`,
     storePants: (userId) => `/store/${userId}/pants`,
 
-    myAccount: '/manager/my-account',
-    profile: '/manager/my-account/profile',
-    address: '/manager/my-account/address',
-    myStore: '/manager/my-store',
-    managerAllProducts: '/manager/my-store/all-products',
-    managerAddProduct: '/manager/my-store/add-product',
-    password: '/manager/my-account/password',
-    myPurchase: '/manager/my-purchases',
-    deleteAccount: '/manager/delete-account',
+    myAccount: '/my-account',
+    profile: '/my-account',
+    address: '/my-account/address',
+    password: '/my-account/password',
+    myPurchase: '/my-account/my-purchases',
+    deleteAccount: '/my-account/delete-account',
+    myStore: '/my-store',
+    managerAllProducts: '/my-store',
+    managerAddProduct: '/my-store/add-product',
 
     aboutUs: '/supports/about-us',
     returnPolicy: '/supports/return-policy',
@@ -29,5 +29,7 @@ const routes = {
     termsOfService: '/supports/terms-of-service',
 
     productDetail: (productId) => `/detail/${productId}`,
+
+    cart: '/cart',
 };
 export default routes;

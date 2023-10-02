@@ -26,7 +26,8 @@ const Color = ({ colors }) => {
             <div className="flex gap-3">
                 Color:
                 {colors.map((item, index) => (
-                    <button
+                    <div
+                        role="button"
                         key={index}
                         className={clsx(
                             'px-2 py-1 rounded-md ring-1 ',
@@ -36,7 +37,7 @@ const Color = ({ colors }) => {
                         )}
                         onClick={() => setChooseColor(item)}>
                         {item.name}
-                    </button>
+                    </div>
                 ))}
             </div>
             <Size sizes={sizes} />

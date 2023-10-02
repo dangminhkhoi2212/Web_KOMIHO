@@ -20,7 +20,7 @@ const FormElements = ({
             show={props.openModal === true}
             onClose={() => handleOnClose()}
             size={size}
-            className="z-drop-down relative overflow-hidden">
+            className="z-drop-down overflow-hidden">
             {label && <Modal.Header>{label}</Modal.Header>}
             <Modal.Body className="relative z-container">{children}</Modal.Body>
         </Modal>

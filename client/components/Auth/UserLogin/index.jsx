@@ -33,8 +33,12 @@ const UserLogin = ({ children }) => {
                         );
 
                         if ('password' in result && !result.password) {
-                            Cookies.set('accessToken', result.accessToken);
-                            Cookies.set('refreshToken', result.refreshToken);
+                            Cookies.set('accessToken', result.accessToken, {
+                                expires: 100,
+                            });
+                            Cookies.set('refreshToken', result.refreshToken, {
+                                expires: 100,
+                            });
                             setShowModal(true);
                             return;
                         }
@@ -58,8 +62,9 @@ const UserLogin = ({ children }) => {
                     dispatch(resetUser());
                 }
             } catch (error) {
+                console.log('🚀 ~ file: index.jsx:65 ~ login ~ error:', error);
                 toast.error('Login error. Please try again later.');
-                signOut();
+                // signOut();
                 dispatch(resetUser());
             }
         };

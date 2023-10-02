@@ -12,6 +12,7 @@ import { getUserId } from '@/redux/selector';
 import Navigation from './Navigation';
 import Link from 'next/link';
 import routes from '@/routes';
+import Cart from './Cart';
 const Header = () => {
     const userId = useSelector(getUserId);
 
@@ -33,13 +34,15 @@ const Header = () => {
                 <Navigation />
             </div>
             <div className="col-span-1 flex flex-col justify-between ">
-                <div className="col-span-1 text-2xl justify-end flex gap-6">
-                    <Link href={routes.storeAllProducts(userId)}>
-                        <IoStorefrontOutline />
+                <div className="col-span-1 text-2xl justify-end flex  mt-2">
+                    <Link
+                        href={routes.storeAllProducts(userId)}
+                        className="relative inline-flex items-center p-3 text-sm font-medium text-center text-white hover:ring-2 outline-none hover:ring-blue-300 rounded-md">
+                        <IoStorefrontOutline className="font-medium text-xl text-black" />
                     </Link>
-                    <Link href={'/'}>
-                        <TfiShoppingCartFull />
-                    </Link>
+                    <div className="">
+                        <Cart />
+                    </div>
                 </div>
                 <div className="">{userId ? <DropDown /> : <UserTools />}</div>
             </div>

@@ -10,15 +10,12 @@ const Tag = () => {
     } = useFormContext();
     return (
         <div className="flex flex-col gap-2">
-            <label htmlFor="tags" className="text-base font-medium">
-                Tags
-            </label>
-
             <Controller
                 name="tags"
                 control={control}
                 render={({ field }) => (
                     <TextareaCustom
+                        label="Tags"
                         id="tags"
                         placeholder="Ex: T-shirt, polo, jeans, ..."
                         helperText={errors.feedback?.message}

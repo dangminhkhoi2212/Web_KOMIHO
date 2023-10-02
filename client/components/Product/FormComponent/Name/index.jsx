@@ -1,4 +1,5 @@
 import InputCustom from '@/components/InputCustom';
+import TextareaCustom from '@/components/TextareaCustom';
 import { useEffect } from 'react';
 import { useFormContext, Controller, useWatch } from 'react-hook-form';
 
@@ -10,12 +11,12 @@ const Name = () => {
 
     const name = useWatch({ control, name: 'name' });
     return (
-        <div className="flex gap-3 items-end">
+        <div className="">
             <Controller
                 name="name"
                 control={control}
                 render={({ field }) => (
-                    <InputCustom
+                    <TextareaCustom
                         id={'name'}
                         label={'Name '}
                         type={'text'}
@@ -26,10 +27,11 @@ const Name = () => {
                         value={field.value}
                         helperText={errors.name?.message}
                         color={errors.name?.message ? 'failure' : 'gray'}
+                        rows={4}
                     />
                 )}
             />
-            <span className="text-gray-400 text-sm">{name.length}/200</span>
+            <span className="text-gray-400 text-sm">{name?.length}/200</span>
         </div>
     );
 };

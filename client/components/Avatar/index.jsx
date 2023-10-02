@@ -18,7 +18,11 @@ export default function AvatarText({ src, name, text, size = 'md', ...rest }) {
         <Flowbite theme={{ theme: customTheme }}>
             <Avatar img={src} rounded {...rest} size={size}>
                 <div className="space-y-1 text-sm text-gray-500 font-medium">
-                    {name && <div className="text-gray-900">{name}</div>}
+                    {name && (
+                        <div className="text-gray-500 text-md font-bold">
+                            {name}
+                        </div>
+                    )}
                     {text && <div className=" ">{text}</div>}
                 </div>
             </Avatar>

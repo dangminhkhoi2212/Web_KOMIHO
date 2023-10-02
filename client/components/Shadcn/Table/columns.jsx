@@ -23,7 +23,9 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import routes from '@/routes';
+
 import { AiOutlineEye } from 'react-icons/ai';
+import ToggleStatus from '@/components/Product/Button/ToggleStatus';
 const handleChooseProduct = ({ product }) => {
     const dispatch = useDispatch();
     dispatch(chooseProduct(product));
@@ -99,6 +101,19 @@ export const columns = [
         },
     },
     {
+        accessorKey: 'active',
+        header: 'Active',
+        cell: ({ row }) => {
+            const { _id, active } = row.original;
+
+            return (
+                <div>
+                    <ToggleStatus productId={_id} active={active} />
+                </div>
+            );
+        },
+    },
+    {
         accessorKey: 'price',
         accessorFn: (row) => {
             return row.price.final;
@@ -143,16 +158,14 @@ export const columns = [
     },
     {
         id: 'actions',
+        header: 'Actions',
         cell: ({ row }) => {
             const product = row.original;
 
             return (
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <HiOutlineDotsHorizontal className="h-4 w-4" />
-                        </Button>
+                    <DropdownMenuTrigger className="hover:ring-1 rounded-md p-1">
+                        <HiOutlineDotsHorizontal className="h-6 w-6 " />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
@@ -161,7 +174,7 @@ export const columns = [
                                 navigator.clipboard.writeText(product._id)
                             }
                             className="DropdownMenuItem">
-                            Copy product ID
+                            <div role="button">Copy product ID</div>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="DropdownMenuItem">
@@ -178,17 +191,4 @@ export const columns = [
             );
         },
     },
-    // {
-    //     accessorKey: 'action',
-    //     header: 'Action',
-    //     cell: ({ row }) => {
-    //         const product = row.original;
-    //         return (
-    //             <div className="flex gap-3 items-center justify-center text-white">
-    //                 <EditButton product={product} />
-    //                 <DeleteButton product={product} />
-    //             </div>
-    //         );
-    //     },
-    // },
 ];

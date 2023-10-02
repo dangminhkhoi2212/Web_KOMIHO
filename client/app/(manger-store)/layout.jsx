@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { createElement } from 'react';
+import { Suspense, createElement } from 'react';
 import { AiOutlineUser } from 'react-icons/ai';
 import { LuClipboardList } from 'react-icons/lu';
 import { IoStorefrontOutline } from 'react-icons/io5';
@@ -9,40 +9,18 @@ import { getName, getUrlAvatar, getUserId } from '@/redux/selector';
 import routes from '@/routes';
 import AvatarText from '@/components/Avatar';
 import { AiOutlineDelete } from 'react-icons/ai';
+import Loading from '../loading';
 
-const childrenAccount = [
-    { name: 'Profile', link: routes.profile },
-    { name: 'Address', link: routes.address },
-    { name: 'Password', link: routes.password },
-];
-const childrenStore = [
-    { name: 'All Products', link: routes.managerAllProducts },
-    { name: 'Add Product', link: routes.managerAddProduct },
-];
 const listParent = [
     {
         icon: AiOutlineUser,
-        name: 'My Account',
-        link: routes.myAccount,
-        children: childrenAccount,
+        name: 'All Products',
+        link: routes.managerAllProducts,
     },
     {
         icon: IoStorefrontOutline,
-        name: 'My Store',
-        link: routes.myStore,
-        children: childrenStore,
-    },
-    {
-        icon: LuClipboardList,
-        name: 'My Purchase',
-        link: routes.myPurchase,
-        children: null,
-    },
-    {
-        icon: AiOutlineDelete,
-        name: 'Delete Account',
-        link: routes.deleteAccount,
-        children: null,
+        name: 'Add Product',
+        link: routes.managerAddProduct,
     },
 ];
 const layout = ({ children }) => {
@@ -51,7 +29,7 @@ const layout = ({ children }) => {
     const name = useSelector(getName);
 
     return (
-        <div className="grid grid-cols-12 gap-5 items-start xl:mx-20 my-5">
+        <div className="grid grid-cols-12 gap-5 items-start  my-5">
             <div className="col-span-3 flex flex-col gap-5 justify-center items-center">
                 <div className="border-4 border-double py-3 w-full rounded-xl bg-white">
                     <AvatarText name={name} src={UrlAvatar} text={'Manager'} />
@@ -84,7 +62,7 @@ const layout = ({ children }) => {
                 </div>
             </div>
             <div className="col-span-9 xl:p-5  rounded-xl bg-white relative min-h-[250px]">
-                {children}
+                <Suspense fallback={<Loading />}>{children}</Suspense>
             </div>
         </div>
     );

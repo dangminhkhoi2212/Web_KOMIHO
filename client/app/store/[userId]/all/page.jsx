@@ -8,7 +8,6 @@ import routes from '@/routes';
 import { useQuery } from '@tanstack/react-query';
 const All = ({ params }) => {
     if (!params?.userId) return;
-    const [product, setProduct] = useState(null);
 
     const getProductsQuery = useQuery({
         queryKey: ['store-all'],
@@ -19,9 +18,7 @@ const All = ({ params }) => {
         },
         refetchOnWindowFocus: false,
     });
-    useEffect(() => {
-        setProduct(getProductsQuery?.data);
-    }, [getProductsQuery]);
+    const product = getProductsQuery?.data?.products;
     return (
         <>
             {getProductsQuery?.data?.products?.length === 0 ? (
@@ -35,9 +32,11 @@ const All = ({ params }) => {
                     </Link>
                 </div>
             ) : (
-                <div className="grid grid-cols-5 auto-rows-max justify-items-center gap-3">
+                <div className="grid grid-cols-5 justify-items-center gap-3">
                     {getProductsQuery?.data?.products?.map((product) => (
-                        <div key={product._id} className="col-span-1">
+                        <div
+                            key={product._id}
+                            className=" shadow-md hover:shadow-xl  rounded-md overflow-hidden   transition-all duration-300 ease-in-out ">
                             <ProductCard product={product} key={product._id} />
                         </div>
                     ))}

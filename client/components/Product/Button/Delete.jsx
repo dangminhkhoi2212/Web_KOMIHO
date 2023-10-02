@@ -10,9 +10,9 @@ const Delete = ({ product }) => {
         dispatch(chooseStatus('delete'));
     };
     return (
-        <button onClick={() => handleChooseProduct()}>
+        <div role="button" onClick={() => handleChooseProduct()}>
             <AiOutlineDelete className="h-8 w-8 p-2 rounded-xl bg-red-400 shadow-md shadow-red-400 hover:shadow-lg hover:shadow-red-400" />
-        </button>
+        </div>
     );
 };
 

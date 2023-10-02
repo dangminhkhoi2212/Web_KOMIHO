@@ -5,7 +5,7 @@ module.exports = {
         './pages/**/*.{js,jsx}',
         './components/**/*.{js,jsx}',
         './app/**/*.{js,jsx}',
-        './src/**/*.{js,jsx}',
+        // './src/**/*.{js,jsx}',
         './node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}',
     ],
     theme: {
@@ -17,10 +17,6 @@ module.exports = {
             },
         },
         extend: {
-            height: {
-                header: '160px',
-                carousel: '600px',
-            },
             zIndex: {
                 header: '1000',
                 'drop-down': '1500',
@@ -30,12 +26,12 @@ module.exports = {
                 backdrop: '1600',
             },
             colors: {
-                border: '#2954AD',
+                border: 'hsl(var(--border))',
                 input: 'hsl(var(--input))',
                 ring: 'hsl(var(--ring))',
                 background: 'hsl(var(--background))',
-                default: '#f5f5f5',
                 foreground: 'hsl(var(--foreground))',
+                default: '#f5f5f5',
                 primary: {
                     DEFAULT: '#8FB3FF',
                     foreground: 'hsl(var(--primary-foreground))',
@@ -65,11 +61,11 @@ module.exports = {
                     foreground: 'hsl(var(--card-foreground))',
                 },
             },
-            borderRadius: {
-                lg: 'var(--radius)',
-                md: 'calc(var(--radius) - 2px)',
-                sm: 'calc(var(--radius) - 4px)',
-            },
+            // borderRadius: {
+            //     lg: 'var(--radius)',
+            //     md: 'calc(var(--radius) - 2px)',
+            //     sm: 'calc(var(--radius) - 4px)',
+            // },
             keyframes: {
                 'accordion-down': {
                     from: { height: 0 },

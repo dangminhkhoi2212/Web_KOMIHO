@@ -23,3 +23,5 @@ export const getChooseProduct = (state) => state.chooseProduct.product;
 export const getChooseStatus = (state) => state.chooseProduct.status;
 // select products in table
 export const getSelectProductInTable = (state) => state.selectProductInTable;
+// cart
+export const getCart = (state) => state.cart.list;

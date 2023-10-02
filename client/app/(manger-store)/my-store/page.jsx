@@ -27,7 +27,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 
 import AccountTemplate from '@/components/Account/AccountTemplate';
-const Loading = dynamic(() => import('@/components/Loading'));
+import Loading from '@/components/Loading';
 const Modal = dynamic(() => import('@/components/Modal'));
 import ButtonModal from '@/components/Modal/ButtonModal';
 
@@ -39,7 +39,7 @@ import Image from 'next/image';
 import { removeChooseProduct } from '@/redux/chooseProductSlice';
 import { resetSelectProductInTable } from '@/redux/selectProductInTable';
 import Search from '@/components/Header/Search';
-import { setTextSearch } from '@/redux/filterSearchSlice';
+import { setPage, setTextSearch } from '@/redux/filterSearchSlice';
 const AllProduct = () => {
     const userId = useSelector(getUserId);
     const queryClient = useQueryClient();
@@ -55,43 +55,33 @@ const AllProduct = () => {
 
     const [modalDeleteMany, setShowModalDeleteMany] = useState(false);
     const dispatch = useDispatch();
-
     const getProductsMutation = useQuery({
-        queryKey: [
-            'products',
-            { userId, price, textSearch, store, page, limit },
-        ],
+        queryKey: ['products', textSearch, page],
         queryFn: () => {
             return getProducts({
                 userId,
-                price,
                 textSearch,
-                store,
                 page,
-                limit,
             });
         },
-        refetchOnWindowFocus: false,
+        keepPreviousData: true,
     });
 
     useEffect(() => {
-        console.log(
-            '🚀 ~ file: page.jsx:78 ~ AllProduct ~ textSearch:',
-            textSearch,
-        );
-        queryClient.invalidateQueries(['products']);
-    }, [textSearch]);
+        getProductsMutation.refetch();
+    }, [textSearch, page]);
+    console.log('🚀 ~ file: page.jsx:74 ~ AllProduct ~ page:', page);
 
     const deleteManyProductsMutation = useMutation({
         mutationFn: (productIds) => {
-            return deleteManyProducts(productIds);
+            return deleteManyProducts({ ids: productIds, userId });
         },
         onSuccess(data) {
             if (data.ok) {
                 dispatch(removeChooseProduct());
                 queryClient.invalidateQueries(['products']);
                 toast.success('Delete products successfully.');
-                setShowModal(false);
+                setShowModalDeleteMany(false);
             }
         },
         onError(error) {
@@ -122,9 +112,14 @@ const AllProduct = () => {
 
     const handleRefresh = () => {
         dispatch(setTextSearch(''));
+        dispatch(setPage(1));
     };
-    const dataTable = getProductsMutation?.data?.products;
-    if (!dataTable) return;
+    const [dataTable, setDataTable] = useState([]);
+    useEffect(() => {
+        setDataTable(getProductsMutation?.data?.products);
+    }, [getProductsMutation?.data]);
+    console.log('🚀 ~ file: page.jsx:122 ~ AllProduct ~ dataTable:', dataTable);
+    if (!dataTable) return <Loading />;
     return (
         <AccountTemplate
             title={'ALL PRODUCTS'}
@@ -221,7 +216,12 @@ const AllProduct = () => {
                 </Modal>
             )}
             <div className="">
-                <DataTable columns={columns} data={dataTable} />
+                <DataTable
+                    columns={columns}
+                    data={dataTable}
+                    pageCount={getProductsMutation?.data?.pageCount}
+                    isLoading={getProductsMutation?.isLoading}
+                />
             </div>
         </AccountTemplate>
     );

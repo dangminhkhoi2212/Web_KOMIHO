@@ -63,6 +63,7 @@ const FormEditProduct = ({ product }) => {
     const {
         formState: { errors },
         handleSubmit,
+        getValues,
     } = methods;
 
     console.log('🚀 ~ file: index.jsx:67 ~ FormAddProduct ~ errors:', errors);
@@ -126,34 +127,44 @@ const FormEditProduct = ({ product }) => {
         const images = getValues('images');
         // listDeleted use to save list deleted images while case list deleted images don't update in time
         var listDeleted = Array.from(listDeletedImages) || [];
+        console.log(
+            '🚀 ~ file: index.jsx:130 ~ handleDeleteImages ~ listDeleted:',
+            listDeleted,
+        );
 
         if (originImages.length)
             originImages.forEach((origin) => {
-                images.forEach((img) => {
-                    if (img.public_id !== origin.public_id) {
-                        dispatch(addDeletedImages(origin));
-                        listDeleted = [...listDeleted, origin];
-                    }
-                });
+                const exist = images.find(
+                    (img) => img.public_id === origin.public_id,
+                );
 
+                if (!exist) {
+                    dispatch(addDeletedImages(origin));
+                    listDeleted = [...listDeleted, origin];
+                }
                 //if old image don't exist in new images
                 // put it into list deleted images
             });
         if (listDeletedImages.length)
             listDeletedImages.forEach((deletedImage) => {
-                images.forEach((img) => {
-                    if (img.public_id === deletedImage.public_id) {
-                        dispatch(removeDeletedImages(deletedImage));
-                        listDeleted = listDeleted.filter(
-                            (img) => img.public_id !== deletedImage.public_id,
-                        );
-                    }
-                });
+                const exist = images.find(
+                    (img) => img.public_id === deletedImage.public_id,
+                );
 
+                if (exist) {
+                    dispatch(removeDeletedImages(deletedImage));
+                    listDeleted = listDeleted.filter(
+                        (img) => img.public_id !== deletedImage.public_id,
+                    );
+                }
                 // if list deleted images exist in new images
                 // remove it from list deleted images
             });
 
+        console.log(
+            '🚀 ~ file: index.jsx:165 ~ handleDeleteImages ~ listDeleted:',
+            listDeleted,
+        );
         deleteImagesMutation.mutate(listDeleted);
     };
 

@@ -27,6 +27,7 @@ const Upload = ({ id = '', label = '', placeholder = '' }) => {
     } = useFormContext();
 
     const images = useWatch({ control, name: 'images' });
+    console.log('🚀 ~ file: index.jsx:30 ~ Upload ~ images:', images);
     const [lengthFile, setLengthFile] = useState([]);
     const allowDeleted = useSelector(getAllowDeletedImages);
     const upload = useMutation({
@@ -48,15 +49,21 @@ const Upload = ({ id = '', label = '', placeholder = '' }) => {
         const data = e.target.files;
         const length = data.length;
         const form = new FormData();
-        var count = images.length;
+        var count = images?.length || 0;
+        console.log('🚀 ~ file: index.jsx:52 ~ handleChange ~ count:', count);
         for (let i = 0; i < length; i++) {
-            if (count > 9) return;
-            count++;
+            if (count === 9) break;
+
             const file = data[i];
 
             form.append('images', file);
+            count++;
         }
         const lengthForm = form.getAll('images').length;
+        console.log(
+            '🚀 ~ file: index.jsx:65 ~ handleChange ~ lengthForm:',
+            lengthForm,
+        );
         if (lengthForm > 0) {
             form.append('userId', userId);
             upload.mutate(form);

@@ -10,24 +10,31 @@ export const updateProduct = async (productId, data) => {
 export const getProducts = async ({
     userId = '',
     page = 1,
-    limit = 50,
+    limit = 2,
     textSearch = '',
-    price = '',
-    store = '',
 }) => {
     return (
         await api.get(
-            `/product?userId=${userId}&page=${page}&limit=${limit}&textSearch=${textSearch}&price=${price}&store=${store}`,
+            `/product/get-by-userId/${userId}?page=${page}&limit=${limit}&textSearch=${textSearch}`,
         )
     ).data;
 };
-export const deleteProduct = async (productId) => {
-    return (await api.delete(`/product/delete/${productId}`)).data;
+export const deleteProduct = async ({ productId, userId }) => {
+    return (
+        await api.delete(
+            `/product/delete?productId=${productId}&userId=${userId}`,
+        )
+    ).data;
 };
-export const deleteManyProducts = async (ids) => {
-    return (await api.post('/product/delete-many', { ids })).data;
+export const deleteManyProducts = async ({ ids, userId }) => {
+    return (await api.post('/product/delete-many', { ids, userId })).data;
 };
 
 export const getProductByProductId = async (productId) => {
     return (await api.get(`/product/${productId}`)).data;
+};
+export const toggleActiveProduct = async ({ productId, active }) => {
+    return (
+        await api.get(`/product/active?productId=${productId}&active=${active}`)
+    ).data;
 };

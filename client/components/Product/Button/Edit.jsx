@@ -10,9 +10,9 @@ const Edit = ({ product }) => {
         dispatch(chooseStatus('edit'));
     };
     return (
-        <button onClick={() => handleChooseProduct()}>
+        <div role="button" onClick={() => handleChooseProduct()}>
             <FiEdit2 className="h-8 w-8  p-2 rounded-xl bg-green-400 shadow-md shadow-green-400 hover:shadow-lg hover:shadow-green-400" />
-        </button>
+        </div>
     );
 };
 

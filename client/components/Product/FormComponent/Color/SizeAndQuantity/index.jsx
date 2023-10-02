@@ -8,13 +8,12 @@ import { BiDownArrowAlt, BiUpArrowAlt, BiReset } from 'react-icons/bi';
 
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import clsx from 'clsx';
-const FormSizeAndQuanitity = ({ indexColor, focusColor, colors }) => {
+const FormSizeAndQuantity = ({ indexColor, focusColor, control }) => {
     const positionColor = `colors.${indexColor}`;
 
     const {
-        control,
         reset,
-
+        resetField,
         formState: { errors },
     } = useFormContext();
 
@@ -56,24 +55,7 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, colors }) => {
                 <PrimaryButton icon={BiDownArrowAlt} onClick={handleMoveDown} />
                 <PrimaryButton
                     icon={BiReset}
-                    onClick={() =>
-                        reset({
-                            colors: colors.map((color, index) => {
-                                if (index === indexColor) {
-                                    return {
-                                        ...color,
-                                        sizes: [
-                                            {
-                                                type: '',
-                                                quantity: '',
-                                            },
-                                        ],
-                                    };
-                                }
-                                return color;
-                            }),
-                        })
-                    }
+                    onClick={() => resetField(`${positionColor}.sizes`)}
                 />
             </section>
 
@@ -99,7 +81,6 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, colors }) => {
                                         id={item.id}
                                         label={'Size '}
                                         type={'text'}
-                                        value={field.value}
                                         placeholder={'Product Sizes '}
                                         onFocus={() => handleFocus(index)}
                                         onChange={(e) => {
@@ -140,7 +121,6 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, colors }) => {
                                         type={'number'}
                                         placeholder={'Quantity '}
                                         min={0}
-                                        value={field.value}
                                         onFocus={() => handleFocus(index)}
                                         onChange={(e) => {
                                             field.onChange(e.target.value);
@@ -183,4 +163,4 @@ const FormSizeAndQuanitity = ({ indexColor, focusColor, colors }) => {
     );
 };
 
-export default memo(FormSizeAndQuanitity);
+export default FormSizeAndQuantity;

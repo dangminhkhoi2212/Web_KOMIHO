@@ -119,6 +119,7 @@ export const addProductSchema = yup.object({
         .array()
         .required('Please select at least one image')
         .test('arrayFileLength', 'Maximum 9 photos', (value) => {
+            console.log('🚀 ~ file: validation.js:122 ~ .test ~ value:', value);
             return value.length <= 9;
         })
 

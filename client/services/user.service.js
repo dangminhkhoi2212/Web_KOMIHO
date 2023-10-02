@@ -22,3 +22,7 @@ export const getUserApi = async (userId) => {
 export const recoverAccount = async (email) => {
     return (await api.put('/user/recover-account', { email })).data;
 };
+export const toggleActiveUser = async ({ userId, active }) => {
+    return (await api.get(`/user/active?userId=${userId}&active=${active}`))
+        .data;
+};

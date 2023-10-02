@@ -13,12 +13,12 @@ const CenterMode = ({ images }) => {
         customPaging: function (i) {
             const img = images.find((img, index) => index === i);
             return (
-                <div className="w-full h-full  relative hover:ring-1 hover:ring-accent rounded-md overflow-hidden">
+                <div className="w-[80px] h-[80px]  relative hover:ring-1 hover:ring-accent rounded-md overflow-hidden">
                     <Image
                         src={img?.url}
                         alt={img?.url}
                         fill
-                        sizes="100%"
+                        sizes="80px"
                         className="object-cover object-center"
                     />
                 </div>
@@ -36,22 +36,20 @@ const CenterMode = ({ images }) => {
         prevArrow: <PreviousArrow />,
     };
     return (
-        <div className="w-full">
-            <Slider {...settings}>
-                {images.map((img) => (
-                    <div key={img.url} className="w-[350px] h-[350px] relative">
-                        <Image
-                            src={img.url}
-                            alt={img.url}
-                            priority
-                            fill
-                            sizes="350px"
-                            className="object-contain object-center"
-                        />
-                    </div>
-                ))}
-            </Slider>
-        </div>
+        <Slider {...settings}>
+            {images.map((img) => (
+                <div key={img.url} className="w-[350px] h-[350px] relative">
+                    <Image
+                        src={img.url}
+                        alt={img.url}
+                        priority
+                        fill
+                        sizes="350px"
+                        className="object-contain object-center"
+                    />
+                </div>
+            ))}
+        </Slider>
     );
 };
 export default CenterMode;

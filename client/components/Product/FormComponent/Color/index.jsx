@@ -10,10 +10,10 @@ import SizeAndQuantity from './SizeAndQuantity';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import clsx from 'clsx';
 
-const FormColor = () => {
+const FormColor = ({ control }) => {
     const {
         resetField,
-        control,
+
         formState: { errors },
     } = useFormContext();
     const { fields, append, remove, move } = useFieldArray({
@@ -58,7 +58,7 @@ const FormColor = () => {
                 <PrimaryButton icon={BiDownArrowAlt} onClick={handleMoveDown} />
                 <PrimaryButton
                     icon={BiReset}
-                    onClick={() => resetField('color')}
+                    onClick={() => resetField('colors')}
                 />
             </section>
             <div className="flex flex-col gap-5">
@@ -116,6 +116,7 @@ const FormColor = () => {
                                     indexColor={index}
                                     focusColor={index === indexForm}
                                     colors={fields}
+                                    control={control}
                                 />
                             </div>
                             {fields.length > 1 && (

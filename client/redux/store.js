@@ -16,15 +16,19 @@ import filterSearchReducer from './filterSearchSlice';
 import listDeletedImagesReducer from './listDeletedImages';
 import chooseProductReducer from './chooseProductSlice';
 import selectProductInTableReducer from './selectProductInTable';
-
+import cartReducer from './cartSlice';
 const persistConfig = {
     key: 'user',
     version: 1,
     storage,
 };
-
+const persistConfigCart = {
+    key: 'cart',
+    version: 2,
+    storage,
+};
 const persistedReducerAdmin = persistReducer(persistConfig, userReducer);
-
+const persistedReducerCart = persistReducer(persistConfigCart, cartReducer);
 const store = configureStore({
     reducer: {
         user: persistedReducerAdmin,
@@ -33,6 +37,7 @@ const store = configureStore({
         listDeletedImages: listDeletedImagesReducer,
         chooseProduct: chooseProductReducer,
         selectProductInTable: selectProductInTableReducer,
+        cart: persistedReducerCart,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

@@ -6,7 +6,6 @@ import { useForm, useFormContext } from 'react-hook-form';
 
 const Size = ({ sizes }) => {
     const [chooseSize, setChooseSize] = useState(null);
-    console.log('🚀 ~ file: index.jsx:9 ~ Size ~ chooseSize:', chooseSize);
     const { setValue } = useFormContext();
     useEffect(() => {
         if (chooseSize) {
@@ -23,8 +22,9 @@ const Size = ({ sizes }) => {
             <h1>Size:</h1>
             <div className="flex gap-3 items-center">
                 {sizes.map((size, index) => (
-                    <button
+                    <div
                         key={index}
+                        role="button"
                         className={clsx(
                             'px-2 py-1 ring-1 rounded-md',
                             size.quantity === 0
@@ -39,7 +39,7 @@ const Size = ({ sizes }) => {
                             if (size.quantity) setChooseSize(size);
                         }}>
                         {size.type} / {size.quantity}
-                    </button>
+                    </div>
                 ))}
             </div>
         </div>

@@ -102,8 +102,6 @@ const FormAddProduct = () => {
                 handleDeleteImages();
                 reset(initValue);
                 toast.success('Add product successfully');
-
-                queryClient.invalidateQueries(['products']);
             }
         },
         onError(error) {
@@ -179,7 +177,7 @@ const FormAddProduct = () => {
 
                     <Name />
                     <Price />
-                    <Color />
+                    <Color control={control} />
 
                     <Tag />
                     {Description && <Description />}
