@@ -41,10 +41,6 @@ const addProduct = async (req, res, next) => {
     try {
         var { name, userId, price, colors, images, tags, description, store } =
             req.body;
-        console.log(
-            '🚀 ~ file: product.controller.js:44 ~ addProduct ~ req.body:',
-            req.body,
-        );
 
         await Product.create({
             name,
@@ -56,7 +52,7 @@ const addProduct = async (req, res, next) => {
             description,
             store,
         });
-
+        await User.findByIdAndUpdate(userId, { $inc: { productTotal: 1 } });
         res.send({ message: 'Add successfully', ok: true });
     } catch (error) {
         next(
@@ -72,12 +68,14 @@ const addProduct = async (req, res, next) => {
 
 const deleteProduct = async (req, res, next) => {
     try {
-        const productId = req.params.productId;
+        const { productId, userId } = req.query.productId;
         const product = await Product.findById(productId);
 
         if (!product) return next(new ApiError(405, 'Product not found'));
 
         await Product.findByIdAndDelete(productId);
+        await User.findByIdAndUpdate(userId, { $inc: { productTotal: -1 } });
+
         res.json({
             title: `Delete product '${product.name}'`,
             status: 'success',
@@ -94,7 +92,7 @@ const deleteProduct = async (req, res, next) => {
 
 const deleteManyProducts = async (req, res, next) => {
     try {
-        const ids = req.body.ids;
+        const { ids, userId } = req.body;
 
         if (ids?.length > 0) {
             const manyProduct = await Product.find({ _id: { $in: ids } });
@@ -102,6 +100,9 @@ const deleteManyProducts = async (req, res, next) => {
                 return next(new ApiError('402', "List product don't find"));
 
             await Product.deleteMany({ _id: { $in: ids } });
+            await User.findByIdAndUpdate(userId, {
+                $inc: { productTotal: -ids.length },
+            });
             return res.send({
                 title: `Deleted products have id ${ids}`,
                 ok: true,
@@ -143,54 +144,51 @@ const deleteAllProducts = async (req, res, next) => {
     }
 };
 
-const getProducts = async (req, res, next) => {
+const getProductsByUserId = async (req, res, next) => {
     try {
-        const { userId, textSearch, price, store } = req.query;
-        console.log(
-            '🚀 ~ file: product.controller.js:143 ~ getProducts ~ userId, textSearch, price, store:',
-            { userId, textSearch, price, store },
-        );
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 50;
+        const data = req.query;
+
+        const userId = req.params.userId;
+        if (!userId) return next(new ApiError(401, 'userId not found.'));
+        const textSearch = `${userId} ${data.textSearch}`;
+        const user = await User.findById(userId);
+        if (!user) return next(new ApiError(404, 'User not found.'));
+
+        const page = parseInt(data.page) || 1;
+        const limit = parseInt(data.limit) || 20;
 
         const skip = (page - 1) * limit;
 
-        // Build the query conditions
-        const query = {
-            userId,
-        };
-
-        if (textSearch) {
-            var findById = { _id: undefined };
-            if (mongoose.isValidObjectId(textSearch)) findById._id = textSearch;
-
-            query.$or = [
-                findById,
-                { name: textSearch },
-                { tags: { $regex: textSearch, $options: 'i' } },
-            ];
-        }
-
-        // Build the sort options
-        const sortOptions = {};
-
-        // if (price) {
-        //     sortOptions['price.final'] = price === 'asc' ? 1 : -1;
-        // } else if (store) {
-        //     sortOptions.store = store === 'asc' ? 1 : -1;
-        // } else {
-        //     sortOptions.createdAt = -1;
-        // }
+        const agg = [
+            {
+                $search: {
+                    index: 'search_product',
+                    text: {
+                        query: textSearch,
+                        path: {
+                            wildcard: '*',
+                        },
+                        fuzzy: {},
+                    },
+                },
+            },
+            { $sort: { _id: -1 } },
+            { $skip: skip },
+            {
+                $limit: limit,
+            },
+        ];
 
         // Find products with the constructed query and sort options
-        const [products, total] = await Promise.all([
-            Product.find(query).sort(sortOptions).skip(skip).limit(limit),
-            Product.countDocuments(query),
-        ]);
-        const pageCount = Math.ceil(total / limit);
+        const [products] = await Promise.all([Product.aggregate(agg)]);
+        const pageCount = Math.ceil(user.productTotal / limit);
 
-        res.send({ pageCount, total, products });
+        res.send({ pageCount, limit, total: products.length, products });
     } catch (error) {
+        console.log(
+            '🚀 ~ file: product.controller.js:213 ~ getProductsByUserId ~ error:',
+            error,
+        );
         next(
             new ApiError(
                 error.code || 500,
@@ -205,7 +203,10 @@ const getProducts = async (req, res, next) => {
 export const getProductByProductId = async (req, res, next) => {
     try {
         const productId = req.params.productId;
-        const result = await Product.findById(productId);
+        const result = await Product.findById(productId).populate({
+            path: 'userId',
+            select: 'name avatar.url createdAt productTotal',
+        });
         res.send(result);
     } catch (error) {
         next(
@@ -257,13 +258,28 @@ const updateProduct = async (req, res, next) => {
         );
     }
 };
-
+export const toggleActive = async (req, res, next) => {
+    try {
+        const { productId, active } = req.query;
+        console.log(
+            '🚀 ~ file: product.controller.js:267 ~ toggleActive ~ req.query:',
+            req.query,
+        );
+        if (!productId)
+            return next(new ApiError(402, 'Don not find productId'));
+        await Product.findByIdAndUpdate(productId, { active });
+        res.send({ ok: true, props: { productId, active } });
+    } catch (error) {
+        next(new ApiError(error.code || 500, error.message || error));
+    }
+};
 export default {
     addProduct,
     deleteProduct,
     deleteAllProducts,
     deleteManyProducts,
-    getProducts,
+    getProductsByUserId,
     getProductByProductId,
     updateProduct,
+    toggleActive,
 };

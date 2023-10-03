@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const ProductSchema = new Schema(
     {
-        userId: { type: Schema.Types.ObjectId, ref: 'users', required: true },
-        name: { type: String, required: true, maxLength: 100 },
+        userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        name: { type: String, required: true, maxLength: 200 },
         price: {
             origin: { type: Number, required: true, default: 0 },
             percent: { type: Number, default: 0 },
@@ -32,6 +32,8 @@ const ProductSchema = new Schema(
         views: { type: Number, default: 0 },
         sold: { type: Number, default: 0 },
         store: { type: Number, default: 0 },
+        public: { type: Boolean, default: true },
+        active: { type: Boolean, default: true },
     },
     {
         timestamps: true,

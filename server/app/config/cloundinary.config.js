@@ -10,7 +10,7 @@ cloudinary.config({
 
 const imageStorage = new CloudinaryStorage({
     cloudinary,
-    allowedFormats: ['jpg', 'png'],
+    allowedFormats: ['jpg', 'png', 'jpeg'],
     params: {
         folder: 'kimoho',
     },

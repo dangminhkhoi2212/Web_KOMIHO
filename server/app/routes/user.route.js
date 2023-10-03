@@ -4,6 +4,7 @@ const router = express.Router();
 import multer from '../lib/multerConfig.js';
 import { verifyToken } from '../middleware/verifyToken.js';
 
+router.route('/active').get(userController.toggleActive);
 router.route('/recover-account/').put(userController.recoverAccount);
 router
     .route('/update/profile/:userId')

@@ -41,12 +41,14 @@ const UserSchema = new Schema(
         emailVerified: { type: Boolean, default: false },
         viaGoogle: { type: Boolean, default: false },
         refreshToken: { type: String },
+        productTotal: { type: Number, default: 0 },
         typeUser: { type: String, required: true, trim: true, default: 'user' },
         public: { type: Boolean, default: true }, // role as delete or block
+        active: { type: Boolean, default: true },
     },
     {
         timestamps: true,
     },
 );
-const User = mongoose.model('Users', UserSchema);
+const User = mongoose.model('User', UserSchema);
 export default User;

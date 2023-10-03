@@ -142,10 +142,6 @@ const updateAddress = async (req, res, next) => {
         }
         return next(new ApiError(404, 'Data is empty.'));
     } catch (error) {
-        console.log(
-            '🚀 ~ file: user.controller.js:140 ~ updateAddress ~ error:',
-            error,
-        );
         next(new ApiError(error.code || 500, error.message));
     }
 };
@@ -170,10 +166,17 @@ const recoverAccount = async (req, res, next) => {
         result.refreshToken = refreshToken;
         res.send(result);
     } catch (error) {
-        console.log(
-            '🚀 ~ file: user.controller.js:158 ~ recoverAccount ~ error:',
-            error,
-        );
+        next(new ApiError(error.code || 500, error.message || error));
+    }
+};
+const toggleActive = async (req, res, next) => {
+    try {
+        const { userId, active } = req.query;
+        if (!userId) return next(new ApiError(401, 'Don not find userId'));
+        await User.findByIdAndUpdate(userId, { active });
+        res.send({ ok: true, props: { userId, active } });
+    } catch (error) {
+        next(new ApiError(error.code || 500, error.message || error));
     }
 };
 export {
@@ -184,4 +187,5 @@ export {
     updateProfile,
     updateAddress,
     recoverAccount,
+    toggleActive,
 };
