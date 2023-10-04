@@ -150,7 +150,7 @@ const getProductsByUserId = async (req, res, next) => {
 
         const userId = req.params.userId;
         if (!userId) return next(new ApiError(401, 'userId not found.'));
-        const textSearch = `${userId} ${data.textSearch}`;
+        const textSearch = data.textSearch.toString();
         const user = await User.findById(userId);
         if (!user) return next(new ApiError(404, 'User not found.'));
 
@@ -160,7 +160,15 @@ const getProductsByUserId = async (req, res, next) => {
         const skip = (page - 1) * limit;
 
         const agg = [
+            { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+            { $sort: { _id: -1 } },
+            { $skip: skip },
             {
+                $limit: limit,
+            },
+        ];
+        if (textSearch)
+            agg.unshift({
                 $search: {
                     index: 'search_product',
                     text: {
@@ -171,19 +179,14 @@ const getProductsByUserId = async (req, res, next) => {
                         fuzzy: {},
                     },
                 },
-            },
-            { $sort: { _id: -1 } },
-            { $skip: skip },
-            {
-                $limit: limit,
-            },
-        ];
+            });
 
         // Find products with the constructed query and sort options
         const [products] = await Promise.all([Product.aggregate(agg)]);
+
         const pageCount = Math.ceil(user.productTotal / limit);
 
-        res.send({ pageCount, limit, total: products.length, products });
+        res.send({ pageCount, limit, products });
     } catch (error) {
         console.log(
             '🚀 ~ file: product.controller.js:213 ~ getProductsByUserId ~ error:',
@@ -203,7 +206,13 @@ const getProductsByUserId = async (req, res, next) => {
 export const getProductByProductId = async (req, res, next) => {
     try {
         const productId = req.params.productId;
-        const result = await Product.findById(productId).populate({
+        const result = await Product.findByIdAndUpdate(
+            productId,
+            {
+                $inc: { views: 1 },
+            },
+            { new: true },
+        ).populate({
             path: 'userId',
             select: 'name avatar.url createdAt productTotal',
         });
@@ -261,14 +270,19 @@ const updateProduct = async (req, res, next) => {
 export const toggleActive = async (req, res, next) => {
     try {
         const { productId, active } = req.query;
-        console.log(
-            '🚀 ~ file: product.controller.js:267 ~ toggleActive ~ req.query:',
-            req.query,
-        );
+
         if (!productId)
             return next(new ApiError(402, 'Don not find productId'));
         await Product.findByIdAndUpdate(productId, { active });
         res.send({ ok: true, props: { productId, active } });
+    } catch (error) {
+        next(new ApiError(error.code || 500, error.message || error));
+    }
+};
+const getAll = async (req, res, next) => {
+    try {
+        const result = await Product.find({ public: true, active: true });
+        res.send(result);
     } catch (error) {
         next(new ApiError(error.code || 500, error.message || error));
     }
@@ -280,6 +294,7 @@ export default {
     deleteManyProducts,
     getProductsByUserId,
     getProductByProductId,
+    getAll,
     updateProduct,
     toggleActive,
 };

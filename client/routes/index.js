@@ -9,7 +9,7 @@ const routes = {
     register: '/register',
 
     store: (userId) => `/store/${userId}`,
-    storeAllProducts: (userId) => `/store/${userId}/all`,
+    storeAllProducts: (userId) => `/store/${userId}`,
     storeShirt: (userId) => `/store/${userId}/shirt`,
     storePants: (userId) => `/store/${userId}/pants`,
 

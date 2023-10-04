@@ -9,7 +9,7 @@ import { FaStar } from 'react-icons/fa';
 const ProductCard = ({ product }) => {
     if (!product) return;
     return (
-        <div>
+        <div className="overflow-hidden bg-white rounded-md shadow-md hover:shadow-xl transition-all duration-300 ease-in-out w-[200px] text-start">
             <Link
                 href={routes.productDetail(product._id)}
                 className="rounded-md bg-white relative ">
@@ -29,7 +29,7 @@ const ProductCard = ({ product }) => {
                     />
                 </div>
                 <div className="grid grid-rows-5 p-2 text-sm  gap-1">
-                    <div className="row-span-2 text-sm ">
+                    <div className="row-span-2 text-sm text-start ">
                         <span className="line-clamp-2 ">{product?.name}</span>
                     </div>
                     <div className="row-span-1 flex gap-1">
@@ -52,7 +52,10 @@ const ProductCard = ({ product }) => {
                             </span>
                         )}
                     </div>
-                    <span>{product?.sold} sold</span>
+                    <div className="row-span-1 flex justify-between">
+                        <span>{product?.sold} sold</span>
+                        <span>{product?.views} views</span>
+                    </div>
                 </div>
             </Link>
         </div>

@@ -86,6 +86,7 @@ const FormSizeAndQuantity = ({ indexColor, focusColor, control }) => {
                                         onChange={(e) => {
                                             field.onChange(e.target.value);
                                         }}
+                                        value={field.value}
                                         helperText={
                                             errors &&
                                             errors.colors &&
@@ -121,6 +122,7 @@ const FormSizeAndQuantity = ({ indexColor, focusColor, control }) => {
                                         type={'number'}
                                         placeholder={'Quantity '}
                                         min={0}
+                                        value={field.value}
                                         onFocus={() => handleFocus(index)}
                                         onChange={(e) => {
                                             field.onChange(e.target.value);

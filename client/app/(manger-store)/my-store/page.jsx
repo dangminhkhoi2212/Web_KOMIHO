@@ -55,7 +55,7 @@ const AllProduct = () => {
 
     const [modalDeleteMany, setShowModalDeleteMany] = useState(false);
     const dispatch = useDispatch();
-    const getProductsMutation = useQuery({
+    const getProductsQuery = useQuery({
         queryKey: ['products', textSearch, page],
         queryFn: () => {
             return getProducts({
@@ -68,7 +68,7 @@ const AllProduct = () => {
     });
 
     useEffect(() => {
-        getProductsMutation.refetch();
+        getProductsQuery.refetch();
     }, [textSearch, page]);
     console.log('🚀 ~ file: page.jsx:74 ~ AllProduct ~ page:', page);
 
@@ -116,8 +116,8 @@ const AllProduct = () => {
     };
     const [dataTable, setDataTable] = useState([]);
     useEffect(() => {
-        setDataTable(getProductsMutation?.data?.products);
-    }, [getProductsMutation?.data]);
+        setDataTable(getProductsQuery?.data?.products);
+    }, [getProductsQuery?.data]);
     console.log('🚀 ~ file: page.jsx:122 ~ AllProduct ~ dataTable:', dataTable);
     if (!dataTable) return <Loading />;
     return (
@@ -215,12 +215,14 @@ const AllProduct = () => {
                     </div>
                 </Modal>
             )}
-            <div className="">
+            <div className="relative">
+                {(getProductsQuery?.isLoading ||
+                    getProductsQuery?.isFetching) && <Loading />}
                 <DataTable
                     columns={columns}
                     data={dataTable}
-                    pageCount={getProductsMutation?.data?.pageCount}
-                    isLoading={getProductsMutation?.isLoading}
+                    pageCount={getProductsQuery?.data?.pageCount}
+                    isLoading={getProductsQuery?.isLoading}
                 />
             </div>
         </AccountTemplate>

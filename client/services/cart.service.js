@@ -11,5 +11,5 @@ export const deleteCart = async ({ userId, sellerId }) => {
     return (await api.delete(`/cart?query={${(userId, sellerId)}}`)).data;
 };
 export const getCartsByUserId = async (userId) => {
-    return (await api.get(`/cart?userId=${userId}`)).data;
+    return (await api.get(`/cart/${userId}`)).data;
 };

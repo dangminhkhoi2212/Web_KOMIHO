@@ -4,7 +4,12 @@ import ApiError from '../utils/apiError.js';
 export const create = async (req, res, next) => {
     try {
         const { productId, select } = req.body;
-        const result = await CartItem.create({ productId, select });
+
+        const result = await CartItem.findOneAndUpdate(
+            { productId },
+            { select },
+            { upsert: true, new: true },
+        );
 
         res.send(result);
     } catch (error) {
@@ -42,11 +47,12 @@ export const update = async (req, res, next) => {
 export const deleteCartItem = async (req, res, next) => {
     try {
         const data = req.query;
+
         const cartId = data?.cartId;
         const cartItemIds = JSON.parse(data?.cartItemIds);
 
         if (!cartItemIds.length)
-            return next(new ApiError(401, 'cartItemId not found.'));
+            return next(new ApiError(401, 'cartItemIds not found.'));
         if (!cartId) return next(new ApiError(401, 'cartId not found.'));
 
         await CartItem.deleteMany({ _id: { $in: cartItemIds } });
@@ -57,7 +63,12 @@ export const deleteCartItem = async (req, res, next) => {
             },
             { new: true },
         );
-
+        console.log(
+            '🚀 ~ file: cartItem.controller.js:70 ~ deleteCartItem ~ result:',
+            result,
+        );
+        if (result.products.length === 0)
+            await Cart.findByIdAndDelete(result._id);
         res.send({
             message: 'Delete successfully',
             ok: true,

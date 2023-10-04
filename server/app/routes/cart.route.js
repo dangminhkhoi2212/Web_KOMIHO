@@ -5,6 +5,6 @@ import {
     deleteCart,
 } from '../controllers/cart.controller.js';
 const router = express.Router();
-
-router.route('/').get(getCartsByUserId).post(addToCart).delete(deleteCart);
+router.route('/:userId').get(getCartsByUserId);
+router.route('/').post(addToCart).delete(deleteCart);
 export default router;

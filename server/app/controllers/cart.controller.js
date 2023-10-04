@@ -4,6 +4,10 @@ import ApiError from '../utils/apiError.js';
 export const addToCart = async (req, res, next) => {
     try {
         const { userId, sellerId, cartItemId } = req.body;
+        console.log(
+            '🚀 ~ file: cart.controller.js:7 ~ addToCart ~ userId, sellerId,:',
+            { userId, sellerId, cartItemId },
+        );
 
         const result = await Cart.findOneAndUpdate(
             { userId, sellerId },
@@ -63,7 +67,7 @@ export const deleteCart = async (req, res, next) => {
 };
 export const getCartsByUserId = async (req, res, next) => {
     try {
-        const { userId } = req.query;
+        const { userId } = req.params;
 
         if (!userId) return next(new ApiError(401, 'userId not found.'));
         const result = await Cart.find({
@@ -74,13 +78,10 @@ export const getCartsByUserId = async (req, res, next) => {
                 path: 'products',
                 populate: {
                     path: 'productId',
-                    select: 'active colors images public name',
+                    select: 'active colors images public name price',
                 },
             });
-        console.log(
-            '🚀 ~ file: cart.controller.js:85 ~ getCartsByUserId ~ result:',
-            result,
-        );
+
         res.send(result);
     } catch (error) {
         next(

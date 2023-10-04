@@ -12,5 +12,6 @@ router
     .route('/get-by-userId/:userId')
     .get(productController.getProductsByUserId);
 router.route('/:productId').get(productController.getProductByProductId);
+router.route('/').get(productController.getAll);
 
 export default router;

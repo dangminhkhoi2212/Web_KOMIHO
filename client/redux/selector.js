@@ -25,3 +25,9 @@ export const getChooseStatus = (state) => state.chooseProduct.status;
 export const getSelectProductInTable = (state) => state.selectProductInTable;
 // cart
 export const getCart = (state) => state.cart.list;
+//cart item
+export const getProductCartItem = (state) => state.cartItem.product;
+export const getSelectCartItem = (state) => state.cartItem.select;
+export const getCartItemId = (state) => state.cartItem.cartItemId;
+//select product in cart
+export const getSelectProductInCart = (state) => state.selectProductInCart.list;

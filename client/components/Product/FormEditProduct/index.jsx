@@ -66,8 +66,6 @@ const FormEditProduct = ({ product }) => {
         getValues,
     } = methods;
 
-    console.log('🚀 ~ file: index.jsx:67 ~ FormAddProduct ~ errors:', errors);
-
     const handleData = (data) => {
         if (data.description)
             data.description = draftToHtml(
@@ -115,7 +113,6 @@ const FormEditProduct = ({ product }) => {
             }
         },
         onError(error) {
-            console.log('🚀 ~ file: index.jsx:116 ~ onError ~ error:', error);
             toast.error(
                 'Update product failure. Please reload the page and try again',
             );
@@ -127,10 +124,6 @@ const FormEditProduct = ({ product }) => {
         const images = getValues('images');
         // listDeleted use to save list deleted images while case list deleted images don't update in time
         var listDeleted = Array.from(listDeletedImages) || [];
-        console.log(
-            '🚀 ~ file: index.jsx:130 ~ handleDeleteImages ~ listDeleted:',
-            listDeleted,
-        );
 
         if (originImages.length)
             originImages.forEach((origin) => {
@@ -161,10 +154,6 @@ const FormEditProduct = ({ product }) => {
                 // remove it from list deleted images
             });
 
-        console.log(
-            '🚀 ~ file: index.jsx:165 ~ handleDeleteImages ~ listDeleted:',
-            listDeleted,
-        );
         deleteImagesMutation.mutate(listDeleted);
     };
 

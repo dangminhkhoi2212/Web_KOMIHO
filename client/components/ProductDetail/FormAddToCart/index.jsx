@@ -15,6 +15,7 @@ import { useMutation } from '@tanstack/react-query';
 import { createCartItem } from '@/services/cartItem.service';
 import { data } from 'autoprefixer';
 import { addToCart } from '@/services/cart.service';
+import Loading from '@/components/Loading';
 const FormAddToCart = ({ product }) => {
     const userId = useSelector(getUserId);
     const router = useRouter();
@@ -46,10 +47,6 @@ const FormAddToCart = ({ product }) => {
             return createCartItem({ productId: product._id, select: data });
         },
         onSuccess(data) {
-            console.log(
-                '🚀 ~ file: index.jsx:51 ~ onSuccess ~ createCartItemMutation:',
-                data,
-            );
             const { _id } = data;
             addToCartMutation.mutate(_id);
         },
@@ -62,14 +59,13 @@ const FormAddToCart = ({ product }) => {
     });
     const addToCartMutation = useMutation({
         mutationFn: (cartItemId) => {
-            return addToCart({ userId, sellerId: product.userId, cartItemId });
+            return addToCart({
+                userId,
+                sellerId: product.userId._id,
+                cartItemId,
+            });
         },
         onSuccess(data) {
-            console.log(
-                '🚀 ~ file: index.jsx:57 ~ onSuccess ~ addToCartMutation:',
-                data,
-            );
-
             toast.success('This product has been added to the cart.');
         },
         onError(error) {
@@ -98,7 +94,15 @@ const FormAddToCart = ({ product }) => {
                     <Quantity />
                     <button
                         type="submit"
-                        className="bg-primary text-white font-medium rounded-md px-3 py-2 flex-1">
+                        disabled={
+                            createCartItemMutation.isLoading ||
+                            addToCartMutation.isLoading
+                        }
+                        className="bg-primary text-white font-medium rounded-md px-3 py-2 flex-1 relative overflow-hidden">
+                        {createCartItemMutation.isLoading ||
+                            (addToCartMutation.isLoading && (
+                                <Loading sizeProp={20} colorProp={'white'} />
+                            ))}
                         ADD TO CART
                     </button>
                 </div>

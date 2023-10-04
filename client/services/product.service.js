@@ -38,3 +38,6 @@ export const toggleActiveProduct = async ({ productId, active }) => {
         await api.get(`/product/active?productId=${productId}&active=${active}`)
     ).data;
 };
+export const getAllProducts = async () => {
+    return (await api.get('/product')).data;
+};

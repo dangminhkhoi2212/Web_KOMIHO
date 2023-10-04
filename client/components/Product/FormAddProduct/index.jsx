@@ -149,16 +149,16 @@ const FormAddProduct = () => {
     };
     const allowDeleted = useSelector(getAllowDeletedImages);
 
-    window.onbeforeunload = () => {
-        if (allowDeleted) {
-            deleteImagesMutation.mutate(listDeletedImages);
-        }
-    };
     useEffect(() => {
+        window.onbeforeunload = () => {
+            if (allowDeleted) {
+                deleteImagesMutation.mutate(listDeletedImages);
+            }
+        };
         return () => {
             window.onbeforeunload = null;
         };
-    }, []);
+    }, [listDeletedImages]);
 
     return (
         <FormProvider {...methods}>
