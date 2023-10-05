@@ -97,7 +97,7 @@ const deleteManyProducts = async (req, res, next) => {
         if (ids?.length > 0) {
             const manyProduct = await Product.find({ _id: { $in: ids } });
             if (manyProduct.length === 0)
-                return next(new ApiError('402', "List product don't find"));
+                return next(new ApiError(400, "List product don't find"));
 
             await Product.deleteMany({ _id: { $in: ids } });
             await User.findByIdAndUpdate(userId, {
@@ -108,7 +108,7 @@ const deleteManyProducts = async (req, res, next) => {
                 ok: true,
             });
         }
-        return next(new ApiError(402, 'List products empty'));
+        return next(new ApiError(400, 'List products empty'));
     } catch (error) {
         next(
             new ApiError(

@@ -81,6 +81,7 @@ const AllProduct = () => {
                 dispatch(removeChooseProduct());
                 queryClient.invalidateQueries(['products']);
                 toast.success('Delete products successfully.');
+                dispatch(resetSelectProductInTable());
                 setShowModalDeleteMany(false);
             }
         },
@@ -118,7 +119,6 @@ const AllProduct = () => {
     useEffect(() => {
         setDataTable(getProductsQuery?.data?.products);
     }, [getProductsQuery?.data]);
-    console.log('🚀 ~ file: page.jsx:122 ~ AllProduct ~ dataTable:', dataTable);
     if (!dataTable) return <Loading />;
     return (
         <AccountTemplate

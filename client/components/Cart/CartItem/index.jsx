@@ -5,7 +5,7 @@ import FormEditCartItem from '@/components/Cart/FormEditCartItem';
 import routes from '@/routes';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteCartItem, updateCartItem } from '@/services/cartItem.service';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,20 +21,25 @@ import clsx from 'clsx';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import {
     addSelectProductInCart,
+    clickOnProductInCart,
+    clickOnSellerProductInCart,
     removeSelectProductInCart,
 } from '@/redux/selectProductInCart';
 import Loading from '@/components/Loading';
+import selectProductInTable from '@/redux/selectProductInTable';
 
-const CartItem = ({ seller, products, cartId }) => {
+const CartItem = ({ seller, productsProp, cartId }) => {
+    const [products, setProducts] = useState(productsProp);
+
     const dispatch = useDispatch();
     const productCartItem = useSelector(getProductCartItem);
     const queryClient = useQueryClient();
+    const [cartItemsClick, setCartItemsClick] = useState([]);
+    const [sellerChecked, setSellerChecked] = useState(false);
     const selectProductInCart = useSelector(getSelectProductInCart);
-    console.log(
-        '🚀 ~ file: index.jsx:28 ~ cartItem ~ selectProductInCart:',
-        selectProductInCart,
-    );
-
+    useEffect(() => {
+        setProducts(productsProp);
+    }, [productsProp]);
     const deleteOneProductMutation = useMutation({
         mutationFn: (cartItemIds) => {
             console.log('🚀 ~ file: index.jsx:28 ~ cartItem ~ cartItemIds:', {
@@ -57,25 +62,38 @@ const CartItem = ({ seller, products, cartId }) => {
     const handleDeleteOneProduct = (cartItemId) => {
         deleteOneProductMutation.mutate([cartItemId]);
     };
+
     const handleClickOnSeller = (e) => {
         const checked = e.target.checked;
-        console.log(
-            '🚀 ~ file: index.jsx:58 ~ handleClickOnSeller ~ checked:',
-            checked,
-        );
-        if (checked) {
-            dispatch(addSelectProductInCart(products));
-        } else dispatch(removeSelectProductInCart(products));
+        dispatch(clickOnSellerProductInCart({ sellerId: seller._id, checked }));
     };
 
     const handleClickOnCartItem = (e, cartItem) => {
         const checked = e.target.checked;
-        if (checked) {
-            dispatch(addSelectProductInCart([cartItem]));
-        } else dispatch(removeSelectProductInCart([cartItem]));
+
+        dispatch(
+            clickOnProductInCart({
+                cartItemId: cartItem._id,
+                checked,
+                select: cartItem.select,
+            }),
+        );
     };
+    const checkSeller = () => {
+        const findSeller = selectProductInCart?.filter(
+            (cartItem) => cartItem.productId.userId === seller._id,
+        );
+        return findSeller.every((cartItem) => cartItem.checked === true);
+    };
+    useEffect(() => {
+        setSellerChecked(() => checkSeller());
+    }, [checkSeller()]);
+
+    if (!products) return <Loading />;
     return (
         <div className=" px-5 py-4 rounded-md  bg-white flex flex-col gap-5 relative">
+            {deleteOneProductMutation?.isLoading && <Loading />}
+
             {productCartItem && (
                 <Modal
                     label={'EDIT SELECTION'}
@@ -95,6 +113,7 @@ const CartItem = ({ seller, products, cartId }) => {
                         onChange={(e) => {
                             handleClickOnSeller(e);
                         }}
+                        checked={sellerChecked}
                         className="rounded-sm w-5 h-5 checked:bg-primary border-2 border-gray-200"
                     />
                 </div>
@@ -108,24 +127,23 @@ const CartItem = ({ seller, products, cartId }) => {
                 </div>
             </div>
             <div className="ring-1 ring-gray-200 rounded-md">
-                {products.map(({ _id, productId, select }, index) => (
-                    <div key={productId?._id} className="relative">
-                        {deleteOneProductMutation?.isLoading && <Loading />}
+                {products?.map(({ _id, productId, select, checked }, index) => (
+                    <div key={_id} className="relative">
                         <div className="grid grid-cols-12 rounded-md items-center py-2 place-items-center">
                             <div className="col-span-1 flex justify-center items-center ">
                                 <input
                                     type="checkbox"
                                     name="cart-item"
-                                    id=""
-                                    checked={selectProductInCart.some(
-                                        (cartItem) =>
-                                            cartItem?.productId?._id ===
-                                            productId?._id,
-                                    )}
+                                    id="cartItem"
+                                    checked={
+                                        selectProductInCart?.find(
+                                            (cartItem) => cartItem._id === _id,
+                                        ).checked
+                                    }
                                     onChange={(e) =>
                                         handleClickOnCartItem(e, {
                                             _id,
-                                            productId,
+                                            checked,
                                             select,
                                         })
                                     }
@@ -167,7 +185,7 @@ const CartItem = ({ seller, products, cartId }) => {
                                             </span>
                                         )}
                                     />
-                                    {productId?.price?.percent && (
+                                    {!!productId?.price?.percent && (
                                         <NumericFormat
                                             value={productId?.price?.final}
                                             thousandSeparator
@@ -181,7 +199,7 @@ const CartItem = ({ seller, products, cartId }) => {
                                         />
                                     )}
                                 </div>
-                                {productId?.price?.percent && (
+                                {!!productId?.price?.percent && (
                                     <span className=" px-2 py-1 text-white  font-medium rounded-md bg-red-500">
                                         {productId?.price?.percent}% OFF
                                     </span>

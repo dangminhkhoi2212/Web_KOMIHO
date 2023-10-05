@@ -8,6 +8,7 @@ const CartItemModel = new Schema(
             ref: 'Product',
             required: true,
         },
+
         select: {
             color: { type: String, required: true },
             size: { type: String, required: true },

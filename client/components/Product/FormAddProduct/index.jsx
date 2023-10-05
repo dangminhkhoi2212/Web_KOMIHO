@@ -30,25 +30,24 @@ import {
     removeDeletedImages,
     resetListDeletedImages,
 } from '@/redux/listDeletedImages';
-
+const initValue = {
+    originImages: [],
+    images: [],
+    name: '',
+    price: {
+        origin: '',
+        percent: '',
+        final: '',
+    },
+    colors: [{ name: '', sizes: [{ type: '', quantity: '' }] }],
+    tags: '',
+    store: 0,
+    description: EditorState.createEmpty(),
+};
 const FormAddProduct = () => {
     const listDeletedImages = useSelector(getListDeletedImages);
     const userId = useSelector(getUserId);
-    const [initValue, setInitValue] = useState({
-        userId,
-        originImages: [],
-        images: [],
-        name: '',
-        price: {
-            origin: '',
-            percent: '',
-            final: '',
-        },
-        colors: [{ name: '', sizes: [{ type: '', quantity: '' }] }],
-        tags: '',
-        store: 0,
-        description: EditorState.createEmpty(),
-    });
+
     useEffect(() => {
         dispatch(resetListDeletedImages());
     }, []);
@@ -62,6 +61,7 @@ const FormAddProduct = () => {
         control,
         getValues,
         reset,
+        resetField,
         formState: { errors },
         handleSubmit,
     } = methods;
@@ -69,6 +69,7 @@ const FormAddProduct = () => {
     console.log('🚀 ~ file: index.jsx:67 ~ FormAddProduct ~ errors:', errors);
 
     const handleData = (data) => {
+        data.userId = userId;
         if (data.description)
             data.description = draftToHtml(
                 convertToRaw(data.description.getCurrentContent()),
@@ -100,6 +101,10 @@ const FormAddProduct = () => {
             if (data.ok) {
                 window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
                 handleDeleteImages();
+                const colors = getValues('colors');
+                colors.forEach((_, index) => {
+                    resetField(`colors.${index}`);
+                });
                 reset(initValue);
                 toast.success('Add product successfully');
             }
@@ -148,17 +153,17 @@ const FormAddProduct = () => {
         deleteImagesMutation.mutate(listDeleted);
     };
     const allowDeleted = useSelector(getAllowDeletedImages);
-
-    useEffect(() => {
-        window.onbeforeunload = () => {
-            if (allowDeleted) {
-                deleteImagesMutation.mutate(listDeletedImages);
-            }
-        };
-        return () => {
-            window.onbeforeunload = null;
-        };
-    }, [listDeletedImages]);
+    if (window !== undefined)
+        useEffect(() => {
+            window.onbeforeunload = () => {
+                if (allowDeleted) {
+                    deleteImagesMutation.mutate(listDeletedImages);
+                }
+            };
+            return () => {
+                window.onbeforeunload = null;
+            };
+        }, [listDeletedImages]);
 
     return (
         <FormProvider {...methods}>

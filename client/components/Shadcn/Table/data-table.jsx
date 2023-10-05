@@ -19,7 +19,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import Pagination from '@/components/Pagination';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import {
     resetSelectProductInTable,
@@ -27,6 +27,7 @@ import {
 } from '@/redux/selectProductInTable';
 import { setPage } from '@/redux/filterSearchSlice';
 import Loading from '@/components/Loading';
+import { getSelectProductInTable } from '@/redux/selector';
 export function DataTable({ columns, data, pageCount, isLoading }) {
     const [rowSelection, setRowSelection] = useState({});
     const [sorting, setSorting] = useState([]);
@@ -47,25 +48,28 @@ export function DataTable({ columns, data, pageCount, isLoading }) {
     const dispatch = useDispatch();
 
     // add selected products to redux store
+    const productInTable = useSelector(getSelectProductInTable);
 
     useEffect(() => {
         const products = table
             .getFilteredSelectedRowModel()
             .rows.map((row) => row.original);
 
-        dispatch(setSelectProductInTable(products));
+        if (products.length) {
+            dispatch(setSelectProductInTable(products));
+        }
         return () => {
             dispatch(resetSelectProductInTable());
         };
-    }, [table.getFilteredSelectedRowModel().rows.length || []]);
+    }, [table.getFilteredSelectedRowModel().rows.length]);
     const handlePageClick = (page) => {
-        console.log(
-            '🚀 ~ file: data-table.jsx:61 ~ handlePageClick ~ page:',
-            page,
-        );
         dispatch(setPage(page + 1));
     };
-
+    useEffect(() => {
+        if (productInTable.length === 0) {
+            table.toggleAllPageRowsSelected(false);
+        }
+    }, [productInTable]);
     return (
         <div>
             {isLoading && <Loading />}
@@ -122,7 +126,7 @@ export function DataTable({ columns, data, pageCount, isLoading }) {
             </div>
 
             <Pagination
-                pageCount={pageCount}
+                pageCount={pageCount || 1}
                 handleEvent={(data) => handlePageClick(data)}
             />
         </div>

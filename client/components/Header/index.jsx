@@ -31,7 +31,7 @@ const Header = () => {
                 <div className="">
                     <Logo />
                 </div>
-                <Navigation />
+                {/* <Navigation /> */}
             </div>
             <div className="col-span-1 flex flex-col justify-between ">
                 <div className="col-span-1 text-2xl justify-end flex  mt-2">

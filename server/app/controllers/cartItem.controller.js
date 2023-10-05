@@ -6,7 +6,7 @@ export const create = async (req, res, next) => {
         const { productId, select } = req.body;
 
         const result = await CartItem.findOneAndUpdate(
-            { productId },
+            { productId, 'select.size': select.size },
             { select },
             { upsert: true, new: true },
         );

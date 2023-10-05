@@ -8,12 +8,13 @@ import { BiDownArrowAlt, BiUpArrowAlt, BiReset } from 'react-icons/bi';
 
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import clsx from 'clsx';
-const FormSizeAndQuantity = ({ indexColor, focusColor, control }) => {
+const FormSizeAndQuantity = ({ indexColor, focusColor }) => {
     const positionColor = `colors.${indexColor}`;
 
     const {
         reset,
         resetField,
+        control,
         formState: { errors },
     } = useFormContext();
 
@@ -22,6 +23,10 @@ const FormSizeAndQuantity = ({ indexColor, focusColor, control }) => {
         name: `${positionColor}.sizes`,
     });
     const [indexForm, setIndexForm] = useState(fields.length);
+    console.log(
+        '🚀 ~ file: index.jsx:25 ~ FormSizeAndQuantity ~ fields:',
+        fields,
+    );
 
     const handleFocus = (index) => {
         if (index < 0) index = 0;

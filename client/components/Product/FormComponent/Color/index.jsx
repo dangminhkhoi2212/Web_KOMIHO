@@ -13,7 +13,6 @@ import clsx from 'clsx';
 const FormColor = ({ control }) => {
     const {
         resetField,
-
         formState: { errors },
     } = useFormContext();
     const { fields, append, remove, move } = useFieldArray({

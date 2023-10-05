@@ -8,13 +8,18 @@ const Total = () => {
     const selectProductInCart = useSelector(getSelectProductInCart);
 
     const total = useMemo(() => {
-        const sum = selectProductInCart.reduce((sum, cartItem) => {
-            const finalPrice = cartItem.productId.price.final;
-            const quantity = cartItem.select.quantity;
-            sum += finalPrice * quantity;
+        if (selectProductInCart.length) {
+            const sum = selectProductInCart.reduce((sum, cartItem) => {
+                if (cartItem.checked) {
+                    const finalPrice = cartItem?.productId?.price?.final;
+                    const quantity = cartItem?.select?.quantity;
+                    sum += finalPrice * quantity;
+                }
+                return sum;
+            }, 0);
             return sum;
-        }, 0);
-        return sum;
+        }
+        return 0;
     }, [selectProductInCart]);
     return (
         <div className="px-5 py-4 rounded-md bg-white flex gap-8 justify-end items-center sticky bottom-0 border-t-2 border-accent">

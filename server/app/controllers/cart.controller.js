@@ -78,7 +78,7 @@ export const getCartsByUserId = async (req, res, next) => {
                 path: 'products',
                 populate: {
                     path: 'productId',
-                    select: 'active colors images public name price',
+                    select: 'active colors images public name price userId',
                 },
             });
 
