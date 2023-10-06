@@ -99,8 +99,8 @@ const FormAddProduct = () => {
         },
         onSuccess(data) {
             if (data.ok) {
-                if (typeof window !== 'undefined')
-                    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                // if (typeof window !== 'undefined')
+                //     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
                 handleDeleteImages();
                 const colors = getValues('colors');
                 colors.forEach((_, index) => {
