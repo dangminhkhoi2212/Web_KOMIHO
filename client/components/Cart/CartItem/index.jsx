@@ -29,6 +29,7 @@ import Loading from '@/components/Loading';
 import selectProductInTable from '@/redux/selectProductInTable';
 
 const CartItem = ({ seller, productsProp, cartId }) => {
+    const selectProductInCart = useSelector(getSelectProductInCart);
     const [products, setProducts] = useState(productsProp);
 
     const dispatch = useDispatch();
@@ -36,16 +37,11 @@ const CartItem = ({ seller, productsProp, cartId }) => {
     const queryClient = useQueryClient();
     const [cartItemsClick, setCartItemsClick] = useState([]);
     const [sellerChecked, setSellerChecked] = useState(false);
-    const selectProductInCart = useSelector(getSelectProductInCart);
     useEffect(() => {
         setProducts(productsProp);
     }, [productsProp]);
     const deleteOneProductMutation = useMutation({
         mutationFn: (cartItemIds) => {
-            console.log('🚀 ~ file: index.jsx:28 ~ cartItem ~ cartItemIds:', {
-                cartId,
-                cartItemIds,
-            });
             return deleteCartItem({ cartId, cartItemIds });
         },
         onSuccess(data) {
@@ -89,7 +85,7 @@ const CartItem = ({ seller, productsProp, cartId }) => {
         setSellerChecked(() => checkSeller());
     }, [checkSeller()]);
 
-    if (!products) return <Loading />;
+    if (!products) return <></>;
     return (
         <div className=" px-5 py-4 rounded-md  bg-white flex flex-col gap-5 relative">
             {deleteOneProductMutation?.isLoading && <Loading />}
@@ -138,7 +134,7 @@ const CartItem = ({ seller, productsProp, cartId }) => {
                                     checked={
                                         selectProductInCart?.find(
                                             (cartItem) => cartItem._id === _id,
-                                        ).checked
+                                        )?.checked || false
                                     }
                                     onChange={(e) =>
                                         handleClickOnCartItem(e, {

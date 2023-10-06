@@ -6,9 +6,11 @@ import { IoAddOutline } from 'react-icons/io5';
 import Link from 'next/link';
 import routes from '@/routes';
 import { useQuery } from '@tanstack/react-query';
+import Loading from '@/components/Loading';
 const All = ({ params }) => {
-    if (!params?.userId) return;
-
+    if (!params?.userId) return <></>;
+    const [products, setProducts] = useState([]);
+    console.log('🚀 ~ file: page.jsx:12 ~ All ~ products:', products);
     const getProductsQuery = useQuery({
         queryKey: ['store-all'],
         queryFn: () => {
@@ -16,12 +18,14 @@ const All = ({ params }) => {
                 userId: params.userId,
             });
         },
-        refetchOnWindowFocus: false,
     });
-    const product = getProductsQuery?.data?.products;
+    useEffect(() => {
+        setProducts(getProductsQuery?.data?.products);
+    }, [getProductsQuery?.data?.products]);
     return (
-        <>
-            {getProductsQuery?.data?.products?.length === 0 ? (
+        <div className="relative">
+            {getProductsQuery.isLoading && <Loading />}
+            {products?.length === 0 ? (
                 <div className="flex flex-col gap-3 justify-center items-center">
                     <p className="text-center">You haven't any product.</p>
                     <Link
@@ -33,12 +37,12 @@ const All = ({ params }) => {
                 </div>
             ) : (
                 <div className="grid grid-cols-5 justify-items-center gap-3">
-                    {getProductsQuery?.data?.products?.map((product) => (
+                    {products?.map((product) => (
                         <ProductCard product={product} key={product._id} />
                     ))}
                 </div>
             )}
-        </>
+        </div>
     );
 };
 

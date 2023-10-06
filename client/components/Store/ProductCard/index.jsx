@@ -7,7 +7,8 @@ import Link from 'next/link';
 import { FaStar } from 'react-icons/fa';
 
 const ProductCard = ({ product }) => {
-    if (!product) return;
+    if (!product) return <></>;
+    if (!product.active) return <></>;
     return (
         <div className="overflow-hidden bg-white rounded-md shadow-md hover:shadow-xl transition-all duration-300 ease-in-out w-[200px] text-start">
             <Link

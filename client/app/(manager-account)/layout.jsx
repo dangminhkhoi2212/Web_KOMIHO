@@ -1,9 +1,11 @@
 'use client';
 import Link from 'next/link';
 import { Suspense, createElement } from 'react';
-import { AiOutlineUser } from 'react-icons/ai';
+import { AiOutlineUser, AiOutlineLock } from 'react-icons/ai';
 import { LuClipboardList } from 'react-icons/lu';
-import { IoStorefrontOutline } from 'react-icons/io5';
+import { IoStorefrontOutline, IoLocationOutline } from 'react-icons/io5';
+import { RiDeleteBin6Line } from 'react-icons/ri';
+
 import { useSelector } from 'react-redux';
 import { getName, getUrlAvatar, getUserId } from '@/redux/selector';
 import routes from '@/routes';
@@ -18,18 +20,18 @@ const listParent = [
         link: routes.profile,
     },
     {
-        icon: IoStorefrontOutline,
+        icon: IoLocationOutline,
         name: 'Address',
         link: routes.address,
     },
     {
-        icon: LuClipboardList,
+        icon: AiOutlineLock,
         name: 'My Purchase',
         name: 'Password',
         link: routes.password,
     },
     {
-        icon: LuClipboardList,
+        icon: RiDeleteBin6Line,
         name: 'Delete Account',
         link: routes.deleteAccount,
     },
@@ -43,7 +45,11 @@ const layout = ({ children }) => {
         <div className="grid grid-cols-12 gap-5 items-start xl:mx-20 my-5">
             <div className="col-span-3 flex flex-col gap-5 justify-center items-center">
                 <div className="border-4 border-double py-3 w-full rounded-xl bg-white">
-                    <AvatarText name={name} src={UrlAvatar} text={'Manager'} />
+                    <AvatarText
+                        name={name}
+                        src={UrlAvatar}
+                        text={'Account Management'}
+                    />
                 </div>
                 <div className="flex flex-col  gap-2 bg-secondary px-6 py-5 w-full rounded-xl">
                     {listParent.map((item) => (

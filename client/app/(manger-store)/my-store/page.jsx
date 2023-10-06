@@ -61,6 +61,7 @@ const AllProduct = () => {
             return getProducts({
                 userId,
                 textSearch,
+                limit: 2,
                 page,
             });
         },
@@ -116,6 +117,7 @@ const AllProduct = () => {
         dispatch(setPage(1));
     };
     const [dataTable, setDataTable] = useState([]);
+    console.log('🚀 ~ file: page.jsx:119 ~ AllProduct ~ dataTable:', dataTable);
     useEffect(() => {
         setDataTable(getProductsQuery?.data?.products);
     }, [getProductsQuery?.data]);

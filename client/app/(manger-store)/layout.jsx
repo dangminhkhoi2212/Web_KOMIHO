@@ -1,24 +1,23 @@
 'use client';
 import Link from 'next/link';
 import { Suspense, createElement } from 'react';
-import { AiOutlineUser } from 'react-icons/ai';
-import { LuClipboardList } from 'react-icons/lu';
-import { IoStorefrontOutline } from 'react-icons/io5';
+import { LuLayoutDashboard } from 'react-icons/lu';
+import { HiOutlineViewGridAdd } from 'react-icons/hi';
 import { useSelector } from 'react-redux';
 import { getName, getUrlAvatar, getUserId } from '@/redux/selector';
+
 import routes from '@/routes';
 import AvatarText from '@/components/Avatar';
-import { AiOutlineDelete } from 'react-icons/ai';
 import Loading from '../loading';
 
 const listParent = [
     {
-        icon: AiOutlineUser,
+        icon: LuLayoutDashboard,
         name: 'All Products',
         link: routes.managerAllProducts,
     },
     {
-        icon: IoStorefrontOutline,
+        icon: HiOutlineViewGridAdd,
         name: 'Add Product',
         link: routes.managerAddProduct,
     },
@@ -32,7 +31,11 @@ const layout = ({ children }) => {
         <div className="grid grid-cols-12 gap-5 items-start  my-5">
             <div className="col-span-3 flex flex-col gap-5 justify-center items-center">
                 <div className="border-4 border-double py-3 w-full rounded-xl bg-white">
-                    <AvatarText name={name} src={UrlAvatar} text={'Manager'} />
+                    <AvatarText
+                        name={name}
+                        src={UrlAvatar}
+                        text={'Store Management'}
+                    />
                 </div>
                 <div className="flex flex-col  gap-2 bg-secondary px-6 py-5 w-full rounded-xl">
                     {listParent.map((item) => (

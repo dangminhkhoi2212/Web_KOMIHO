@@ -10,7 +10,7 @@ export const updateProduct = async (productId, data) => {
 export const getProducts = async ({
     userId = '',
     page = 1,
-    limit = 2,
+    limit = 9999,
     textSearch = '',
 }) => {
     return (

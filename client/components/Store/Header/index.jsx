@@ -32,13 +32,13 @@ const StoreHeader = ({ user }) => {
                     name={user?.name}
                     text={
                         <div className="row-span-1  flex gap-3 justify-center items-center text-gray-500">
-                            <button className="px-3 py-2 rounded-md bg-white ring-1 flex gap-2 items-center hover:bg-primary/20">
+                            <button className="px-3 py-2 rounded-md bg-white ring-1 flex gap-2 items-center hover:bg-primary/20 ">
                                 <VscAdd className="font-medium stroke-1" />
-                                <span>FOLLOW</span>
+                                <span>Follow</span>
                             </button>
-                            <button className="px-3 py-2 rounded-md bg-white ring-1 flex gap-2 items-center hover:bg-primary/20">
+                            <button className="px-3 py-2 rounded-md bg-white ring-1 flex gap-2 items-center hover:bg-primary/20 ">
                                 <BsChatRightHeartFill />
-                                <span>CHAT</span>
+                                <span>Chat</span>
                             </button>
                         </div>
                     }

@@ -51,6 +51,13 @@ const Cart = () => {
     }, [getCartsQuery?.data]);
 
     // useEffect(() => {
+    //     if (!selectProductInCart?.length) return;
+
+    //     setCartItems(getCartsQuery?.data);
+    //     const data = getCartsQuery?.data.map((cart) => cart.products);
+    //     dispatch(initSelectProductInCart(data.flat()));
+    // }, [selectProductInCart]);
+    // useEffect(() => {
     //     return () => dispatch(resetSelectProductInCart());
     // }, []);
 

@@ -11,8 +11,8 @@ import routes from '@/routes';
 import Cookies from 'js-cookie';
 import { resetAllReducers } from '@/redux/store';
 const listDropdown = [
-    { name: 'Manager Account', link: routes.profile },
-    { name: 'Manager Store', link: routes.managerAllProducts },
+    { name: 'Account', link: routes.profile },
+    { name: 'Store', link: routes.managerAllProducts },
 ];
 export default function DropdownItem() {
     const UrlAvatar = useSelector(getUrlAvatar);
@@ -42,7 +42,7 @@ export default function DropdownItem() {
                 />
                 {show && (
                     <div
-                        className="flex flex-col gap-1  absolute top-full bg-white shadow-md rounded-md p-2 ring-1 z-drop-down  break-words w-52
+                        className="flex flex-col gap-1  absolute top-full bg-white shadow-md rounded-md p-2 ring-1 z-drop-down  break-words w-40
                                 ">
                         {listDropdown.map((item) => (
                             <Link

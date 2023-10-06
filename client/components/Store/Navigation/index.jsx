@@ -8,13 +8,13 @@ import { useRouter, usePathname } from 'next/navigation';
 
 const Navigation = ({ userId }) => {
     const navs = [
-        { name: 'All', link: `/store/${userId}/all`, icon: DiGhostSmall },
-        {
-            name: 'Shirt',
-            link: `/store/${userId}/shirts`,
-            icon: LiaTshirtSolid,
-        },
-        { name: 'Pants', link: `/store/${userId}/pants`, icon: PiPantsDuotone },
+        { name: 'All', link: `/store/${userId}/`, icon: DiGhostSmall },
+        // {
+        //     name: 'Shirt',
+        //     link: `/store/${userId}/shirts`,
+        //     icon: LiaTshirtSolid,
+        // },
+        // { name: 'Pants', link: `/store/${userId}/pants`, icon: PiPantsDuotone },
     ];
     return (
         <div className=" text-md flex flex-col gap-1">

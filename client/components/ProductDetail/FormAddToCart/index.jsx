@@ -11,12 +11,13 @@ import { addProductToCart } from '@/redux/cartSlice';
 import { getCart, getUserId } from '@/redux/selector';
 import { useRouter } from 'next/navigation';
 import routes from '@/routes';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createCartItem } from '@/services/cartItem.service';
 import { addToCart } from '@/services/cart.service';
 import Loading from '@/components/Loading';
 import clsx from 'clsx';
 const FormAddToCart = ({ product }) => {
+    const queryClient = useQueryClient();
     const userId = useSelector(getUserId);
     const router = useRouter();
     const defaultValues = {
@@ -66,6 +67,7 @@ const FormAddToCart = ({ product }) => {
             });
         },
         onSuccess(data) {
+            queryClient.invalidateQueries(['carts']);
             toast.success('This product has been added to the cart.');
         },
         onError(error) {
@@ -90,8 +92,10 @@ const FormAddToCart = ({ product }) => {
                 onSubmit={handleSubmit(handleAddToCart)}
                 className="flex flex-col gap-5">
                 <Color colors={product?.colors} />
-                <div className="flex gap-3">
-                    <Quantity />
+                <div className="flex flex-col gap-3">
+                    <div>
+                        <Quantity />
+                    </div>
                     <button
                         type="submit"
                         disabled={
