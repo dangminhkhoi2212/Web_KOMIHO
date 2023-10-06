@@ -153,17 +153,17 @@ const FormAddProduct = () => {
         deleteImagesMutation.mutate(listDeleted);
     };
     const allowDeleted = useSelector(getAllowDeletedImages);
-    if (window !== undefined)
-        useEffect(() => {
-            window.onbeforeunload = () => {
-                if (allowDeleted) {
-                    deleteImagesMutation.mutate(listDeletedImages);
-                }
-            };
-            return () => {
-                window.onbeforeunload = null;
-            };
-        }, [listDeletedImages]);
+    // if (window !== undefined)
+    //     useEffect(() => {
+    //         window.onbeforeunload = () => {
+    //             if (allowDeleted) {
+    //                 deleteImagesMutation.mutate(listDeletedImages);
+    //             }
+    //         };
+    //         return () => {
+    //             window.onbeforeunload = null;
+    //         };
+    //     }, [listDeletedImages]);
 
     return (
         <FormProvider {...methods}>
