@@ -27,13 +27,9 @@ import cartItem from '@/redux/cartItem';
 const Cart = () => {
     const userId = useSelector(getUserId);
     const [cartItems, setCartItems] = useState([]);
-    console.log('🚀 ~ file: page.jsx:27 ~ Cart ~ cartItems:', cartItems);
-    const [checkedAll, setCheckedAll] = useState(false);
+
     const selectProductInCart = useSelector(getSelectProductInCart);
-    console.log(
-        '🚀 ~ file: page.jsx:29 ~ Cart ~ selectProductInCart:',
-        selectProductInCart,
-    );
+
     const dispatch = useDispatch();
     const getCartsQuery = useQuery({
         queryKey: ['carts'],
@@ -50,25 +46,6 @@ const Cart = () => {
         dispatch(initSelectProductInCart(data.flat()));
     }, [getCartsQuery?.data]);
 
-    // useEffect(() => {
-    //     if (!selectProductInCart?.length) return;
-
-    //     setCartItems(getCartsQuery?.data);
-    //     const data = getCartsQuery?.data.map((cart) => cart.products);
-    //     dispatch(initSelectProductInCart(data.flat()));
-    // }, [selectProductInCart]);
-    // useEffect(() => {
-    //     return () => dispatch(resetSelectProductInCart());
-    // }, []);
-
-    // const allCartItems = useMemo(() => {
-    //     const arr = [];
-
-    //     getCartsQuery?.data?.forEach((cart) => {
-    //         arr.push(...cart.products);
-    //     });
-    //     return arr;
-    // }, [getCartsQuery]);
     const handleOnClickAll = (e) => {
         const checked = e.target.checked;
         dispatch(clickAllSelectProductsInCart({ checked }));
@@ -78,7 +55,7 @@ const Cart = () => {
         <div className="px-20 flex flex-col gap-5 relative ">
             {getCartsQuery.isLoading ||
                 (getCartsQuery.isFetching && <LoadingCpn />)}
-            <div className="grid grid-cols-12 px-5 py-4 rounded-md bg-white">
+            <div className="grid grid-cols-12 px-5 py-4 rounded-md bg-white place-items-center">
                 <div className="col-span-1 flex justify-center items-center ">
                     <input
                         type="checkbox"
@@ -90,9 +67,10 @@ const Cart = () => {
                         className="rounded-sm w-5 h-5 checked:bg-primary border-2 border-gray-200"
                     />
                 </div>
-                <div className="col-span-6">Product</div>
+                <div className="col-span-4">Product</div>
                 <div className="col-span-2">Price</div>
-                <div className="col-span-2">Quantity</div>
+                <div className="col-span-3">Select</div>
+                <div className="col-span-1">Total</div>
                 <div className="col-span-1">Actions</div>
             </div>
             {cartItems?.length === 0 ? (

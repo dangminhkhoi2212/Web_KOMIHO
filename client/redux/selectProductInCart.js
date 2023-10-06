@@ -56,20 +56,14 @@ const selectProductInCart = createSlice({
         },
         clickOnProductInCart: (state, action) => {
             const { cartItemId, checked, select } = action.payload;
-            console.log(
-                '🚀 ~ file: selectProductInCart.js:59 ~ { cartItemId, checked, select } :',
-                { cartItemId, checked, select },
-            );
+
             state.list = state.list.map((cartItem) => {
                 const check =
                     cartItem._id === cartItemId &&
                     cartItem.select.size === select.size &&
                     cartItem.select.color === select.color &&
                     cartItem.select.quantity === select.quantity;
-                console.log(
-                    '🚀 ~ file: selectProductInCart.js:66 ~ state.list=state.list.map ~ check:',
-                    check,
-                );
+
                 if (check) {
                     return {
                         ...cartItem,
