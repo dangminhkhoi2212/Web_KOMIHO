@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { Suspense, createElement } from 'react';
-import { LuLayoutDashboard } from 'react-icons/lu';
+import { LuClipboardList, LuLayoutDashboard } from 'react-icons/lu';
 import { HiOutlineViewGridAdd } from 'react-icons/hi';
 import { useSelector } from 'react-redux';
 import { getName, getUrlAvatar, getUserId } from '@/redux/selector';
@@ -20,6 +20,11 @@ const listParent = [
         icon: HiOutlineViewGridAdd,
         name: 'Add Product',
         link: routes.managerAddProduct,
+    },
+    {
+        icon: LuClipboardList,
+        name: 'Order Management',
+        link: routes.managerOrder,
     },
 ];
 const layout = ({ children }) => {
@@ -64,7 +69,7 @@ const layout = ({ children }) => {
                     ))}
                 </div>
             </div>
-            <div className="col-span-9 xl:p-5  rounded-xl bg-white relative min-h-[250px]">
+            <div className="col-span-9 xl:p-5  rounded-xl  relative min-h-[250px]">
                 <Suspense fallback={<Loading />}>{children}</Suspense>
             </div>
         </div>

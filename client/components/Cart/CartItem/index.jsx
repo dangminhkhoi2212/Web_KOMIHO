@@ -5,47 +5,40 @@ import FormEditCartItem from '@/components/Cart/FormEditCartItem';
 import routes from '@/routes';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteCartItem, updateCartItem } from '@/services/cartItem.service';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetCartItem, setCartItem } from '@/redux/cartItem';
-import {
-    getCartItemId,
-    getProductCartItem,
-    getSelectCartItem,
-    getSelectProductInCart,
-} from '@/redux/selector';
+import { getProductCartItem, getCartList, getUserId } from '@/redux/selector';
 import { NumericFormat } from 'react-number-format';
 import clsx from 'clsx';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import {
-    addSelectProductInCart,
     clickOnProductInCart,
     clickOnSellerProductInCart,
-    removeSelectProductInCart,
-} from '@/redux/selectProductInCart';
+    setCartLength,
+} from '@/redux/cartSlice';
 import Loading from '@/components/Loading';
-import selectProductInTable from '@/redux/selectProductInTable';
+import { deleteCart } from '@/services/cart.service';
+import { Badge } from 'flowbite-react';
 
-const CartItem = ({ seller, productsProp, cartId }) => {
-    const selectProductInCart = useSelector(getSelectProductInCart);
+const CartItem = ({ seller, productsProp }) => {
+    const selectProductInCart = useSelector(getCartList);
     const [products, setProducts] = useState(productsProp);
-
+    const userId = useSelector(getUserId);
     const dispatch = useDispatch();
-    const productCartItem = useSelector(getProductCartItem);
+    const [chooseCartItem, setChooseCartItem] = useState(null);
     const queryClient = useQueryClient();
-    const [cartItemsClick, setCartItemsClick] = useState([]);
     const [sellerChecked, setSellerChecked] = useState(false);
     useEffect(() => {
         setProducts(productsProp);
     }, [productsProp]);
     const deleteOneProductMutation = useMutation({
-        mutationFn: (cartItemIds) => {
-            return deleteCartItem({ cartId, cartItemIds });
+        mutationFn: (cartIds) => {
+            return deleteCart({ userId, cartIds });
         },
         onSuccess(data) {
-            queryClient.invalidateQueries(['carts']);
+            queryClient.invalidateQueries(['cart']);
+            dispatch(setCartLength({ cartLength: data.cartLength }));
         },
         onError(error) {
             toast.error(
@@ -77,7 +70,7 @@ const CartItem = ({ seller, productsProp, cartId }) => {
     };
     const checkSeller = () => {
         const findSeller = selectProductInCart?.filter(
-            (cartItem) => cartItem.productId.userId === seller._id,
+            (cartItem) => cartItem.productId.userId._id === seller._id,
         );
         return findSeller.every((cartItem) => cartItem.checked === true);
     };
@@ -90,14 +83,19 @@ const CartItem = ({ seller, productsProp, cartId }) => {
         <div className=" px-5 py-4 rounded-md  bg-white flex flex-col gap-5 relative">
             {deleteOneProductMutation?.isLoading && <Loading />}
 
-            {productCartItem && (
+            {chooseCartItem && (
                 <Modal
                     label={'EDIT SELECTION'}
                     handleEvent={() => {
-                        dispatch(resetCartItem());
+                        setChooseCartItem(false);
                     }}>
-                    <p className="mb-3 font-medium">{productCartItem.name}</p>
-                    <FormEditCartItem product={productCartItem} />
+                    <p className="mb-3 font-medium">
+                        {chooseCartItem.product.name}
+                    </p>
+                    <FormEditCartItem
+                        cartItem={chooseCartItem}
+                        handleEvent={() => setChooseCartItem(null)}
+                    />
                 </Modal>
             )}
             <div className="grid grid-cols-12 ">
@@ -162,8 +160,8 @@ const CartItem = ({ seller, productsProp, cartId }) => {
                                     {productId?.name}
                                 </div>
                             </Link>
-                            <div className="col-span-2 flex gap-3 items-center text-xs">
-                                <div className="inline-flex flex-col gap-2">
+                            <div className="col-span-2 flex gap-3 items-start text-xs">
+                                <div className="inline-flex flex-col  gap-2">
                                     <NumericFormat
                                         value={productId?.price?.origin}
                                         thousandSeparator
@@ -196,9 +194,9 @@ const CartItem = ({ seller, productsProp, cartId }) => {
                                     )}
                                 </div>
                                 {!!productId?.price?.percent && (
-                                    <span className=" px-2 py-1 text-white  font-medium rounded-md bg-red-500">
+                                    <Badge color={'red'}>
                                         {productId?.price?.percent}% OFF
-                                    </span>
+                                    </Badge>
                                 )}
                             </div>
                             <div className="col-span-3 ">
@@ -206,13 +204,18 @@ const CartItem = ({ seller, productsProp, cartId }) => {
                                     className="flex gap-5 text-sm ring-1 ring-gray-200 px-3 py-2 rounded-md hover:bg-primary/20 hover:ring-0 "
                                     type="button"
                                     onClick={() => {
-                                        dispatch(
-                                            setCartItem({
-                                                product: productId,
-                                                cartItemId: _id,
-                                                select,
-                                            }),
-                                        );
+                                        setChooseCartItem({
+                                            cartId: _id,
+                                            product: productId,
+                                            select,
+                                        });
+                                        // dispatch(
+                                        //     setCartItem({
+                                        //         product: productId,
+                                        //         cartItemId: _id,
+                                        //         select,
+                                        //     }),
+                                        // );
                                     }}>
                                     <span className="flex flex-col gap-1">
                                         <span className="font-semibold">
@@ -260,7 +263,7 @@ const CartItem = ({ seller, productsProp, cartId }) => {
                                 </button>
                             </div>
                         </div>
-                        {index !== 0 && index < products.length && <hr />}
+                        {index < products.length - 1 && <hr />}
                     </div>
                 ))}
             </div>

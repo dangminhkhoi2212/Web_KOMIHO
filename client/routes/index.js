@@ -19,9 +19,11 @@ const routes = {
     password: '/my-account/password',
     myPurchase: '/my-account/my-purchases',
     deleteAccount: '/my-account/delete-account',
+
     myStore: '/my-store',
     managerAllProducts: '/my-store',
     managerAddProduct: '/my-store/add-product',
+    managerOrder: '/my-store/order',
 
     aboutUs: '/supports/about-us',
     returnPolicy: '/supports/return-policy',
@@ -31,5 +33,6 @@ const routes = {
     productDetail: (productId) => `/detail/${productId}`,
 
     cart: '/cart',
+    order: '/order',
 };
 export default routes;

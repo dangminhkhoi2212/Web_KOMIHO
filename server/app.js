@@ -24,7 +24,7 @@ import mailRouter from './app/routes/mail.route.js';
 import categoryRouter from './app/routes/category.route.js';
 import imageRouter from './app/routes/image.route.js';
 import cartRouter from './app/routes/cart.route.js';
-import cartItemRouter from './app/routes/cartItem.route.js';
+import orderRouter from './app/routes/order.route.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,7 +60,7 @@ app.use('/api/service/mail', mailRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/image', imageRouter);
 app.use('/api/cart', cartRouter);
-app.use('/api/cart-item', cartItemRouter);
+app.use('/api/order', orderRouter);
 
 //handle error
 app.use((rep, res, next) => {

@@ -6,16 +6,13 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { addToCartSchema } from '@/utils/validation';
 import { toast } from 'react-toastify';
 import Quantity from '@/components/Cart/FormEditCartItem/Quantity';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updateCartItem } from '@/services/cartItem.service';
 
-import { resetCartItem } from '@/redux/cartItem';
-import { getCartItemId, getSelectCartItem } from '@/redux/selector';
-import { updateSelectOneCartItem } from '@/redux/selectProductInCart';
-const FormAddToCart = ({ product }) => {
-    const cartItemId = useSelector(getCartItemId);
-    const select = useSelector(getSelectCartItem);
+import { updateCart } from '@/services/cart.service';
+const FormAddToCart = ({ cartItem, handleEvent }) => {
+    const { cartId, select, product } = cartItem;
+
     const defaultValues = {
         colors: product?.colors,
         size: select?.size,
@@ -31,7 +28,6 @@ const FormAddToCart = ({ product }) => {
         formState: { errors },
     } = methods;
 
-    const dispatch = useDispatch();
     const queryClient = useQueryClient();
     useEffect(() => {
         toast.error(
@@ -43,14 +39,12 @@ const FormAddToCart = ({ product }) => {
 
     const updateCartItemMutation = useMutation({
         mutationFn: (select) => {
-            const data = { cartItemId, select };
-
-            return updateCartItem(data);
+            return updateCart({ cartId, select });
         },
         onSuccess(data) {
-            queryClient.invalidateQueries(['carts']);
-            dispatch(resetCartItem());
-            dispatch(updateSelectOneCartItem(data));
+            queryClient.invalidateQueries(['cart']);
+            toast.success('This product has updated successfully.');
+            if (handleEvent) handleEvent();
         },
         onError(error) {
             toast.error(

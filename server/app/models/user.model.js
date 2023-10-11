@@ -9,6 +9,7 @@ const UserSchema = new Schema(
             required: true,
             trim: true,
             unique: true,
+            lowercase: true,
         },
         phone: {
             type: String,

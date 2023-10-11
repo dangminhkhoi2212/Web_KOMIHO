@@ -153,7 +153,18 @@ export const columns = [
             );
         },
         cell: ({ row }) => {
-            return <p className="text-center">{row.getValue('store')}</p>;
+            const colors = row.original.colors;
+
+            const store = colors.reduce((sum, color) => {
+                const sizes = color.sizes;
+                const subSum = sizes.reduce((sum, size) => {
+                    sum += size.quantity;
+                    return sum;
+                }, 0);
+                sum += subSum;
+                return sum;
+            }, 0);
+            return <p className="text-center">{store}</p>;
         },
     },
     {

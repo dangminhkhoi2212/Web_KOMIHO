@@ -17,8 +17,7 @@ import listDeletedImagesReducer from './listDeletedImages';
 import chooseProductReducer from './chooseProductSlice';
 import selectProductInTableReducer from './selectProductInTable';
 import cartReducer from './cartSlice';
-import cartItemReducer from './cartItem';
-import selectProductInCartReducer from './selectProductInCart';
+import checkOutReducer from './checkoutSlice';
 const persistConfig = {
     key: 'user',
     version: 1,
@@ -30,7 +29,6 @@ const persistConfigCart = {
     storage,
 };
 const persistedReducerAdmin = persistReducer(persistConfig, userReducer);
-const persistedReducerCart = persistReducer(persistConfigCart, cartReducer);
 const store = configureStore({
     reducer: {
         user: persistedReducerAdmin,
@@ -39,9 +37,8 @@ const store = configureStore({
         listDeletedImages: listDeletedImagesReducer,
         chooseProduct: chooseProductReducer,
         selectProductInTable: selectProductInTableReducer,
-        cart: persistedReducerCart,
-        cartItem: cartItemReducer,
-        selectProductInCart: selectProductInCartReducer,
+        cart: cartReducer,
+        checkOut: checkOutReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

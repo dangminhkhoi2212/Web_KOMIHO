@@ -29,7 +29,7 @@ const Auth = ({ children }) => {
                 <QueryClientProvider client={queryClient}>
                     <UserLogin>
                         <div className=" flex flex-col justify-between  ">
-                            <ToastContainer />
+                            <ToastContainer position="bottom-right" />
                             <Header />
                             <div className="bg-default py-4 lg:px-20 min-h-[400px]  relative z-container">
                                 <BreadCrumb />

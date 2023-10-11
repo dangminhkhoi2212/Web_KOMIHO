@@ -12,6 +12,7 @@ import routes from '@/routes';
 import AvatarText from '@/components/Avatar';
 import { AiOutlineDelete } from 'react-icons/ai';
 import Loading from '../loading';
+import { HiOutlineClipboardList } from 'react-icons/hi';
 
 const listParent = [
     {
@@ -25,8 +26,12 @@ const listParent = [
         link: routes.address,
     },
     {
-        icon: AiOutlineLock,
+        icon: HiOutlineClipboardList,
         name: 'My Purchase',
+        link: routes.myPurchase,
+    },
+    {
+        icon: AiOutlineLock,
         name: 'Password',
         link: routes.password,
     },
@@ -78,7 +83,7 @@ const layout = ({ children }) => {
                     ))}
                 </div>
             </div>
-            <div className="col-span-9 xl:p-5  rounded-xl bg-white relative min-h-[250px]">
+            <div className="col-span-9  relative min-h-[250px]">
                 <Suspense fallback={<Loading />}>{children}</Suspense>
             </div>
         </div>

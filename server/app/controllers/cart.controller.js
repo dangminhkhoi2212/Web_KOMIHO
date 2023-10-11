@@ -1,35 +1,39 @@
+import mongoose from 'mongoose';
 import Cart from '../models/cart.model.js';
 import ApiError from '../utils/apiError.js';
 
 export const addToCart = async (req, res, next) => {
     try {
-        const { userId, sellerId, cartItemId } = req.body;
-        console.log(
-            '🚀 ~ file: cart.controller.js:7 ~ addToCart ~ userId, sellerId,:',
-            { userId, sellerId, cartItemId },
-        );
+        const { userId, sellerId, productId, select } = req.body;
 
         const result = await Cart.findOneAndUpdate(
-            { userId, sellerId },
             {
-                $addToSet: { products: cartItemId },
+                userId,
+                sellerId,
+                productId,
+                'select.color': select.color,
+                'select.size': select.size,
+            },
+            {
+                userId,
+                sellerId,
+                productId,
+                productId,
+                select,
             },
             {
                 new: true,
                 upsert: true,
             },
         );
-
+        const cartLength = await Cart.countDocuments({ userId });
         res.send({
             message: 'Add product to your cart successfully',
             ok: true,
             result,
+            cartLength,
         });
     } catch (error) {
-        console.log(
-            '🚀 ~ file: cart.controller.js:17 ~ create ~ error:',
-            error,
-        );
         next(
             new ApiError(
                 error.code || 500,
@@ -38,23 +42,36 @@ export const addToCart = async (req, res, next) => {
         );
     }
 };
+export const updateCart = async (req, res, next) => {
+    try {
+        const { cartId, select } = req.body;
+        if (!cartId) return next(new ApiError(400, 'CartId not found'));
+        const result = await Cart.findByIdAndUpdate(
+            cartId,
+            { select },
+            { new: true },
+        );
+        res.send({ ok: true, result });
+    } catch (error) {
+        next(
+            new ApiError(
+                error.code || 500,
+                error.message || error || 'Can not update this cart.',
+            ),
+        );
+    }
+};
 export const deleteCart = async (req, res, next) => {
     try {
-        const { userId, sellerId } = req.params.query;
-        const query = {};
+        const { userId, cartIds } = req.query;
+        if (!userId) return next(new ApiError(400, 'userId not found'));
 
-        if (userId) {
-            query.userId = userId;
-        }
-        if (sellerId) {
-            query.sellerId;
-        }
-        await Cart.deleteMany(query);
-        res.send({
-            message: 'Delete cart successfully',
+        await Cart.deleteMany({ _id: { $in: JSON.parse(cartIds) } });
+        const cartLength = await Cart.countDocuments({ userId });
+        return res.send({
             ok: true,
-            userId,
-            sellerId,
+            msg: `Deleted cart with ids ${cartIds} `,
+            cartLength,
         });
     } catch (error) {
         next(
@@ -65,23 +82,67 @@ export const deleteCart = async (req, res, next) => {
         );
     }
 };
-export const getCartsByUserId = async (req, res, next) => {
+export const getCart = async (req, res, next) => {
     try {
-        const { userId } = req.params;
+        const { userId, getLength, cartIds } = req.query;
 
         if (!userId) return next(new ApiError(401, 'userId not found.'));
-        const result = await Cart.find({
-            userId,
-        })
-            .populate({ path: 'sellerId', select: 'name avatar' })
-            .populate({
-                path: 'products',
-                populate: {
-                    path: 'productId',
-                    select: 'active colors images public name price userId',
-                },
-            });
+        if (getLength === 'yes') {
+            const cartLength = await Cart.countDocuments({ userId });
+            return res.send({ cartLength });
+        }
+        var agg = [];
+        agg.push({
+            $match: {
+                userId: new mongoose.Types.ObjectId(userId),
+            },
+        });
 
+        if (cartIds) {
+            const cartIdsTemp = JSON.parse(cartIds).map(
+                (id) => new mongoose.Types.ObjectId(id),
+            );
+
+            if (cartIdsTemp?.length) {
+                agg.push({
+                    $match: { _id: { $in: cartIdsTemp } },
+                });
+            }
+        }
+        agg.push({
+            $group: {
+                _id: {
+                    userId: '$userId',
+                    sellerId: '$sellerId',
+                },
+                products: {
+                    $push: {
+                        _id: '$_id',
+                        productId: '$productId',
+                        select: '$select',
+                    },
+                },
+            },
+        });
+        agg = [...agg, { $sort: { _id: 1 } }];
+        const result_agg = await Cart.aggregate(agg);
+        const result = await Cart.populate(result_agg, [
+            {
+                path: '_id.sellerId',
+                model: 'User',
+                select: 'name avatar address',
+            },
+            {
+                path: 'products.productId',
+                model: 'Product',
+                select: '-description',
+                populate: {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'name avatar',
+                },
+            },
+        ]);
         res.send(result);
     } catch (error) {
         next(

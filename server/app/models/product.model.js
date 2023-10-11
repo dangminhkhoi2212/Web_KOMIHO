@@ -31,7 +31,7 @@ const ProductSchema = new Schema(
         images: [{ url: { type: String }, public_id: { type: String } }],
         views: { type: Number, default: 0 },
         sold: { type: Number, default: 0 },
-        store: { type: Number, default: 0 },
+
         public: { type: Boolean, default: true },
         active: { type: Boolean, default: true },
     },

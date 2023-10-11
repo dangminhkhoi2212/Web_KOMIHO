@@ -2,55 +2,69 @@
 import AccountTemplate from '@/components/Account/AccountTemplate';
 import Loading from '@/components/Loading';
 import MenuBar from '@/components/MenuBar';
-const PurchaseItem = dynamic(() =>
-    import('@/components/Purchases/PurchaseItem'),
-);
+import PurchaseItem from '@/components/Purchases/PurchaseItem';
 import { getUserId } from '@/redux/selector';
 import routes from '@/routes';
 import { getOrder } from '@/services/order.service';
 import { useQuery } from '@tanstack/react-query';
-import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import React from 'react';
+import { LuClipboardList } from 'react-icons/lu';
 import { useSelector } from 'react-redux';
 
-const navs = [
+const tabs = [
     { name: 'All', tab: 'all', active: true },
-    { name: 'Pending', tab: 'pending', active: false },
+    {
+        name: 'Pending',
+        tab: 'pending',
+        active: false,
+    },
+    {
+        name: 'Cancelled',
+        tab: 'cancelled',
+        active: false,
+    },
     {
         name: 'Delivering',
         tab: 'delivering',
         active: false,
     },
-    { name: 'Delivered', tab: 'delivered', active: false },
-    { name: 'Cancelled', tab: 'cancelled', active: false },
+    {
+        name: 'Delivered',
+        tab: 'delivered',
+        active: false,
+    },
+    {
+        name: 'Delivery failed',
+        tab: 'delivery-failed',
+        active: false,
+    },
 ];
-const MyPurchases = () => {
-    const userId = useSelector(getUserId);
+const OrderManagement = () => {
     const router = useRouter();
+    const userId = useSelector(getUserId);
     const status = useSearchParams().get('status');
 
     const getOrderQuery = useQuery({
         queryKey: ['order', status],
         queryFn: () => {
-            var data = { userId };
-            if (status) data = { ...data, status: status };
-            return getOrder(data);
+            return getOrder({ sellerId: userId, status });
         },
     });
 
     const handleSelectTab = (tab) => {
-        const url =
+        const query =
             tab === 'all'
-                ? `${routes.myPurchase}`
-                : `${routes.myPurchase}?status=${tab}`;
-        router.replace(url);
+                ? `${routes.managerOrder}`
+                : `${routes.managerOrder}?status=${tab}`;
+
+        router.replace(query);
     };
     return (
         <div className="flex flex-col gap-3">
-            <AccountTemplate title={'MY PURCHASES'}>
+            <AccountTemplate title={'ORDER MANAGEMENT'}>
                 <MenuBar
-                    list={navs}
+                    list={tabs}
                     handleEvent={(tab) => handleSelectTab(tab)}
                 />
             </AccountTemplate>
@@ -66,6 +80,7 @@ const MyPurchases = () => {
                         <PurchaseItem
                             purchase={orderItem}
                             key={orderItem._id}
+                            isManager={true}
                         />
                     );
                 })}
@@ -74,4 +89,4 @@ const MyPurchases = () => {
     );
 };
 
-export default MyPurchases;
+export default OrderManagement;

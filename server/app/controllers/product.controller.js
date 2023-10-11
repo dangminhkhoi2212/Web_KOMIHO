@@ -39,7 +39,7 @@ const deleteOnCloudinary = async (userId) => {
 };
 const addProduct = async (req, res, next) => {
     try {
-        var { name, userId, price, colors, images, tags, description, store } =
+        var { name, userId, price, colors, images, tags, description } =
             req.body;
 
         await Product.create({
@@ -50,7 +50,6 @@ const addProduct = async (req, res, next) => {
             images,
             tags,
             description,
-            store,
         });
         await User.findByIdAndUpdate(userId, { $inc: { productTotal: 1 } });
         res.send({ message: 'Add successfully', ok: true });

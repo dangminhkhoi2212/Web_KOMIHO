@@ -7,17 +7,15 @@ import { addToCartSchema } from '@/utils/validation';
 import { toast } from 'react-toastify';
 import Quantity from './Quantity';
 import { useDispatch, useSelector } from 'react-redux';
-import { addProductToCart } from '@/redux/cartSlice';
-import { getCart, getUserId } from '@/redux/selector';
+import { setCartLength } from '@/redux/cartSlice';
+import { getUserId } from '@/redux/selector';
 import { useRouter } from 'next/navigation';
 import routes from '@/routes';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createCartItem } from '@/services/cartItem.service';
+import { useMutation } from '@tanstack/react-query';
 import { addToCart } from '@/services/cart.service';
 import Loading from '@/components/Loading';
 import clsx from 'clsx';
 const FormAddToCart = ({ product }) => {
-    const queryClient = useQueryClient();
     const userId = useSelector(getUserId);
     const router = useRouter();
     const defaultValues = {
@@ -35,7 +33,6 @@ const FormAddToCart = ({ product }) => {
     } = methods;
 
     const dispatch = useDispatch();
-    const cart = useSelector(getCart);
     useEffect(() => {
         toast.error(
             errors?.color?.message ||
@@ -43,31 +40,18 @@ const FormAddToCart = ({ product }) => {
                 errors?.quantity?.message,
         );
     }, [errors]);
-    const createCartItemMutation = useMutation({
-        mutationFn: (data) => {
-            return createCartItem({ productId: product._id, select: data });
-        },
-        onSuccess(data) {
-            const { _id } = data;
-            addToCartMutation.mutate(_id);
-        },
-        onError(error) {
-            toast.error(
-                error?.response?.data?.message ||
-                    'An error occurred, please try again.',
-            );
-        },
-    });
+
     const addToCartMutation = useMutation({
-        mutationFn: (cartItemId) => {
+        mutationFn: (select) => {
             return addToCart({
                 userId,
                 sellerId: product.userId._id,
-                cartItemId,
+                productId: product._id,
+                select,
             });
         },
         onSuccess(data) {
-            queryClient.invalidateQueries(['carts']);
+            dispatch(setCartLength({ cartLength: data.cartLength }));
             toast.success('This product has been added to the cart.');
         },
         onError(error) {
@@ -81,7 +65,7 @@ const FormAddToCart = ({ product }) => {
         if (!userId) {
             router.push(routes.login);
         } else {
-            createCartItemMutation.mutate(data);
+            addToCartMutation.mutate(data);
             //add selected product to cartItem
             //add cartItem to cart
         }
@@ -99,7 +83,6 @@ const FormAddToCart = ({ product }) => {
                     <button
                         type="submit"
                         disabled={
-                            createCartItemMutation.isLoading ||
                             addToCartMutation.isLoading ||
                             userId === product?.userId?._id
                         }
@@ -110,10 +93,9 @@ const FormAddToCart = ({ product }) => {
                                     userId === product?.userId?._id,
                             },
                         )}>
-                        {createCartItemMutation.isLoading ||
-                            (addToCartMutation.isLoading && (
-                                <Loading sizeProp={20} colorProp={'white'} />
-                            ))}
+                        {addToCartMutation.isLoading && (
+                            <Loading sizeProp={20} colorProp={'white'} />
+                        )}
                         ADD TO CART
                     </button>
                 </div>

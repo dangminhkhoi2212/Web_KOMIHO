@@ -1,7 +1,7 @@
 'use client';
-import { getSelectProductInCart, getUserId } from '@/redux/selector';
-import { getCartsByUserId } from '@/services/cart.service';
-import { useQuery } from '@tanstack/react-query';
+import { getCartList, getUserId } from '@/redux/selector';
+import { getCart } from '@/services/cart.service';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import React, {
     Suspense,
     useCallback,
@@ -12,30 +12,28 @@ import React, {
 import { useDispatch, useSelector } from 'react-redux';
 import CartItem from '@/components/Cart/CartItem';
 import LoadingCpn from '@/components/Loading';
-import { Button } from '@/components/ui/button';
-import { NumericFormat } from 'react-number-format';
 import {
-    addSelectProductInCart,
     clickAllSelectProductsInCart,
     initSelectProductInCart,
     resetSelectProductInCart,
-} from '@/redux/selectProductInCart';
+} from '@/redux/cartSlice';
 import Total from '@/components/Cart/Total';
 import Loading from './loading';
-import cartItem from '@/redux/cartItem';
+import { resetCheckOut } from '@/redux/checkoutSlice';
 
 const Cart = () => {
     const userId = useSelector(getUserId);
     const [cartItems, setCartItems] = useState([]);
 
-    const selectProductInCart = useSelector(getSelectProductInCart);
+    const selectProductInCart = useSelector(getCartList);
 
     const dispatch = useDispatch();
     const getCartsQuery = useQuery({
-        queryKey: ['carts'],
+        queryKey: ['cart'],
         queryFn: () => {
-            return getCartsByUserId(userId);
+            return getCart({ userId });
         },
+        refetchOnWindowFocus: false,
     });
 
     useEffect(() => {
@@ -59,9 +57,11 @@ const Cart = () => {
                 <div className="col-span-1 flex justify-center items-center ">
                     <input
                         type="checkbox"
-                        checked={selectProductInCart?.every(
-                            (cartItem) => cartItem.checked === true,
-                        )}
+                        checked={
+                            selectProductInCart?.every(
+                                (cartItem) => cartItem.checked === true,
+                            ) && selectProductInCart.length !== 0
+                        }
                         name="cart-item"
                         onChange={(e) => handleOnClickAll(e)}
                         className="rounded-sm w-5 h-5 checked:bg-primary border-2 border-gray-200"
@@ -80,12 +80,11 @@ const Cart = () => {
             ) : (
                 <Suspense fallback={<Loading />}>
                     {getCartsQuery.isLoading && <Loading />}
-                    {cartItems?.map((cartItem) => (
-                        <div key={cartItem._id}>
+                    {cartItems?.map((cartItem, index) => (
+                        <div key={index}>
                             <CartItem
-                                seller={cartItem.sellerId}
+                                seller={cartItem._id.sellerId}
                                 productsProp={cartItem.products}
-                                cartId={cartItem._id}
                             />
                         </div>
                     ))}

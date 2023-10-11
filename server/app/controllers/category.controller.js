@@ -1,4 +1,4 @@
-import Category from '../models/category.js';
+import Category from '../models/category.model.js';
 import ApiError from '../utils/apiError.js';
 
 export const createCategory = async (req, res, next) => {

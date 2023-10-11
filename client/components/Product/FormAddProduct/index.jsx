@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     getAllowDeletedImages,
     getListDeletedImages,
+    getStoreAddress,
     getUserId,
 } from '@/redux/selector';
 
@@ -30,6 +31,9 @@ import {
     removeDeletedImages,
     resetListDeletedImages,
 } from '@/redux/listDeletedImages';
+import { useRouter } from 'next/navigation';
+import routes from '@/routes';
+import { Button } from '@/components/ui/button';
 const initValue = {
     originImages: [],
     images: [],
@@ -41,13 +45,13 @@ const initValue = {
     },
     colors: [{ name: '', sizes: [{ type: '', quantity: '' }] }],
     tags: '',
-    store: 0,
     description: EditorState.createEmpty(),
 };
 const FormAddProduct = () => {
     const listDeletedImages = useSelector(getListDeletedImages);
     const userId = useSelector(getUserId);
-
+    const storeAddress = useSelector(getStoreAddress);
+    const router = useRouter();
     useEffect(() => {
         dispatch(resetListDeletedImages());
     }, []);
@@ -74,12 +78,6 @@ const FormAddProduct = () => {
             data.description = draftToHtml(
                 convertToRaw(data.description.getCurrentContent()),
             );
-
-        data.colors.forEach((color) => {
-            color.sizes.forEach((size) => {
-                data.store += Number(size.quantity);
-            });
-        });
 
         return data;
     };
@@ -151,13 +149,35 @@ const FormAddProduct = () => {
 
         deleteImagesMutation.mutate(listDeleted);
     };
-    const allowDeleted = useSelector(getAllowDeletedImages);
 
     return (
         <FormProvider {...methods}>
             <form
                 onSubmit={handleSubmit((data) => handleAddProduct.mutate(data))}
                 className="p-5 relative overflow-hidden rounded-md">
+                {!storeAddress && (
+                    <Modal
+                        handleEvent={() => {
+                            router.push(routes.address);
+                        }}
+                        label={'UPDATE STORE ADDRESS'}>
+                        <div>
+                            <p>
+                                You don't have a store address yet. Please add
+                                your store address.
+                            </p>
+                            <div className="flex justify-end gap-3">
+                                <Button
+                                    className=""
+                                    onClick={() => {
+                                        router.push(routes.address);
+                                    }}>
+                                    Continue
+                                </Button>
+                            </div>
+                        </div>
+                    </Modal>
+                )}
                 {handleAddProduct.isLoading && (
                     <Modal showModel={handleAddProduct.isLoading}>
                         <div className="w-20 h-20 flex flex-col justify-center items-center">

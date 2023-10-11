@@ -45,7 +45,6 @@ const FormEditProduct = ({ product }) => {
         colors: product.colors || [
             { name: '', sizes: [{ type: '', quantity: '' }] },
         ],
-        store: 0,
         tags: product.tags || '',
         description:
             EditorState.createWithContent(stateFromHTML(product.description)) ||
@@ -71,12 +70,6 @@ const FormEditProduct = ({ product }) => {
             data.description = draftToHtml(
                 convertToRaw(data.description.getCurrentContent()),
             );
-
-        data.colors.forEach((color) => {
-            color.sizes.forEach((size) => {
-                data.store += Number(size.quantity);
-            });
-        });
 
         return data;
     };

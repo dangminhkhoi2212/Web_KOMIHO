@@ -53,37 +53,7 @@ const Address = () => {
             );
         },
     });
-    // const handleUpdate = async (data) => {
-    //     try {
-    //         setLoading(true);
-    //         if ('pickup' in data) setShowEditPickup(false);
-    //         else setShowEditStore(false);
 
-    //         const result = await updateAddress(userId, data);
-    //         if (result) {
-    //             dispatch(
-    //                 setAlert({
-    //                     status: 'success',
-    //                     message: 'Update successfully.',
-    //                 }),
-    //             );
-    //             dispatch(setUser(result));
-    //         }
-
-    //         setLoading(false);
-    //     } catch (error) {
-    //         dispatch(
-    //             setAlert({
-    //                 status: 'failure',
-    //                 message:
-    //                     error?.response?.data?.message ||
-    //                     'Update failed. Please try again.',
-    //             }),
-    //         );
-
-    //         setLoading(false);
-    //     }
-    // };
     const handleDeleteAddress = useMutation({
         mutationFn: async (type) => {
             var result;
@@ -100,33 +70,7 @@ const Address = () => {
             toast.error('Delete failed. Please try again.');
         },
     });
-    // const handleDelete = async (type) => {
-    //     try {
-    //         setLoading(true);
-    //         var result;
-    //         if (type === 'pickup') {
-    //             result = await updateAddress(userId, { pickup: {} });
-    //         } else result = await updateAddress(userId, { store: {} });
-    //         if (result) {
-    //             dispatch(setUser(result));
-    //             dispatch(
-    //                 setAlert({
-    //                     status: 'success',
-    //                     message: 'Delete successfully.',
-    //                 }),
-    //             );
-    //         }
-    //         setLoading(false);
-    //     } catch (error) {
-    //         dispatch(
-    //             setAlert({
-    //                 status: 'failure',
-    //                 message: 'Delete failed. Please try again.',
-    //             }),
-    //         );
-    //         setLoading(false);
-    //     }
-    // };
+
     return (
         <div className="overflow-hidden relative">
             {(handleDeleteAddress.isLoading ||
@@ -141,7 +85,8 @@ const Address = () => {
                         <Modal
                             label={'Update pickup address'}
                             showModel={showEditPickup}
-                            handleEvent={() => setShowEditPickup(false)}>
+                            handleEvent={() => setShowEditPickup(false)}
+                            size="xl">
                             <AddressComponent
                                 type={'pickup'}
                                 handleUpdate={handleUpdateAddress.mutate}
