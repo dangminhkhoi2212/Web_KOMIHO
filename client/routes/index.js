@@ -16,6 +16,7 @@ const routes = {
     myAccount: '/my-account',
     profile: '/my-account',
     address: '/my-account/address',
+    follow: '/my-account/follow',
     password: '/my-account/password',
     myPurchase: '/my-account/my-purchases',
     deleteAccount: '/my-account/delete-account',
@@ -34,5 +35,8 @@ const routes = {
 
     cart: '/cart',
     order: '/order',
+    feedback: (orderId) => {
+        return `/feedback/${orderId}`;
+    },
 };
 export default routes;

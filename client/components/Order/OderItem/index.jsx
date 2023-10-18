@@ -8,6 +8,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { NumericFormat } from 'react-number-format';
 import { GrLocation } from 'react-icons/gr';
 import { HiOutlineLocationMarker } from 'react-icons/hi';
+import PriceFormat from '@/components/PriceFormat';
 const OrderItem = ({ orderItem }) => {
     const seller = orderItem._id.sellerId;
     const products = orderItem.products;
@@ -54,43 +55,7 @@ const OrderItem = ({ orderItem }) => {
                                 </div>
                             </Link>
                             <div className="col-span-2 flex gap-3 justify-self-start text-xs">
-                                <div className="inline-flex flex-col gap-2">
-                                    <NumericFormat
-                                        value={productId?.price?.origin}
-                                        thousandSeparator
-                                        displayType="text"
-                                        suffix={' VND'}
-                                        renderText={(value) => (
-                                            <span
-                                                className={clsx(
-                                                    productId?.price
-                                                        ?.percent !== 0
-                                                        ? 'line-through'
-                                                        : 'font-medium',
-                                                )}>
-                                                {value}
-                                            </span>
-                                        )}
-                                    />
-                                    {!!productId?.price?.percent && (
-                                        <NumericFormat
-                                            value={productId?.price?.final}
-                                            thousandSeparator
-                                            displayType="text"
-                                            suffix={' VND'}
-                                            renderText={(value) => (
-                                                <span className="font-medium">
-                                                    {value}
-                                                </span>
-                                            )}
-                                        />
-                                    )}
-                                </div>
-                                {!!productId?.price?.percent && (
-                                    <Badge color={'red'}>
-                                        {productId?.price?.percent}% OFF
-                                    </Badge>
-                                )}
+                                <PriceFormat price={productId?.price} />
                             </div>
                             <div className="col-span-4 ">
                                 <div className="flex  gap-5 text-sm ring-1 ring-gray-200 px-3 py-2 rounded-md ">

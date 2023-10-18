@@ -7,12 +7,6 @@ const Price = ({ price }) => {
     if (!price) return;
     return (
         <div>
-            <div className=" flex gap-1">
-                {[...Array(5)].map((star, index) => (
-                    <FaStar className="text-yellow-300" key={index} />
-                ))}
-                <span>50 Reviews</span>
-            </div>
             <div className="flex gap-5 items-center">
                 <NumericFormat
                     value={price?.origin}

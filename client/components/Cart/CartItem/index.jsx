@@ -20,6 +20,7 @@ import {
 import Loading from '@/components/Loading';
 import { deleteCart } from '@/services/cart.service';
 import { Badge } from 'flowbite-react';
+import PriceFormat from '@/components/PriceFormat';
 
 const CartItem = ({ seller, productsProp }) => {
     const selectProductInCart = useSelector(getCartList);
@@ -161,43 +162,7 @@ const CartItem = ({ seller, productsProp }) => {
                                 </div>
                             </Link>
                             <div className="col-span-2 flex gap-3 items-start text-xs">
-                                <div className="inline-flex flex-col  gap-2">
-                                    <NumericFormat
-                                        value={productId?.price?.origin}
-                                        thousandSeparator
-                                        displayType="text"
-                                        suffix={' VND'}
-                                        renderText={(value) => (
-                                            <span
-                                                className={clsx(
-                                                    productId?.price
-                                                        ?.percent !== 0
-                                                        ? 'line-through'
-                                                        : '',
-                                                )}>
-                                                {value}
-                                            </span>
-                                        )}
-                                    />
-                                    {!!productId?.price?.percent && (
-                                        <NumericFormat
-                                            value={productId?.price?.final}
-                                            thousandSeparator
-                                            displayType="text"
-                                            suffix={' VND'}
-                                            renderText={(value) => (
-                                                <span className="font-medium">
-                                                    {value}
-                                                </span>
-                                            )}
-                                        />
-                                    )}
-                                </div>
-                                {!!productId?.price?.percent && (
-                                    <Badge color={'red'}>
-                                        {productId?.price?.percent}% OFF
-                                    </Badge>
-                                )}
+                                <PriceFormat price={productId?.price} />
                             </div>
                             <div className="col-span-3 ">
                                 <button

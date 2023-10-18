@@ -72,117 +72,116 @@ const Address = () => {
     });
 
     return (
-        <div className="overflow-hidden relative">
+        <div className="overflow-hidden relative flex flex-col gap-3">
             {(handleDeleteAddress.isLoading ||
                 handleUpdateAddress.isLoading) && <Loading />}
 
-            <div>
-                <AccountTemplate
-                    title={'PICKUP ADDRESS'}
-                    note={'Your order will be delivered to this address.'}
-                    key={'pickup'}>
-                    {showEditPickup && (
-                        <Modal
-                            label={'Update pickup address'}
-                            showModel={showEditPickup}
-                            handleEvent={() => setShowEditPickup(false)}
-                            size="xl">
-                            <AddressComponent
-                                type={'pickup'}
-                                handleUpdate={handleUpdateAddress.mutate}
-                                address={pickupAddress}
-                            />
-                        </Modal>
-                    )}
-                    {pickupAddress ? (
-                        <div className="grid grid-cols-12 p-4 bg-secondary rounded-xl">
-                            <div className="col-span-11">
-                                <div className="flex gap-3 font-medium">
-                                    <span>{name}</span>
-                                    <span className=" hidden h-5 w-px bg-slate-900/10 sm:block"></span>
-                                    <span>{phone}</span>
-                                </div>
-                                <p>{pickupAddress?.sub}</p>
-                                <p>{pickupAddress?.main}</p>
+            <AccountTemplate
+                title={'PICKUP ADDRESS'}
+                note={'Your order will be delivered to this address.'}
+                key={'pickup'}>
+                {showEditPickup && (
+                    <Modal
+                        label={'Update pickup address'}
+                        showModel={showEditPickup}
+                        handleEvent={() => setShowEditPickup(false)}
+                        size="xl">
+                        <AddressComponent
+                            type={'pickup'}
+                            handleUpdate={handleUpdateAddress.mutate}
+                            address={pickupAddress}
+                        />
+                    </Modal>
+                )}
+                {pickupAddress ? (
+                    <div className="grid grid-cols-12 p-4 bg-secondary rounded-xl">
+                        <div className="col-span-11">
+                            <div className="flex gap-3 font-medium">
+                                <span>{name}</span>
+                                <span className=" hidden h-5 w-px bg-slate-900/10 sm:block"></span>
+                                <span>{phone}</span>
                             </div>
-                            <div className="col-span-1 flex items-center gap-3">
-                                <FiEdit3
-                                    className="font-medium text-2xl  cursor-pointer"
-                                    onClick={() => setShowEditPickup(true)}
-                                />
-                                <AiOutlineDelete
-                                    className="font-medium text-2xl cursor-pointer"
-                                    onClick={() =>
-                                        handleDeleteAddress.mutate('pickup')
-                                    }
-                                />
-                            </div>
+                            <p>{pickupAddress?.sub}</p>
+                            <p>{pickupAddress?.main}</p>
                         </div>
-                    ) : (
-                        <div className="flex flex-col justify-center items-center">
-                            <p className="text-orange-300">
-                                Your have not a pickup address.
-                            </p>
-                            <RiMapPinAddLine
-                                className="font-medium text-2xl  cursor-pointer bg-secondary rounded-full h-8 w-8 p-1"
+                        <div className="col-span-1 flex items-center gap-3">
+                            <FiEdit3
+                                className="font-medium text-2xl  cursor-pointer"
                                 onClick={() => setShowEditPickup(true)}
                             />
-                        </div>
-                    )}
-                </AccountTemplate>
-                <AccountTemplate
-                    title={'STORE ADDRESS'}
-                    note={'Shippers will get goods from this address.'}
-                    key={'store'}>
-                    {showEditStore && (
-                        <Modal
-                            label={'Update store address'}
-                            showModel={showEditStore}
-                            handleEvent={() => setShowEditStore(false)}>
-                            <AddressComponent
-                                type={'store'}
-                                handleUpdate={handleUpdateAddress.mutate}
-                                address={storeAddress}
+                            <AiOutlineDelete
+                                className="font-medium text-2xl cursor-pointer"
+                                onClick={() =>
+                                    handleDeleteAddress.mutate('pickup')
+                                }
                             />
-                        </Modal>
-                    )}
-                    {storeAddress ? (
-                        <div className="grid grid-cols-12 p-4 bg-secondary rounded-xl">
-                            <div className="col-span-11">
-                                <div className="flex gap-3 font-medium">
-                                    <span>{name}</span>
-                                    <span className=" hidden h-5 w-px bg-slate-900/10 sm:block"></span>
-                                    <span>{phone}</span>
-                                </div>
-                                <p>{storeAddress?.sub}</p>
-                                <p>{storeAddress?.main}</p>
-                            </div>
-                            <div className="col-span-1 flex items-center gap-3">
-                                <FiEdit3
-                                    className="font-medium text-2xl  cursor-pointer"
-                                    onClick={() => setShowEditStore(true)}
-                                />
-                                <AiOutlineDelete
-                                    className="font-medium text-2xl cursor-pointer"
-                                    onClick={() =>
-                                        handleDeleteAddress.mutate('store')
-                                    }
-                                />
-                            </div>
                         </div>
-                    ) : (
-                        <div className="flex flex-col justify-center items-center">
-                            <p className="text-orange-300">
-                                Your have not a store address.
-                            </p>
-                            <RiMapPinAddLine
-                                className="font-medium text-2xl  cursor-pointer bg-secondary rounded-full h-8 w-8 p-1"
+                    </div>
+                ) : (
+                    <div className="flex flex-col justify-center items-center">
+                        <p className="text-orange-300">
+                            You have not a pickup address.
+                        </p>
+                        <RiMapPinAddLine
+                            className="font-medium text-2xl  cursor-pointer bg-secondary rounded-full h-8 w-8 p-1"
+                            onClick={() => setShowEditPickup(true)}
+                        />
+                    </div>
+                )}
+            </AccountTemplate>
+            <AccountTemplate
+                title={'STORE ADDRESS'}
+                note={'Shippers will get goods from this address.'}
+                key={'store'}>
+                {showEditStore && (
+                    <Modal
+                        label={'Update store address'}
+                        showModel={showEditStore}
+                        size="xl"
+                        handleEvent={() => setShowEditStore(false)}>
+                        <AddressComponent
+                            type={'store'}
+                            handleUpdate={handleUpdateAddress.mutate}
+                            address={storeAddress}
+                        />
+                    </Modal>
+                )}
+                {storeAddress ? (
+                    <div className="grid grid-cols-12 p-4 bg-secondary rounded-xl">
+                        <div className="col-span-11">
+                            <div className="flex gap-3 font-medium">
+                                <span>{name}</span>
+                                <span className=" hidden h-5 w-px bg-slate-900/10 sm:block"></span>
+                                <span>{phone}</span>
+                            </div>
+                            <p>{storeAddress?.sub}</p>
+                            <p>{storeAddress?.main}</p>
+                        </div>
+                        <div className="col-span-1 flex items-center gap-3">
+                            <FiEdit3
+                                className="font-medium text-2xl  cursor-pointer"
                                 onClick={() => setShowEditStore(true)}
                             />
+                            <AiOutlineDelete
+                                className="font-medium text-2xl cursor-pointer"
+                                onClick={() =>
+                                    handleDeleteAddress.mutate('store')
+                                }
+                            />
                         </div>
-                    )}
-                </AccountTemplate>
-            </div>
+                    </div>
+                ) : (
+                    <div className="flex flex-col justify-center items-center">
+                        <p className="text-orange-300">
+                            You have not a store address.
+                        </p>
+                        <RiMapPinAddLine
+                            className="font-medium text-2xl  cursor-pointer bg-secondary rounded-full h-8 w-8 p-1"
+                            onClick={() => setShowEditStore(true)}
+                        />
+                    </div>
+                )}
+            </AccountTemplate>
         </div>
     );
 };

@@ -25,6 +25,8 @@ import categoryRouter from './app/routes/category.route.js';
 import imageRouter from './app/routes/image.route.js';
 import cartRouter from './app/routes/cart.route.js';
 import orderRouter from './app/routes/order.route.js';
+import feedbackRouter from './app/routes/feedback.route.js';
+import followRouter from './app/routes/follow.route.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -61,6 +63,8 @@ app.use('/api/category', categoryRouter);
 app.use('/api/image', imageRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
+app.use('/api/feedback', feedbackRouter);
+app.use('/api/follow', followRouter);
 
 //handle error
 app.use((rep, res, next) => {

@@ -59,6 +59,7 @@ const percentPriceYup = yup
     .required('Discount percent is required')
     .min(0, 'Discount percent cannot be negative')
     .max(100, 'Discount percent cannot exceed 100');
+
 ////////////////////////////////////////////////////////////////////////
 export const emailSchema = yup.object({
     email: emailYup,
@@ -119,7 +120,6 @@ export const addProductSchema = yup.object({
         .array()
         .required('Please select at least one image')
         .test('arrayFileLength', 'Maximum 9 photos', (value) => {
-            console.log('🚀 ~ file: validation.js:122 ~ .test ~ value:', value);
             return value.length <= 9;
         })
 
@@ -138,3 +138,4 @@ export const addToCartSchema = yup.object({
         .min(1, 'Minimum is 1 product')
         .max(100, 'Maximum is 100 products'),
 });
+export const feedbackSchema = yup.object({});

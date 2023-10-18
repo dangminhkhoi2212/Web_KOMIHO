@@ -35,7 +35,7 @@ const layout = ({ children }) => {
     return (
         <div className="grid grid-cols-12 gap-5 items-start  my-5">
             <div className="col-span-3 flex flex-col gap-5 justify-center items-center">
-                <div className="border-4 border-double py-3 w-full rounded-xl bg-white">
+                <div className="border-4 border-double py-3 w-full rounded-xl bg-white flex justify-center">
                     <AvatarText
                         name={name}
                         src={UrlAvatar}
@@ -69,7 +69,7 @@ const layout = ({ children }) => {
                     ))}
                 </div>
             </div>
-            <div className="col-span-9 xl:p-5  rounded-xl  relative min-h-[250px]">
+            <div className="col-span-9 xl:px-5  rounded-xl  relative min-h-[250px]">
                 <Suspense fallback={<Loading />}>{children}</Suspense>
             </div>
         </div>

@@ -41,11 +41,12 @@ export const uploadImages = async (req, res, next) => {
 export const deleteImages = async (req, res, next) => {
     try {
         const images = req.body;
-        const publicIds = images.map((img) => img.public_id);
         console.log(
-            '🚀 ~ file: image.controller.js:45 ~ deleteImages ~ publicIds:',
-            publicIds,
+            '🚀 ~ file: image.controller.js:44 ~ deleteImages ~ images:',
+            images,
         );
+        const publicIds = images.map((img) => img.public_id);
+
         if (publicIds.length > 0) {
             const result = await deleteResources(publicIds);
             console.log(

@@ -6,6 +6,12 @@ import { convertISO } from '@/utils/date';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateOrder } from '@/services/order.service';
 import { toast } from 'react-toastify';
+import Link from 'next/link';
+import routes from '@/routes';
+import Modal from '@/components/Modal';
+import { memo, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { getUserId } from '@/redux/selector';
 
 const statusList = [
     { name: 'Pending', value: 'pending', color: 'warning' },
@@ -17,6 +23,7 @@ const PurchaseItem = ({ purchase, isManager }) => {
     const customer = isManager ? purchase.userId : purchase.sellerId;
     const items = purchase.items;
     const status = purchase.status;
+    const userId = useSelector(getUserId);
     const queryClient = useQueryClient();
     const cancelMutation = useMutation({
         mutationFn: () => {
@@ -64,10 +71,12 @@ const PurchaseItem = ({ purchase, isManager }) => {
             <div className="flex gap-2 items-center justify-between">
                 <div className="flex gap-2 ">
                     <span className="font-medium">{customer?.name}</span>
-                    <span className="flex gap-1 items-center px-1 rounded ring-1 ring-gray-200">
+                    <Link
+                        href={routes.store(customer._id)}
+                        className="flex gap-1 items-center px-1 rounded ring-1 ring-gray-200">
                         <CiShop />
                         View
-                    </span>
+                    </Link>
                 </div>
                 {statusList.map((status) => {
                     if (status.value === purchase.status)
@@ -76,7 +85,6 @@ const PurchaseItem = ({ purchase, isManager }) => {
                                 {status.name}
                             </Badge>
                         );
-                    return <></>;
                 })}
 
                 {status === 'pending' && (
@@ -107,10 +115,10 @@ const PurchaseItem = ({ purchase, isManager }) => {
             <hr />
             <div className="flex flex-col gap-2">
                 {items.map((item, index) => (
-                    <>
-                        <Product item={item} key={index} />
+                    <div key={index}>
+                        <Product item={item} />
                         {index < items.length - 1 && <hr />}
-                    </>
+                    </div>
                 ))}
             </div>
             <div className="border-t-2 border-gray-200 border-dashed py-2 flex justify-between items-center">
@@ -138,17 +146,25 @@ const PurchaseItem = ({ purchase, isManager }) => {
                         </span>
                     )}
                 />
-                {status === 'delivering' && (
-                    <Button
-                        color="green"
-                        isProcessing={receiveMutation.isLoading}
-                        onClick={() => receiveMutation.mutate()}>
-                        Receive
-                    </Button>
+                {status === 'delivering' &&
+                    userId === purchase?.userId?._id && (
+                        <Button
+                            color="green"
+                            isProcessing={receiveMutation.isLoading}
+                            onClick={() => receiveMutation.mutate()}>
+                            Receive
+                        </Button>
+                    )}
+                {status === 'delivered' && userId === purchase?.userId?._id && (
+                    <Link href={routes.feedback(purchase._id)}>
+                        <Button className="bg-primary/80 hover:!bg-primary !ring-0 !border-0">
+                            Feedback
+                        </Button>
+                    </Link>
                 )}
             </div>
         </div>
     );
 };
 
-export default PurchaseItem;
+export default memo(PurchaseItem);

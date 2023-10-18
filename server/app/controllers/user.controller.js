@@ -3,6 +3,8 @@ import 'dotenv/config.js';
 
 import User from '../models/user.model.js';
 import Product from '../models/product.model.js';
+import Feedback from '../models/feedback.model.js';
+import Order from '../models/order.model.js';
 import ApiError from '../utils/apiError.js';
 import { sendMail } from '../utils/mailer.js';
 import {
@@ -17,13 +19,48 @@ import {
     createAccessToken,
     createRefreshToken,
 } from '../services/token.service.js';
+import mongoose from 'mongoose';
 const PROPERTIES_USER = process.env.PROPERTIES_USER;
 const BCRYPT_HASH = process.env.BCRYPT_HASH;
 const getUser = async (req, res, next) => {
     try {
-        const userId = req.params.id;
-        const result = await User.findById(userId).select(PROPERTIES_USER);
-        res.json(result);
+        const userId = new mongoose.Types.ObjectId(req.params.id);
+        if (!userId) return next(new ApiError(400, 'userId not found.'));
+
+        const aggFeedback = [
+            {
+                $match: {
+                    sellerId: userId,
+                    isFeedback: true, // If you want to include only feedback with isFeedback set to true
+                },
+            },
+            {
+                $group: {
+                    _id: '$sellerId', // Group by userId
+                    averageStars: { $avg: '$stars' }, // Calculate the average of stars
+                },
+            },
+            {
+                $project: {
+                    averageStars: 1,
+                    _id: 0,
+                },
+            },
+        ];
+        const [totalProducts, totalRatings, totalSales] = await Promise.all([
+            Product.countDocuments({ userId }),
+            Feedback.aggregate(aggFeedback),
+            Order.countDocuments({ sellerId: userId, status: 'delivered' }),
+        ]);
+        const result = await User.findById(userId)
+            .select(PROPERTIES_USER)
+            .lean();
+        res.json({
+            ...result,
+            totalProducts,
+            totalRatings: totalRatings[0]?.averageStars.toFixed(2) || 0,
+            totalSales,
+        });
     } catch (error) {
         next(new ApiError(error.code || 500, error.message));
     }

@@ -23,7 +23,7 @@ const All = ({ params }) => {
         setProducts(getProductsQuery?.data?.products);
     }, [getProductsQuery?.data?.products]);
     return (
-        <div className="relative">
+        <>
             {getProductsQuery.isLoading && <Loading />}
             {products?.length === 0 ? (
                 <div className="flex flex-col gap-3 justify-center items-center">
@@ -42,7 +42,7 @@ const All = ({ params }) => {
                     ))}
                 </div>
             )}
-        </div>
+        </>
     );
 };
 

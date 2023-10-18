@@ -141,7 +141,7 @@ const Total = () => {
                 <Button
                     pill
                     color="blue"
-                    className="bg-primary/80 hover:!bg-primary"
+                    className="bg-primary/80 hover:!bg-primary !border-none focus:!ring-0"
                     onClick={() => handleCheckOut()}
                     isProcessing={getCartMutation.isLoading}>
                     <span>CHECK OUT</span>

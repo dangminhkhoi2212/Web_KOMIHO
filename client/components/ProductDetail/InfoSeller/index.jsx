@@ -13,13 +13,13 @@ import routes from '@/routes';
 const StoreHeader = ({ user }) => {
     const backgroundImage = `url('${user?.avatar?.url || ''}')`;
     const listMiddle = [
-        { name: 'Products', content: user?.productTotal, icon: LuStore },
+        { name: 'Products', content: user?.totalProducts, icon: LuStore },
         { name: 'Following', content: user?.name, icon: FiUserPlus },
         { name: 'Followers', content: user?.name, icon: FiUsers },
     ];
     const listRight = [
-        { name: 'Rating', content: user?.name, icon: AiOutlineStar },
-        { name: 'Sale', content: user?.name, icon: BsCartCheck },
+        { name: 'Rating', content: user?.totalRatings, icon: AiOutlineStar },
+        { name: 'Sale', content: user?.totalSales, icon: BsCartCheck },
         {
             name: 'Joined',
             content: ISOTimeToDate(user?.createdAt),

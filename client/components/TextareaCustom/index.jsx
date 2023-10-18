@@ -32,10 +32,8 @@ const TextareaCustom = ({
     helperText,
     color = 'gray',
     value,
+    rows,
 }) => {
-    const handleOnchangeKeyDown = (e) => {
-        if (e.key === 'Enter') e.preventDefault();
-    };
     return (
         <div className="flex flex-col  gap-y-1 max-w-md">
             <Flowbite theme={{ theme: customTheme }}>
@@ -48,12 +46,12 @@ const TextareaCustom = ({
                         min={min}
                         max={max}
                         type={type}
+                        rows={rows}
                         color={color}
                         value={value}
                         onFocus={onFocus}
                         onChange={onChange}
                         onBlur={onBlur}
-                        onKeyDown={handleOnchangeKeyDown}
                     />
                 </div>
             </Flowbite>

@@ -34,7 +34,6 @@ const PlaceOrder = ({ productCheckOut }) => {
             return deleteCart({ userId, cartIds });
         },
         onSuccess(data) {
-            console.log('🚀 ~ file: index.jsx:36 ~ onSuccess ~ data:', data);
             disPatch(setCartLength({ cartLength: data.cartLength }));
             toast('Placed order successfully');
             router.push(routes.myPurchase);
@@ -55,7 +54,11 @@ const PlaceOrder = ({ productCheckOut }) => {
             deleteCartMutation.mutate(cartIds);
         },
         onError(error) {
-            toast.error('Placed order failed. Please try again.');
+            console.log('🚀 ~ file: index.jsx:57 ~ onError ~ error:', error);
+            toast.error(
+                error?.response?.data?.message ||
+                    'Placed order failed. Please try again.',
+            );
         },
     });
     const handlePlaceOrder = () => {
@@ -64,6 +67,7 @@ const PlaceOrder = ({ productCheckOut }) => {
             const productIds = cartItem.products.map((product) => {
                 return {
                     product: {
+                        productId: product.productId._id,
                         name: product.productId.name,
                         price: product.productId.price,
                         images: {
@@ -105,7 +109,8 @@ const PlaceOrder = ({ productCheckOut }) => {
             </div>
             <div className="border-t-2 border-dashed px-5 py-3 ">
                 <Button
-                    className="float-right bg-primary hover:!bg-primary"
+                    pill
+                    className="float-right bg-primary/80 hover:!bg-primary !border-none focus:!ring-0"
                     isProcessing={
                         placeOrderMutation.isLoading ||
                         deleteCartMutation.isLoading

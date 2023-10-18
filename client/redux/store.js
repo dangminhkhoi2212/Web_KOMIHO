@@ -23,11 +23,6 @@ const persistConfig = {
     version: 1,
     storage,
 };
-const persistConfigCart = {
-    key: 'cart',
-    version: 2,
-    storage,
-};
 const persistedReducerAdmin = persistReducer(persistConfig, userReducer);
 const store = configureStore({
     reducer: {

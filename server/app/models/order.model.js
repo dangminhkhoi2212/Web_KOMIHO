@@ -23,6 +23,7 @@ const orderSchema = new Schema(
         items: [
             {
                 product: {
+                    productId: { type: Schema.Types.ObjectId, ref: 'Product' },
                     name: { type: String, required: true, maxLength: 200 },
                     price: {
                         origin: { type: Number, required: true, default: 0 },

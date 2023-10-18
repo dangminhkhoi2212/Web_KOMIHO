@@ -66,12 +66,12 @@ const AllProduct = () => {
             });
         },
         keepPreviousData: true,
+        refetchOnWindowFocus: false,
     });
 
     useEffect(() => {
         getProductsQuery.refetch();
     }, [textSearch, page]);
-    console.log('🚀 ~ file: page.jsx:74 ~ AllProduct ~ page:', page);
 
     const deleteManyProductsMutation = useMutation({
         mutationFn: (productIds) => {

@@ -1,24 +1,21 @@
 import PriceFormat from '@/components/PriceFormat';
 import Image from 'next/image';
-import React from 'react';
+import Link from 'next/link';
+import React, { memo } from 'react';
 import { NumericFormat } from 'react-number-format';
-
+import ProductImageCover from '@/components/ProductImageCover';
+import routes from '@/routes';
 const Product = ({ item }) => {
-    console.log('🚀 ~ file: index.jsx:5 ~ Product ~ item:', item);
     return (
         <div className="grid grid-cols-12 gap-3 place-items-center">
             <div className="col-span-7 flex gap-2 place-self-start">
-                <div className="w-[80px] h-[80px] relative rounded-md overflow-hidden ring-1 ring-gray-200">
-                    <Image
-                        src={item.product.images.url}
-                        alt={item.product.images.url}
-                        fill
-                        sizes="80px"
-                        className="object-center object-contain"
-                    />
-                </div>
+                <ProductImageCover image={item.product.images} />
                 <div className="flex flex-col ">
-                    <p className="font-medium">{item.product.name}</p>
+                    <Link
+                        href={routes.productDetail(item.product.productId)}
+                        className="font-medium">
+                        {item.product.name}
+                    </Link>
                     <p className="text-gray-500">{`${item.select.color}, ${item.select.size}`}</p>
                 </div>
             </div>
@@ -43,4 +40,4 @@ const Product = ({ item }) => {
     );
 };
 
-export default Product;
+export default memo(Product);

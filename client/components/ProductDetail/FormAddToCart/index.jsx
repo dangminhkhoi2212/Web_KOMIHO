@@ -16,6 +16,7 @@ import { addToCart } from '@/services/cart.service';
 import Loading from '@/components/Loading';
 import clsx from 'clsx';
 const FormAddToCart = ({ product }) => {
+    console.log('🚀 ~ file: index.jsx:19 ~ FormAddToCart ~ product:', product);
     const userId = useSelector(getUserId);
     const router = useRouter();
     const defaultValues = {
@@ -45,7 +46,7 @@ const FormAddToCart = ({ product }) => {
         mutationFn: (select) => {
             return addToCart({
                 userId,
-                sellerId: product.userId._id,
+                sellerId: product.userId,
                 productId: product._id,
                 select,
             });
@@ -84,13 +85,13 @@ const FormAddToCart = ({ product }) => {
                         type="submit"
                         disabled={
                             addToCartMutation.isLoading ||
-                            userId === product?.userId?._id
+                            userId === product?.userId
                         }
                         className={clsx(
                             'bg-primary text-white font-medium rounded-md px-3 py-2 flex-1 relative overflow-hidden',
                             {
                                 'cursor-not-allowed':
-                                    userId === product?.userId?._id,
+                                    userId === product?.userId,
                             },
                         )}>
                         {addToCartMutation.isLoading && (

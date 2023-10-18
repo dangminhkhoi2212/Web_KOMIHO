@@ -5,24 +5,19 @@ import '@/app/globals.css';
 import StoreHeader from '@/components/Store/Header';
 import Navigation from '@/components/Store/Navigation';
 import Loading from './loading';
+import { useQuery } from '@tanstack/react-query';
+import LoadingCpn from '@/components/Loading';
 const layout = ({ params, children }) => {
-    const [user, setUser] = useState(null);
-    useEffect(() => {
-        const getUser = async () => {
-            try {
-                const data = await getUserApi(params.userId);
-                setUser(data);
-            } catch (error) {
-                console.log(
-                    '🚀 ~ file: layout.jsx:13 ~ getUserApi ~ error:',
-                    error,
-                );
-            }
-        };
-        getUser();
-    }, [params]);
+    const getUserQuery = useQuery({
+        queryKey: ['get-user-store'],
+        queryFn: () => {
+            return getUserApi(params.userId);
+        },
+    });
+    const user = getUserQuery?.data;
     return (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 relative">
+            {getUserQuery?.isLoading && <LoadingCpn />}
             <div className="bg-white rounded-xl p-5">
                 <StoreHeader user={user} />
             </div>
@@ -30,7 +25,7 @@ const layout = ({ params, children }) => {
                 <nav className="col-span-2 p-5 bg-white rounded-xl">
                     <Navigation userId={params?.userId} />
                 </nav>
-                <section className="col-span-10 bg-white rounded-xl p-5 ">
+                <section className="col-span-10 bg-white rounded-xl p-5 min-h-[200px] relative">
                     <Suspense fallback={<Loading />}>{children}</Suspense>
                 </section>
             </div>

@@ -60,7 +60,6 @@ const FormAddProduct = () => {
         defaultValues: initValue,
     });
     const dispatch = useDispatch();
-    const queryClient = useQueryClient();
     const {
         control,
         getValues,
@@ -69,8 +68,6 @@ const FormAddProduct = () => {
         formState: { errors },
         handleSubmit,
     } = methods;
-
-    console.log('🚀 ~ file: index.jsx:67 ~ FormAddProduct ~ errors:', errors);
 
     const handleData = (data) => {
         data.userId = userId;
@@ -107,7 +104,6 @@ const FormAddProduct = () => {
             }
         },
         onError(error) {
-            console.log('🚀 ~ file: index.jsx:97 ~ onError ~ error:', error);
             toast.error(
                 'Add product failure. Please reload the page and try again',
             );

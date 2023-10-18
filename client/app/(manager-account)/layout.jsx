@@ -13,6 +13,7 @@ import AvatarText from '@/components/Avatar';
 import { AiOutlineDelete } from 'react-icons/ai';
 import Loading from '../loading';
 import { HiOutlineClipboardList } from 'react-icons/hi';
+import { PiUsersThreeBold } from 'react-icons/pi';
 
 const listParent = [
     {
@@ -29,6 +30,11 @@ const listParent = [
         icon: HiOutlineClipboardList,
         name: 'My Purchase',
         link: routes.myPurchase,
+    },
+    {
+        icon: PiUsersThreeBold,
+        name: 'Follow',
+        link: routes.follow,
     },
     {
         icon: AiOutlineLock,
@@ -49,7 +55,7 @@ const layout = ({ children }) => {
     return (
         <div className="grid grid-cols-12 gap-5 items-start xl:mx-20 my-5">
             <div className="col-span-3 flex flex-col gap-5 justify-center items-center">
-                <div className="border-4 border-double py-3 w-full rounded-xl bg-white">
+                <div className="border-4 border-double py-3 w-full rounded-xl bg-white flex justify-center">
                     <AvatarText
                         name={name}
                         src={UrlAvatar}

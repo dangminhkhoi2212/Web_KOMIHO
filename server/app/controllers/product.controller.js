@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 import Product from '../models/product.model.js';
+import Feedback from '../models/feedback.model.js';
+import Order from '../models/order.model.js';
 import User from '../models/user.model.js';
 import {
     deleteFile,
@@ -51,7 +53,6 @@ const addProduct = async (req, res, next) => {
             tags,
             description,
         });
-        await User.findByIdAndUpdate(userId, { $inc: { productTotal: 1 } });
         res.send({ message: 'Add successfully', ok: true });
     } catch (error) {
         next(
@@ -147,9 +148,13 @@ const getProductsByUserId = async (req, res, next) => {
     try {
         const data = req.query;
 
-        const userId = req.params.userId;
+        const userId = new mongoose.Types.ObjectId(req.params.userId);
+        console.log(
+            '🚀 ~ file: product.controller.js:152 ~ getProductsByUserId ~ userId:',
+            userId,
+        );
         if (!userId) return next(new ApiError(401, 'userId not found.'));
-        const textSearch = data.textSearch.toString();
+        const textSearch = data?.textSearch?.toString();
         const user = await User.findById(userId);
         if (!user) return next(new ApiError(404, 'User not found.'));
 
@@ -160,7 +165,6 @@ const getProductsByUserId = async (req, res, next) => {
 
         const agg = [
             { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-            { $sort: { _id: -1 } },
             { $skip: skip },
             {
                 $limit: limit,
@@ -179,11 +183,19 @@ const getProductsByUserId = async (req, res, next) => {
                     },
                 },
             });
+        else agg.push({ $sort: { _id: -1 } });
 
         // Find products with the constructed query and sort options
         const [products] = await Promise.all([Product.aggregate(agg)]);
 
-        const pageCount = Math.ceil(user.productTotal / limit);
+        const pageCount = Math.ceil(
+            textSearch ? products.length : user.productTotal / limit,
+        );
+        console.log(
+            '🚀 ~ file: product.controller.js:192 ~ getProductsByUserId ~ user.productTotal:',
+            user.productTotal,
+            limit,
+        );
 
         res.send({ pageCount, limit, products });
     } catch (error) {
@@ -204,18 +216,54 @@ const getProductsByUserId = async (req, res, next) => {
 
 export const getProductByProductId = async (req, res, next) => {
     try {
-        const productId = req.params.productId;
-        const result = await Product.findByIdAndUpdate(
-            productId,
+        const productId = new mongoose.Types.ObjectId(req.params.productId);
+        const aggFeedback = [
             {
-                $inc: { views: 1 },
+                $match: { productId },
             },
-            { new: true },
-        ).populate({
-            path: 'userId',
-            select: 'name avatar.url createdAt productTotal',
+            {
+                $group: {
+                    _id: `$productId`,
+                    totalRatings: { $avg: '$stars' },
+                    countRatings: { $sum: 1 },
+                },
+            },
+        ];
+
+        const aggOrder = [
+            {
+                $match: {
+                    'items.product.productId': productId,
+                    status: 'delivered',
+                },
+            },
+            {
+                $unwind: '$items',
+            },
+            {
+                $group: {
+                    _id: '$items.product.productId',
+                    countSold: { $sum: 1 },
+                },
+            },
+        ];
+        const [result, ratings, sold] = await Promise.all([
+            Product.findByIdAndUpdate(
+                productId,
+                {
+                    $inc: { views: 1 },
+                },
+                { new: true },
+            ).lean(),
+            Feedback.aggregate(aggFeedback),
+            Order.aggregate(aggOrder),
+        ]);
+        res.send({
+            ...result,
+            countRatings: ratings[0]?.countRatings || 0,
+            totalRatings: ratings[0]?.totalRatings.toFixed(2) || 0,
+            countSold: sold[0]?.countSold || 0,
         });
-        res.send(result);
     } catch (error) {
         next(
             new ApiError(

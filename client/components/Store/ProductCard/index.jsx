@@ -5,10 +5,10 @@ import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FaStar } from 'react-icons/fa';
+import { Rating } from 'react-simple-star-rating';
 
 const ProductCard = ({ product }) => {
-    if (!product) return <></>;
-    if (!product.active) return <></>;
+    if (!product || !product.active) return <></>;
     return (
         <div className="overflow-hidden bg-white rounded-md shadow-md hover:shadow-xl transition-all duration-300 ease-in-out w-[200px] text-start">
             <Link
@@ -34,9 +34,13 @@ const ProductCard = ({ product }) => {
                         <span className="line-clamp-2 ">{product?.name}</span>
                     </div>
                     <div className="row-span-1 flex gap-1">
-                        {[...Array(5)].map((star, index) => (
-                            <FaStar className="text-yellow-300" key={index} />
-                        ))}
+                        <Rating
+                            SVGclassName="inline"
+                            size={20}
+                            allowFraction
+                            initialValue={product?.ratingsAverage || 0}
+                            readonly={true}
+                        />
                     </div>
                     <div className="row-span-1 flex gap-3">
                         <span
