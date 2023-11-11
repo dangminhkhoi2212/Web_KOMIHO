@@ -2,7 +2,14 @@
 const nextConfig = {
     images: {
         domains: ['res.cloudinary.com'],
-        // Add your domain here
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: '*.googleusercontent.com',
+                port: '',
+                pathname: '**',
+            },
+        ],
     },
 };
 

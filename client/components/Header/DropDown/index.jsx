@@ -12,14 +12,13 @@ import Cookies from 'js-cookie';
 import { resetAllReducers } from '@/redux/store';
 const listDropdown = [
     { name: 'Account', link: routes.profile },
-    { name: 'Store', link: routes.managerAllProducts },
+    { name: 'Store', link: routes.myStore },
 ];
 export default function DropdownItem() {
     const UrlAvatar = useSelector(getUrlAvatar);
-    const userId = useSelector(getUserId);
+
     const name = useSelector(getName);
 
-    const dispatch = useDispatch();
     const [show, setShow] = useState(false);
     const handleLogout = () => {
         resetAllReducers();

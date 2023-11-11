@@ -1,7 +1,10 @@
-import apiConfig from '@/services/apiConfig';
+import useApi from './apiConfig';
+const api = useApi();
 
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
-const api = apiConfig(`${SERVER_URL}/admin/statisticUser`);
-export const getUserRegisted = async () => {
-    return (await api.get('/register')).data;
+export const getRevenue = async (userId) => {
+    return (await api.get('/statistic/analysis-seller', { params: { userId } }))
+        .data;
+};
+export const getAnalysisAdmin = async () => {
+    return (await api.get('/statistic/analysis-admin')).data;
 };

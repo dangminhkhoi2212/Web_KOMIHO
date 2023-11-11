@@ -33,8 +33,8 @@ const listParent = [
     },
     {
         icon: PiUsersThreeBold,
-        name: 'Follow',
-        link: routes.follow,
+        name: 'Favorite',
+        link: routes.favorite,
     },
     {
         icon: AiOutlineLock,

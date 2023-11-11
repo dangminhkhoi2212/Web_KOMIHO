@@ -1,23 +1,25 @@
 'use client';
 import { useState, useEffect } from 'react';
 import ProductCard from '@/components/Store/ProductCard';
-import { getProducts } from '@/services/product.service';
+import { getAllProducts } from '@/services/product.service';
 import { IoAddOutline } from 'react-icons/io5';
 import Link from 'next/link';
 import routes from '@/routes';
 import { useQuery } from '@tanstack/react-query';
 import Loading from '@/components/Loading';
 const All = ({ params }) => {
+    console.log('🚀 ~ file: page.jsx:11 ~ All ~ params:', params);
     if (!params?.userId) return <></>;
     const [products, setProducts] = useState([]);
     console.log('🚀 ~ file: page.jsx:12 ~ All ~ products:', products);
     const getProductsQuery = useQuery({
         queryKey: ['store-all'],
         queryFn: () => {
-            return getProducts({
-                userId: params.userId,
+            return getAllProducts({
+                textSearch: params.userId,
             });
         },
+        enable: !!params.userId,
     });
     useEffect(() => {
         setProducts(getProductsQuery?.data?.products);

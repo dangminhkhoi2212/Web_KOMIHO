@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { isValidObjectId } from 'mongoose';
 import Product from '../models/product.model.js';
 import Feedback from '../models/feedback.model.js';
 import Order from '../models/order.model.js';
@@ -11,6 +11,7 @@ import {
     uploadToCloudinary,
 } from '../services/cloudinary.service.js';
 import ApiError from '../utils/apiError.js';
+import { sendMail } from '../utils/mailer.js';
 
 User.watch().on('change', async (data) => {
     try {
@@ -328,8 +329,141 @@ export const toggleActive = async (req, res, next) => {
 };
 const getAll = async (req, res, next) => {
     try {
-        const result = await Product.find({ public: true, active: true });
-        res.send(result);
+        const query = req.query;
+
+        const userId =
+            query?.userId && new mongoose.Types.ObjectId(query.userId);
+        const withFullImages = query?.withFullImages === 'true' ? true : false;
+        const textSearch = query?.textSearch;
+        console.log(
+            '🚀 ~ file: product.controller.js:338 ~ getAll ~ textSearch:',
+            textSearch,
+        );
+
+        const page = parseInt(query?.page) || 1;
+        const limit = parseInt(query?.limit) || 30;
+        const skip = (page - 1) * limit;
+
+        const projectFilter = {
+            _id: 1,
+            name: 1,
+            userId: 1,
+            price: 1,
+            colors: 1,
+            sold: 1,
+            active: 1,
+            ratingsAverage: 1,
+            views: 1,
+            lock: 1,
+        };
+
+        if (withFullImages) {
+            projectFilter.images = 1;
+        } else {
+            projectFilter.cover = { $arrayElemAt: ['$images.url', 0] };
+        }
+
+        const agg = [{ $project: projectFilter }];
+        if (textSearch) {
+            if (isValidObjectId(textSearch)) {
+                agg.unshift({
+                    $match: {
+                        $or: [
+                            {
+                                _id: new mongoose.Types.ObjectId(textSearch),
+                            },
+                            {
+                                userId: new mongoose.Types.ObjectId(textSearch),
+                            },
+                        ],
+                    },
+                });
+            } else
+                agg.unshift({
+                    $search: {
+                        index: 'search_product',
+                        text: {
+                            query: textSearch,
+                            path: {
+                                wildcard: '*',
+                            },
+                            fuzzy: {},
+                        },
+                    },
+                });
+        }
+        if (userId) {
+            agg.push({ $match: { userId } });
+        }
+
+        // Count the matching documents without the skip and limit
+        const countAgg = [...agg];
+        countAgg.push({ $count: 'count' });
+        const countResult = await Product.aggregate(countAgg);
+        const count = countResult.length ? countResult[0].count : 0;
+
+        // Add skip and limit for pagination
+        agg.push({ $skip: skip }, { $limit: limit });
+
+        // Use the aggregation pipeline to get the products
+        const products = await Product.aggregate(agg);
+
+        const pageCount = Math.ceil(count / limit);
+
+        // Send the response
+        res.send({ products, pageCount, page, limit });
+    } catch (error) {
+        next(new ApiError(error.code || 500, error.message || error));
+    }
+};
+
+const toggleLock = async (req, res, next) => {
+    try {
+        const { productId, lock } = req.body;
+
+        if (!productId) return next(new ApiError(400, 'productId not found'));
+
+        const product = await Product.findById(productId)
+            .populate('userId', 'email')
+            .lean();
+
+        if (!product) return next(new ApiError(400, 'User not found'));
+
+        await Product.findByIdAndUpdate(productId, { lock });
+        await sendMail(
+            product.userId.email,
+            'Notice of product lockout',
+            `
+                <div>
+                    <h5>Product ID: ${productId}</h5>
+                    <h5>Product name: ${product.name} </h5>
+                    <h5>
+                        This product is ${!lock.status ? 'unlocked' : 'locked'}
+                        by admin.
+                    </h5>
+                    <p>Reason: ${lock.reason}</p>
+                    <a
+                        href="${process.env.CLIENT_URL}/detail/${productId}"
+                        style="
+                            padding: 0.5rem 0.8rem;
+                            border-radius: 10px;
+                            background-color: #2954ad;
+                            color: #ffffff;
+                            text-decoration: none;
+                            display: inline-block;
+                            font-weight: 600;
+                                    ">
+                        Link product
+                    </a>
+                </div>
+            `,
+        );
+        res.send({
+            ok: true,
+            message: `${
+                !lock.status ? 'Unlocked' : 'Locked'
+            } product with id = ${productId}`,
+        });
     } catch (error) {
         next(new ApiError(error.code || 500, error.message || error));
     }
@@ -344,4 +478,5 @@ export default {
     getAll,
     updateProduct,
     toggleActive,
+    toggleLock,
 };

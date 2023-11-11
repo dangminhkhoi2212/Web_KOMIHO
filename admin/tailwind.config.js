@@ -1,37 +1,85 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+    darkMode: ['class'],
     content: [
-        './pages/**/*.{js,ts,jsx,tsx,mdx}',
-        './components/**/*.{js,ts,jsx,tsx,mdx}',
-        './app/**/*.{js,ts,jsx,tsx,mdx}',
-        './node_modules/flowbite-react/**/*.js',
+        './pages/**/*.{js,jsx}',
+        './components/**/*.{js,jsx}',
+        './app/**/*.{js,jsx}',
+        './src/**/*.{js,jsx}',
     ],
     theme: {
+        container: {
+            center: true,
+            padding: '2rem',
+            screens: {
+                '2xl': '1400px',
+            },
+        },
         extend: {
-            height: {
-                'height-header': '70px',
-                'height-main': 'calc( 100vh - 70px )',
+            zIndex: {
+                header: '1000',
+                'drop-down': '1500',
+                container: '1',
+                loading: '2000',
+                alert: '5000',
+                backdrop: '1600',
             },
             colors: {
-                primary: '#8FB3FF',
-                secondary: '#CEEFFD',
-                accent: '#2954AD',
-                backgroundColor: '#f2f2f2',
-                textColor: '#000000',
+                border: 'hsl(var(--border))',
+                input: 'hsl(var(--input))',
+                ring: 'hsl(var(--ring))',
+                background: 'hsl(var(--background))',
+                foreground: 'hsl(var(--foreground))',
+                default: '#f1f5f9',
+                primary: {
+                    DEFAULT: '#8FB3FF',
+                    foreground: 'hsl(var(--primary-foreground))',
+                },
+                secondary: {
+                    DEFAULT: '#CEEFFD',
+                    foreground: 'hsl(var(--secondary-foreground))',
+                },
+                destructive: {
+                    DEFAULT: 'hsl(var(--destructive))',
+                    foreground: 'hsl(var(--destructive-foreground))',
+                },
+                muted: {
+                    DEFAULT: 'hsl(var(--muted))',
+                    foreground: 'hsl(var(--muted-foreground))',
+                },
+                accent: {
+                    DEFAULT: '#2954AD',
+                    foreground: 'hsl(var(--accent-foreground))',
+                },
+                popover: {
+                    DEFAULT: 'hsl(var(--popover))',
+                    foreground: 'hsl(var(--popover-foreground))',
+                },
+                card: {
+                    DEFAULT: 'hsl(var(--card))',
+                    foreground: 'hsl(var(--card-foreground))',
+                },
             },
-            fontFamily: {
-                pops: ['var(--font-poppins)'],
+            borderRadius: {
+                lg: 'var(--radius)',
+                md: 'calc(var(--radius) - 2px)',
+                sm: 'calc(var(--radius) - 4px)',
             },
-            zIndex: {
-                header: '100',
-                'drop-down': '500',
-                container: '50',
+            keyframes: {
+                'accordion-down': {
+                    from: { height: 0 },
+                    to: { height: 'var(--radix-accordion-content-height)' },
+                },
+                'accordion-up': {
+                    from: { height: 'var(--radix-accordion-content-height)' },
+                    to: { height: 0 },
+                },
             },
-            spacing: {
-                'height-header': '70px',
-                'height-main': 'calc( 100vh - 70px )',
+            animation: {
+                'accordion-down': 'accordion-down 0.2s ease-out',
+                'accordion-up': 'accordion-up 0.2s ease-out',
             },
         },
     },
-    plugins: [require('flowbite/plugin')],
+    plugins: [require('tailwindcss-animate')],
 };

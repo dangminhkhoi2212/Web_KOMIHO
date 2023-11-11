@@ -5,6 +5,7 @@ import { resetCheckOut } from '@/redux/checkoutSlice';
 import {
     getCartList,
     getListProductCheckOut,
+    getPhone,
     getPickupAddress,
     getUserId,
 } from '@/redux/selector';
@@ -27,6 +28,7 @@ const PlaceOrder = ({ productCheckOut }) => {
     const disPatch = useDispatch();
     const userId = useSelector(getUserId);
     const pickupAddress = useSelector(getPickupAddress);
+    const phone = useSelector(getPhone);
     const selectProductInCart = useSelector(getCartList);
 
     const deleteCartMutation = useMutation({
@@ -62,7 +64,9 @@ const PlaceOrder = ({ productCheckOut }) => {
         },
     });
     const handlePlaceOrder = () => {
-        if (!pickupAddress) return toast.error('Update your pickup address.');
+        if (!pickupAddress)
+            return toast.error('Please update your pickup address.');
+        if (!phone) return toast.error('Please update your phone.');
         const orderData = productCheckOut.map((cartItem) => {
             const productIds = cartItem.products.map((product) => {
                 return {

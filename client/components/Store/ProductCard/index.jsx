@@ -21,7 +21,7 @@ const ProductCard = ({ product }) => {
                 )}
                 <div className="relative h-[200px] w-[200px]">
                     <Image
-                        src={product?.images[0]?.url}
+                        src={product?.cover}
                         alt={product?.name}
                         fill={true}
                         priority

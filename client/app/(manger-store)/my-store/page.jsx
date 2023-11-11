@@ -1,234 +1,243 @@
 'use client';
-import Link from 'next/link';
-import routes from '@/routes';
-import dynamic from 'next/dynamic';
-import {
-    getChooseProduct,
-    getChooseStatus,
-    getLimitFilter,
-    getPageFilter,
-    getPriceFilter,
-    getSelectProductInTable,
-    getStoreFilter,
-    getTextSearchFilter,
-    getUserId,
-} from '@/redux/selector';
-import {
-    deleteManyProducts,
-    deleteProduct,
-    getProducts,
-} from '@/services/product.service';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AiOutlineDelete } from 'react-icons/ai';
-import { IoAddOutline } from 'react-icons/io5';
-import { BiRefresh } from 'react-icons/bi';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
-
 import AccountTemplate from '@/components/Account/AccountTemplate';
-import Loading from '@/components/Loading';
-const Modal = dynamic(() => import('@/components/Modal'));
-import ButtonModal from '@/components/Modal/ButtonModal';
-
-import { Payment, columns } from '@/components/Shadcn/Table/columns';
-import { DataTable } from '@/components/Shadcn/Table/data-table';
-import { formatPrice } from '@/utils/format';
-import FormEditProduct from '@/components/Product/FormEditProduct';
-import Image from 'next/image';
-import { removeChooseProduct } from '@/redux/chooseProductSlice';
-import { resetSelectProductInTable } from '@/redux/selectProductInTable';
-import Search from '@/components/Header/Search';
-import { setPage, setTextSearch } from '@/redux/filterSearchSlice';
-const AllProduct = () => {
+import { getUserId } from '@/redux/selector';
+import { getStatistic } from '@/services/statistic.service';
+import { useQuery } from '@tanstack/react-query';
+import React, { createElement, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { NumericFormat } from 'react-number-format';
+import { Badge } from 'flowbite-react';
+import { RiMoneyDollarCircleLine } from 'react-icons/ri';
+import { TbClipboardList } from 'react-icons/tb';
+import {
+    AiOutlineEye,
+    AiOutlineHeart,
+    AiOutlineStar,
+    AiTwotoneStar,
+} from 'react-icons/ai';
+import AvatarText from '@/components/Avatar';
+import routes from '@/routes';
+import Link from 'next/link';
+import { CiShop } from 'react-icons/ci';
+import ImageIconProduct from '@/components/ProductImageCover';
+import DoughnutChart from '@/components/Charts/DoughnoutChart';
+import VerticalChart from '@/components/Charts/VerticalChart';
+import LineChartRevenue from '@/components/Charts/LineChartRevenue';
+const listNumber = ['red', 'success', 'yellow', 'indigo', 'dark'];
+const page = () => {
     const userId = useSelector(getUserId);
-    const queryClient = useQueryClient();
-
-    const price = useSelector(getPriceFilter);
-    const store = useSelector(getStoreFilter);
-    const page = useSelector(getPageFilter);
-    const limit = useSelector(getLimitFilter);
-    const textSearch = useSelector(getTextSearchFilter);
-
-    const chooseProduct = useSelector(getChooseProduct);
-    const chooseStatus = useSelector(getChooseStatus);
-
-    const [modalDeleteMany, setShowModalDeleteMany] = useState(false);
-    const dispatch = useDispatch();
-    const getProductsQuery = useQuery({
-        queryKey: ['products', textSearch, page],
+    const getRevenueQuery = useQuery({
+        queryKey: ['analysis-revenue'],
         queryFn: () => {
-            return getProducts({
-                userId,
-                textSearch,
-                limit: 2,
-                page,
-            });
+            return getStatistic(userId);
         },
-        keepPreviousData: true,
-        refetchOnWindowFocus: false,
+        enabled: !!userId,
     });
 
+    const data = getRevenueQuery?.data;
+    const revenueData = data?.revenue;
+    const topProducts = data?.topProducts;
+    const topCustomers = data?.topCustomers;
+    const [labelsLineRevenue, setLabelsLineRevenue] = useState();
+    const [datasetsLineRevenue, setDatasetsLineRevenue] = useState();
+    const [datasetsTopProducts, setDatasetsTopProducts] = useState();
+    const [datasetsTopCustomers, setDatasetsTopCustomers] = useState();
     useEffect(() => {
-        getProductsQuery.refetch();
-    }, [textSearch, page]);
+        setLabelsLineRevenue(revenueData?.list?.map((item) => item.month));
+        setDatasetsLineRevenue(
+            revenueData?.list?.map((item) => item.totalRevenue),
+        );
+        setDatasetsTopProducts(topProducts?.map((item) => item.sold));
+        setDatasetsTopCustomers(topCustomers?.map((item) => item.totalExpense));
+    }, [data]);
 
-    const deleteManyProductsMutation = useMutation({
-        mutationFn: (productIds) => {
-            return deleteManyProducts({ ids: productIds, userId });
+    const listCards = [
+        {
+            name: 'Total Revenue',
+            value: revenueData?.total,
+            color: 'success',
+            icon: RiMoneyDollarCircleLine,
         },
-        onSuccess(data) {
-            if (data.ok) {
-                dispatch(removeChooseProduct());
-                queryClient.invalidateQueries(['products']);
-                toast.success('Delete products successfully.');
-                dispatch(resetSelectProductInTable());
-                setShowModalDeleteMany(false);
-            }
+        {
+            name: 'Total Rating',
+            value: data?.totalRating,
+            color: 'indigo',
+            icon: AiOutlineStar,
         },
-        onError(error) {
-            console.log('🚀 ~ file: page.jsx:102 ~ onError ~ error:', error);
-            const errorMessage = error.message || 'Delete products failed';
-            toast.warning(errorMessage);
+        {
+            name: 'Total Order',
+            value: data?.totalOrder,
+            color: 'pink',
+            icon: TbClipboardList,
         },
-    });
-
-    // handle button modal
-    const handleCancel = () => {
-        dispatch(removeChooseProduct());
-    };
-    const selectProductInTable = useSelector(getSelectProductInTable);
-
-    const handleButtonDeleteMany = () => {
-        if (!selectProductInTable.length) {
-            toast.warning('You do not choose product.');
-            setShowModalDeleteMany(false);
-            return;
-        }
-        deleteManyProductsMutation.mutate(selectProductInTable);
-    };
-
-    const handleSearch = ({ textSearch }) => {
-        dispatch(setTextSearch(textSearch));
-    };
-
-    const handleRefresh = () => {
-        dispatch(setTextSearch(''));
-        dispatch(setPage(1));
-    };
-    const [dataTable, setDataTable] = useState([]);
-    console.log('🚀 ~ file: page.jsx:119 ~ AllProduct ~ dataTable:', dataTable);
-    useEffect(() => {
-        setDataTable(getProductsQuery?.data?.products);
-    }, [getProductsQuery?.data]);
-    if (!dataTable) return <Loading />;
+        {
+            name: 'Total Favorite',
+            value: data?.totalFavorite,
+            color: 'lime',
+            icon: AiOutlineHeart,
+        },
+    ];
+    if (!userId || !getRevenueQuery?.data) return <></>;
     return (
-        <AccountTemplate
-            title={'ALL PRODUCTS'}
-            note={'Edit all your products'}
-            button={
-                <div className="flex gap-5">
-                    <button
-                        onClick={() => {
-                            if (!selectProductInTable.length) {
-                                toast.warning(
-                                    'You have not selected any product yet.',
-                                );
-                            } else setShowModalDeleteMany(true);
-                        }}
-                        className="flex gap-3 px-2 py-1 border-2 border-solid border-secondary items-center hover:bg-red-200 hover:border-red-200 rounded-full shadow-md">
-                        <span className="text-sm">Delete many</span>
-                        <AiOutlineDelete className="h-8 w-8 p-2 rounded-full bg-red-400 shadow-lg text-white" />
-                    </button>
-                    <Link
-                        href={routes.managerAddProduct}
-                        className="flex gap-3 px-2 py-1 border-2 border-solid border-secondary items-center hover:bg-secondary rounded-full shadow-md">
-                        <span className="text-sm">Add</span>
-                        <IoAddOutline className="h-8 w-8 rounded-full bg-accent text-white" />
-                    </Link>
-                </div>
-            }>
-            {chooseProduct && chooseStatus === 'edit' && (
-                <Modal
-                    label={'UPDATE'}
-                    handleEvent={() => handleCancel()}
-                    size="4xl">
-                    <FormEditProduct product={chooseProduct} />
-                </Modal>
-            )}
-            {chooseProduct && chooseStatus === 'delete' && (
-                <Modal label={'UPDATE'} handleEvent={() => handleCancel()}>
-                    {deleteManyProductsMutation.isLoading && (
-                        <Loading sizeProp={60} />
-                    )}
-                    <div className="flex flex-col gap-3 justify-center items-center">
-                        <h1>Do you want delete this product?</h1>
-                        <div className="flex gap-3 items-center">
-                            <div className="relative w-[60px] h-[60px] ">
-                                <Image
-                                    src={chooseProduct.images[0]?.url}
-                                    fill
-                                    sizes="60px"
-                                    alt={chooseProduct.images[0]?.url}
-                                    className="object-contain object-center rounded-md ring-1"
-                                />
-                            </div>
-                            <span className="max-w-[200px]">
-                                {chooseProduct.name}
-                            </span>
+        <div className="flex flex-col gap-3">
+            <AccountTemplate title={'ANALYSIS'}></AccountTemplate>
+            <div className="grid grid-cols-4 gap-5">
+                {listCards.map((card, index) => (
+                    <div
+                        key={index}
+                        className="flex flex-col gap-3 rounded-md bg-white p-5">
+                        <div className="flex justify-between items-center">
+                            <Badge size={'xl'} color={card.color}>
+                                {card.name}
+                            </Badge>
+                            {createElement(card.icon, {
+                                className: 'text-2xl',
+                            })}
                         </div>
+                        <NumericFormat
+                            value={card.value}
+                            thousandSeparator
+                            displayType="text"
+                            suffix={card.name === 'Total Revenue' ? ' VND' : ''}
+                            renderText={(value) => (
+                                <p className="text-xl font-medium">{value}</p>
+                            )}
+                        />
+                    </div>
+                ))}
+            </div>
+            <div className="rounded-md bg-white p-5">
+                <LineChartRevenue />
+            </div>
 
-                        <ButtonModal
-                            handleYes={() => {
-                                deleteManyProductsMutation.mutate([
-                                    chooseProduct._id,
-                                ]);
-                            }}
-                            handleNo={() => handleCancel()}
+            <div className="grid grid-cols-2 gap-3">
+                <div className="bg-white rounded-md p-5">
+                    <Badge size={'xl'}> Top Outstanding Products</Badge>
+                    <div className="w-full h-64 flex ">
+                        <VerticalChart
+                            labels={Array.from(
+                                { length: topCustomers.length },
+                                (v, i) => i + 1,
+                            )}
+                            datasets={datasetsTopCustomers}
+                            label="Expense"
+                            yLabel="VND"
+                            xLabel="Customers rank"
                         />
                     </div>
-                </Modal>
-            )}
-            <div className="flex justify-between items-center">
-                <button
-                    className="p-1 rounded-full bg-accent"
-                    onClick={() => handleRefresh()}>
-                    <BiRefresh className="text-2xl text-white" />
-                </button>
-                <Search handleEvent={(data) => handleSearch(data)} />
-            </div>
-            {modalDeleteMany && (
-                <Modal
-                    label={'DELETE MANY'}
-                    handleEvent={() => setShowModalDeleteMany(false)}>
-                    <div className="flex flex-col items-center gap-3">
-                        <h1>
-                            Do you want delete {selectProductInTable.length}{' '}
-                            products ?
-                        </h1>
-                        <ButtonModal
-                            handleYes={() => {
-                                handleButtonDeleteMany();
-                            }}
-                            handleNo={() => {
-                                setShowModalDeleteMany(false);
-                            }}
+                    <div className="flex gap-3 flex-col  justify-start">
+                        {topCustomers?.map((customer, index) => (
+                            <div
+                                className="grid grid-cols-12 gap-5"
+                                key={index}>
+                                <div className="col-span-1 flex justify-center items-center h-full flex-col">
+                                    <Badge
+                                        color={listNumber[index]}
+                                        size={'xl'}>
+                                        {index + 1}
+                                    </Badge>
+                                </div>
+                                <div className="col-span-11">
+                                    <AvatarText
+                                        name={customer?.user?.name}
+                                        src={customer?.user?.avatar?.url}
+                                        text={
+                                            <Link
+                                                className="flex justify-center items-center gap-2 p-1 ring-1 rounded-md hover:bg-primary/20 w-20"
+                                                href={routes.store(
+                                                    customer?.user?._id,
+                                                )}>
+                                                <CiShop />
+                                                View
+                                            </Link>
+                                        }
+                                    />
+                                    <div className="flex flex-row gap-2 items-center mt-2">
+                                        <p>
+                                            <span className="text-gray-500 font-medium">
+                                                Order(s):{' '}
+                                            </span>
+                                            <span className="font-medium">
+                                                {customer.totalPurchases}
+                                            </span>
+                                        </p>
+                                        <div className="w-[2px] h-4 bg-gray-300"></div>
+                                        <div className="flex gap-2">
+                                            <span className="text-gray-500 font-medium">
+                                                Total Expense:{' '}
+                                            </span>
+                                            <NumericFormat
+                                                value={customer?.totalExpense}
+                                                thousandSeparator
+                                                displayType="text"
+                                                suffix={' VND'}
+                                                renderText={(value) => (
+                                                    <p className=" font-medium">
+                                                        {value}
+                                                    </p>
+                                                )}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="bg-white rounded-md p-5">
+                    <Badge size={'xl'}> Top Outstanding Products</Badge>
+                    <div className="w-full h-64 flex ">
+                        <VerticalChart
+                            labels={Array.from(
+                                { length: topProducts.length },
+                                (v, i) => i + 1,
+                            )}
+                            datasets={datasetsTopProducts}
+                            label="Sold"
+                            yLabel="Quantity"
+                            xLabel="Products rank"
                         />
                     </div>
-                </Modal>
-            )}
-            <div className="relative">
-                {(getProductsQuery?.isLoading ||
-                    getProductsQuery?.isFetching) && <Loading />}
-                <DataTable
-                    columns={columns}
-                    data={dataTable}
-                    pageCount={getProductsQuery?.data?.pageCount}
-                    isLoading={getProductsQuery?.isLoading}
-                />
+                    <div className="flex gap-3 flex-col  justify-start">
+                        {topProducts?.map((product, index) => (
+                            <div
+                                key={product._id}
+                                className="grid grid-cols-12 gap-3">
+                                <div className="col-span-1 flex justify-center items-center h-full flex-col">
+                                    <Badge
+                                        color={listNumber[index]}
+                                        size={'xl'}>
+                                        {index + 1}
+                                    </Badge>
+                                </div>
+                                <div className="col-span-3 place-self-center">
+                                    <ImageIconProduct image={product.images} />
+                                </div>
+                                <div className="col-span-8 flex flex-col gap-3 justify-between">
+                                    <p className="line-clamp-3">
+                                        {product.name}
+                                    </p>
+                                    <div className="flex justify-between">
+                                        <p className="font-semibold text-gray-500">
+                                            {product.sold} sold
+                                        </p>
+
+                                        <Link
+                                            className=" px-2 py-1 ring-1 rounded-md hover:bg-primary/20 text-gray-500 text-xs"
+                                            href={routes.productDetail(
+                                                product._id,
+                                            )}>
+                                            View
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
-        </AccountTemplate>
+        </div>
     );
 };
 
-export default AllProduct;
+export default page;

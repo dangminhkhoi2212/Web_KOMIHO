@@ -78,8 +78,8 @@ export const getOrder = async (req, res, next) => {
             query,
         );
         const result = await Order.find(query)
-            .populate('sellerId', 'name avatar.url')
-            .populate('userId', 'name avatar.url')
+            .populate('sellerId', 'name avatar.url address.store phone')
+            .populate('userId', 'name avatar.url address.pickup phone')
             .sort({ _id: -1 });
         res.send(result);
     } catch (error) {

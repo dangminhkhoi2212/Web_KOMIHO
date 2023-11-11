@@ -87,60 +87,6 @@ const ProfileForm = () => {
     });
     const { ref } = register('avatar');
 
-    // const handleUpdate = async (data) => {
-    //     try {
-    //         setLoading(true);
-    //         data.isUpdateAvatar = false;
-
-    //         const form = new FormData();
-    //         form.append('name', data.name);
-    //         form.append('email', data.email);
-    //         form.append('phone', data.phone);
-    //         if (data.avatar.length > 0 && data.avatar[0]) {
-    //             data.avatar = data.avatar[0];
-    //             form.append('avatar', data.avatar);
-    //             data.isUpdateAvatar = true;
-    //         }
-    //         form.append('isUpdateAvatar', data.isUpdateAvatar);
-
-    //         const result = await updateProfile(userId, form);
-
-    //         if (result) {
-    //             //delete form after update
-    //             if (data.avatar) if (avtUrl) URL.revokeObjectURL(avtUrl);
-    //             reset({
-    //                 name: form.get('name'),
-    //                 email: form.get('email'),
-    //                 phone: form.get('phone'),
-    //                 avatar: {},
-    //             });
-    //             for (var pair of form) {
-    //                 form.delete(pair[0]);
-    //             }
-
-    //             dispatch(setUser(result));
-    //             dispatch(
-    //                 setAlert({
-    //                     status: 'success',
-    //                     message: 'Your profile updated successfully.',
-    //                 }),
-    //             );
-
-    //             setFileSize('');
-    //         }
-    //         setLoading(false);
-    //     } catch (error) {
-    //         dispatch(
-    //             setAlert({
-    //                 status: 'failure',
-    //                 message:
-    //                     error?.response?.data?.message ||
-    //                     'Have an error. Please try again.',
-    //             }),
-    //         );
-    //         setLoading(false);
-    //     }
-    // };
     const handleChooseFile = () => {
         inputFile.current.click();
     };
@@ -240,7 +186,7 @@ const ProfileForm = () => {
                     </div>
                 )}
             </div>
-            <div className="col-span-3 flex flex-col gap-3">
+            <div className="col-span-3 flex flex-col justify-center items-center gap-3">
                 <AvatarText
                     src={avtUrl}
                     size="lg"
@@ -250,7 +196,7 @@ const ProfileForm = () => {
 
                 <div>
                     <div
-                        className="py-1 border-2 border-dashed rounded-md text-center cursor-pointer"
+                        className="py-1 px-2 border-2 border-dashed rounded-md text-center cursor-pointer"
                         onClick={handleChooseFile}>
                         Select Image
                     </div>

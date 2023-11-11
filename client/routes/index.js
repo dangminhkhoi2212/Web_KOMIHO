@@ -16,13 +16,13 @@ const routes = {
     myAccount: '/my-account',
     profile: '/my-account',
     address: '/my-account/address',
-    follow: '/my-account/follow',
+    favorite: '/my-account/favorite',
     password: '/my-account/password',
     myPurchase: '/my-account/my-purchases',
     deleteAccount: '/my-account/delete-account',
 
     myStore: '/my-store',
-    managerAllProducts: '/my-store',
+    managerAllProducts: '/my-store/all-products',
     managerAddProduct: '/my-store/add-product',
     managerOrder: '/my-store/order',
 

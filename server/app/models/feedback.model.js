@@ -18,7 +18,6 @@ const feedbackSchema = new Schema(
             type: Schema.Types.ObjectId,
             required: true,
         },
-        isFeedback: { type: Boolean, default: false },
         stars: { type: Number, default: 1, min: 1, max: 5 },
         images: {
             type: [

@@ -20,6 +20,7 @@ const statusList = [
     { name: 'Delivered', value: 'delivered', color: 'success' },
 ];
 const PurchaseItem = ({ purchase, isManager }) => {
+    console.log('🚀 ~ file: index.jsx:23 ~ PurchaseItem ~ purchase:', purchase);
     const customer = isManager ? purchase.userId : purchase.sellerId;
     const items = purchase.items;
     const status = purchase.status;
@@ -132,6 +133,19 @@ const PurchaseItem = ({ purchase, isManager }) => {
                             <span className="font-medium">Expected date: </span>
                             {convertISO(purchase?.deliveredDate)}
                         </p>
+                    )}
+                    {isManager ? (
+                        <div>
+                            <p>{purchase?.userId?.address?.pickup?.main}</p>
+                            <p>{purchase?.userId?.address?.pickup?.sub}</p>
+                            <p>{purchase?.userId?.phone}</p>
+                        </div>
+                    ) : (
+                        <div>
+                            <p>{purchase?.sellerId?.address?.store?.main}</p>
+                            <p>{purchase?.sellerId?.address?.store?.sub}</p>
+                            <p>{purchase?.sellerId?.phone}</p>
+                        </div>
                     )}
                 </div>
                 <NumericFormat

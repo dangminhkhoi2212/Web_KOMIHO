@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-
+const URL_DEFAULT_AVATAR =
+    'https://res.cloudinary.com/dakwyskfm/image/upload/v1698637143/komiho/image_default/1da7ac6b68f80d499ad5427665d3d617_wdiibp.png';
 const UserSchema = new Schema(
     {
         name: { type: String, required: true, trim: true, max: 30, min: 0 },
@@ -23,7 +24,7 @@ const UserSchema = new Schema(
         },
         avatar: {
             public_id: { type: String },
-            url: { type: String },
+            url: { type: String, default: URL_DEFAULT_AVATAR },
         },
         address: {
             pickup: {
@@ -46,6 +47,10 @@ const UserSchema = new Schema(
         typeUser: { type: String, required: true, trim: true, default: 'user' },
         public: { type: Boolean, default: true }, // role as delete or block
         active: { type: Boolean, default: true },
+        lock: {
+            status: { type: Boolean, default: false },
+            reason: { type: String, max: 5000, trim: true },
+        },
     },
     {
         timestamps: true,

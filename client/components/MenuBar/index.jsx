@@ -1,12 +1,12 @@
 'use client';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 
 const MenuBar = ({ list, handleEvent }) => {
     const [navs, setNavs] = useState(list || []);
-    // useEffect(() => {
-    //     setNavs(list);
-    // }, [list]);
+    useEffect(() => {
+        setNavs(list);
+    }, [list]);
     const handleSelectTag = (tab) => {
         const changeNavs = navs.map((nav) => {
             if (nav.tab === tab) return { ...nav, active: true };
@@ -37,4 +37,4 @@ const MenuBar = ({ list, handleEvent }) => {
     );
 };
 
-export default MenuBar;
+export default memo(MenuBar);

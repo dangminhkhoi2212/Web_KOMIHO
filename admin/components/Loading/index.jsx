@@ -1,20 +1,31 @@
+import { memo } from 'react';
 import { HashLoader } from 'react-spinners';
 
-const Loading = ({ loadingStatus, colorProp, sizeProp }) => {
+const Loading = ({ colorProp, sizeProp }) => {
     let color = colorProp || '#8fb3ff';
-    const size = sizeProp || 100;
+    const size = sizeProp || 60;
 
     return (
-        <div className="flex justify-center items-center inset-0 absolute">
+        <>
+            <div className="inset-0 absolute z-backdrop bg-white/30 rounded-md backdrop-blur-sm"></div>
             <HashLoader
                 color={color}
-                loading={loadingStatus}
+                loading={true}
                 size={size}
                 aria-label="Loading Spinner"
                 data-testid="loader"
+                cssOverride={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    opacity: 1,
+                    zIndex: 2000,
+                }}
+                speedMultiplier={1.6}
             />
-        </div>
+        </>
     );
 };
 
-export default Loading;
+export default memo(Loading);

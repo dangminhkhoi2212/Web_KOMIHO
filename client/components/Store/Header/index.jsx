@@ -1,23 +1,20 @@
 'use client';
-import { createElement, useEffect, useState } from 'react';
+import { createElement, memo, useEffect, useState } from 'react';
 import AvatarText from '@/components/Avatar';
-import { AiOutlineStar } from 'react-icons/ai';
-import { FiUserPlus, FiUsers, FiUserCheck, FiUserX } from 'react-icons/fi';
-import { VscAdd } from 'react-icons/vsc';
-import { BsChatRightHeartFill, BsCartCheck } from 'react-icons/bs';
+import { AiOutlineHeart, AiOutlineStar, AiTwotoneHeart } from 'react-icons/ai';
+import { FiUserPlus, FiUsers, FiUserCheck } from 'react-icons/fi';
+import { BsCartCheck } from 'react-icons/bs';
 import { LuStore } from 'react-icons/lu';
 import { ISOTimeToDate } from '@/utils/date';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { addFollower, checkFollow } from '@/services/follow.service';
+import { useMutation } from '@tanstack/react-query';
+import { checkFavorite, toggleFavorite } from '@/services/favorite.service';
 import { useSelector } from 'react-redux';
 import { getUserId } from '@/redux/selector';
 import { Button } from 'flowbite-react';
 import { BiMessageAltDetail } from 'react-icons/bi';
 const StoreHeader = ({ user }) => {
-    console.log('🚀 ~ file: index.jsx:16 ~ StoreHeader ~ user:', user);
     const userId = useSelector(getUserId);
-    const [isFollow, setIsFollow] = useState(false);
-    console.log('🚀 ~ file: index.jsx:18 ~ StoreHeader ~ isFollow:', isFollow);
+    const [isFavorite, setIsFavorite] = useState(false);
     const listMiddle = [
         {
             name: 'Products',
@@ -36,36 +33,27 @@ const StoreHeader = ({ user }) => {
             icon: FiUserCheck,
         },
     ];
-    const checkFollowMutation = useMutation({
+    const checkFavoriteMutation = useMutation({
         mutationFn: () => {
-            return checkFollow({ userId, followerId: user._id });
+            return checkFavorite({ userId, favoriteId: user._id });
         },
         onSuccess(data) {
-            const isFollowed = data.isFollowed;
-            console.log(
-                '🚀 ~ file: index.jsx:43 ~ onSuccess ~ isFollowed:',
-                isFollowed,
-            );
-            setIsFollow(isFollowed);
+            const isFavorite = data.isFavorite;
+
+            setIsFavorite(isFavorite);
         },
     });
     useEffect(() => {
         if (!user) return;
-        checkFollowMutation.mutate();
+        checkFavoriteMutation.mutate();
     }, [user]);
 
-    const handleFollowMutation = useMutation({
+    const handleFavoriteMutation = useMutation({
         mutationFn: () => {
-            return addFollower({ userId, followerId: user._id });
+            return toggleFavorite({ userId, favoriteId: user._id });
         },
         onSuccess(data) {
-            const { status } = data;
-            setIsFollow(status === 'follow' ? true : false);
-            // checkFollowQuery.refetch();
-            console.log('🚀 ~ file: index.jsx:40 ~ onSuccess ~ data:', data);
-        },
-        onError(error) {
-            console.log('🚀 ~ file: index.jsx:43 ~ onSuccess ~ error:', error);
+            setIsFavorite(data?.status === 'add' ? true : false);
         },
     });
     if (!user) return <></>;
@@ -77,35 +65,39 @@ const StoreHeader = ({ user }) => {
                     key={user?._id}
                     name={user?.name}
                     text={
-                        <div className="row-span-1  flex gap-3 justify-center items-center text-gray-500">
-                            <Button
-                                size="xs"
-                                className=" !bg-white ring-1 flex gap-2 items-center hover:!bg-primary/20 text-gray-500"
-                                onClick={() => handleFollowMutation.mutate()}
-                                isProcessing={handleFollowMutation.isLoading}>
-                                {!isFollow ? (
+                        userId !== user._id ? (
+                            <div className="row-span-1  flex gap-3 justify-center items-center text-gray-500">
+                                <Button
+                                    size="xs"
+                                    className=" !bg-white ring-1 flex gap-2 items-center hover:!bg-primary/20 text-gray-500"
+                                    onClick={() =>
+                                        handleFavoriteMutation.mutate()
+                                    }
+                                    isProcessing={
+                                        handleFavoriteMutation.isLoading
+                                    }>
                                     <div className="flex gap-2 justify-center items-center">
-                                        {' '}
-                                        <FiUserCheck />
-                                        <span>Follow</span>
+                                        {isFavorite ? (
+                                            <AiTwotoneHeart className="fill-red-500" />
+                                        ) : (
+                                            <AiOutlineHeart />
+                                        )}
+
+                                        <span>Favorite</span>
                                     </div>
-                                ) : (
+                                </Button>
+                                <Button
+                                    size="xs"
+                                    className="!bg-white ring-1 hover:!bg-primary/20 flex gap-2 justify-center items-center text-gray-500">
                                     <div className="flex gap-2 justify-center items-center">
-                                        {' '}
-                                        <FiUserX />
-                                        <span>UnFollow</span>
+                                        <BiMessageAltDetail />
+                                        <span>Chat</span>
                                     </div>
-                                )}
-                            </Button>
-                            <Button
-                                size="xs"
-                                className="!bg-white ring-1 hover:!bg-primary/20 flex gap-2 justify-center items-center text-gray-500">
-                                <div className="flex gap-2 justify-center items-center">
-                                    <BiMessageAltDetail />
-                                    <span>Chat</span>
-                                </div>
-                            </Button>
-                        </div>
+                                </Button>
+                            </div>
+                        ) : (
+                            <p>My store</p>
+                        )
                     }
                     size="lg"
                 />
@@ -136,4 +128,4 @@ const StoreHeader = ({ user }) => {
     );
 };
 
-export default StoreHeader;
+export default memo(StoreHeader);

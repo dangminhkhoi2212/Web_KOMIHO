@@ -19,7 +19,7 @@ import {
     createAccessToken,
     createRefreshToken,
 } from '../services/token.service.js';
-import mongoose from 'mongoose';
+import mongoose, { isValidObjectId } from 'mongoose';
 const PROPERTIES_USER = process.env.PROPERTIES_USER;
 const BCRYPT_HASH = process.env.BCRYPT_HASH;
 const getUser = async (req, res, next) => {
@@ -65,10 +65,58 @@ const getUser = async (req, res, next) => {
         next(new ApiError(error.code || 500, error.message));
     }
 };
-const getAllUsers = async (_req, res, next) => {
+const getAllUsers = async (req, res, next) => {
     try {
-        const users = await User.find({}).select(PROPERTIES_USER);
-        res.send(users);
+        const query = req.query;
+        const limit = parseInt(query?.limit) || 30;
+        const page = parseInt(query?.page) || 1;
+        const skip = (page - 1) * limit;
+
+        const textSearch = query?.textSearch;
+        const agg = [
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    email: 1,
+                    'avatar.url': 1,
+                    phone: 1,
+                    lock: 1,
+                },
+            },
+            {
+                $skip: skip,
+            },
+            { $limit: limit },
+            { $sort: { name: 1 } },
+        ];
+        if (textSearch)
+            if (isValidObjectId(textSearch)) {
+                agg.unshift({
+                    $match: {
+                        _id: new mongoose.Types.ObjectId(textSearch),
+                    },
+                });
+            } else
+                agg.unshift({
+                    $search: {
+                        index: 'search_user',
+                        text: {
+                            query: textSearch,
+                            path: {
+                                wildcard: '*',
+                            },
+                            fuzzy: {},
+                        },
+                    },
+                });
+        const [users, count] = await Promise.all([
+            User.aggregate(agg),
+            User.estimatedDocumentCount(),
+        ]);
+        const countTemp = textSearch ? users.length : count;
+        const pageCount = Math.ceil(countTemp / limit);
+        res.send({ users, pageCount, limit, skip });
     } catch (error) {
         next(new ApiError(error.code || 500, error.message));
     }
@@ -216,6 +264,28 @@ const toggleActive = async (req, res, next) => {
         next(new ApiError(error.code || 500, error.message || error));
     }
 };
+const toggleLock = async (req, res, next) => {
+    try {
+        const { userId, lock } = req.body;
+        if (!userId) return next(new ApiError(400, 'userId not found'));
+
+        const user = await User.findById(userId);
+        if (!user) return next(new ApiError(400, 'User not found'));
+
+        await User.findByIdAndUpdate(userId, { lock });
+        await sendMail(
+            user.email,
+            'Notice of account lockout',
+            `<div>
+                <h5>Your account are locked by admin</h5>
+                 <p>Reason: ${lock.reason}</p>
+            </div>`,
+        );
+        res.send({ ok: true, message: `Locked account with id = ${userId}` });
+    } catch (error) {
+        next(new ApiError(error.code || 500, error.message || error));
+    }
+};
 export {
     PROPERTIES_USER,
     getAllUsers,
@@ -225,4 +295,5 @@ export {
     updateAddress,
     recoverAccount,
     toggleActive,
+    toggleLock,
 };

@@ -42,6 +42,10 @@ const ProductSchema = new Schema(
 
         public: { type: Boolean, default: true },
         active: { type: Boolean, default: true },
+        lock: {
+            status: { type: Boolean, default: false },
+            reason: { type: String, max: 5000, trim: true },
+        },
     },
     {
         timestamps: true,

@@ -51,7 +51,7 @@ const page = () => {
                 </h1>
                 <div className="flex  justify-between gap-3">
                     <div className="flex flex-col justify-center">
-                        <div className="flex  gap-5 font-medium text-xl">
+                        <div className="flex  gap-5 font-medium text-lg">
                             <p>{name}</p>
                             <p>{email}</p>
                             {phone ? (

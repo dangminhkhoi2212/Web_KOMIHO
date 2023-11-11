@@ -1,11 +1,12 @@
-import { Component, useState } from 'react';
-import { Editor } from 'react-draft-wysiwyg';
-import { useFormContext, Controller, useController } from 'react-hook-form';
-
-import { EditorState, convertToRaw } from 'draft-js';
-import draftToHtml from 'draftjs-to-html';
+'use client';
+import { useFormContext, Controller } from 'react-hook-form';
+import dynamic from 'next/dynamic';
+const toolbar = dynamic(() => import('./toolbar'));
+const Editor = dynamic(
+    () => import('react-draft-wysiwyg').then((mod) => mod.Editor),
+    { ssr: false },
+);
 import '@/node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import toolbar from './toolbar';
 const FromDescription = () => {
     const { control } = useFormContext();
 

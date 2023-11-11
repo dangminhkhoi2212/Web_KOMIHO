@@ -14,12 +14,12 @@ const ImageIconProduct = ({
     const handleDeleteImage = () => {
         if (deleteImage) deleteImage(image);
     };
-    if (!Object.keys(image).length) return <></>;
+    if (!image) return <></>;
     return (
         <div className="w-[80px] h-[80px] rounded-md overflow-hidden ring-1 ring-gray-200 relative group">
             <Image
-                src={image?.url}
-                alt={image?.url}
+                src={image?.url || image[0]?.url}
+                alt={image?.url || image[0]?.url}
                 fill
                 sizes="80px"
                 className="object-contain object-center"
@@ -32,8 +32,8 @@ const ImageIconProduct = ({
                     <div className="flex justify-center items-center">
                         <div className="w-[300px] h-[300px] rounded-md overflow-hidden ring-1 ring-gray-200 relative">
                             <Image
-                                src={image?.url}
-                                alt={image?.url}
+                                src={image?.url || image[0]?.url}
+                                alt={image?.url || image[0]?.url}
                                 fill
                                 sizes="300px"
                                 className="object-contain object-center"

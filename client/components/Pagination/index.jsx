@@ -4,13 +4,12 @@ import { memo } from 'react';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import { useSelector } from 'react-redux';
 
-const Pagination = dynamic(() => import('react-paginate'));
+import Pagination from 'react-paginate';
 
-const PaginationCustom = ({ pageCount, handleEvent }) => {
-    const page = useSelector(getPageFilter);
+const PaginationCustom = ({ pageCount, handleEvent, page }) => {
     const handlePageClick = (data) => {
         if (handleEvent) {
-            handleEvent(data.selected);
+            handleEvent(data.selected + 1);
         }
     };
     return (

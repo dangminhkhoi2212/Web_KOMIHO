@@ -5,6 +5,7 @@ import multer from '../lib/multerConfig.js';
 import { verifyToken } from '../middleware/verifyToken.js';
 
 router.route('/active').get(userController.toggleActive);
+router.route('/lock').patch(verifyToken, userController.toggleLock);
 router.route('/recover-account/').put(userController.recoverAccount);
 router
     .route('/update/profile/:userId')
