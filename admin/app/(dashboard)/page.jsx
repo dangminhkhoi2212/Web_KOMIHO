@@ -22,6 +22,7 @@ import AvatarText from '@/components/Avatar';
 import Link from 'next/link';
 import CardBox from '@/components/CardBox';
 import Loading from '@/components/Loading';
+import LineChartRevenue from '@/components/Charts/LineChartRevenue';
 const DashboardPage = () => {
     const [date, setDate] = useState(new Date());
     const getAnalysisAdminQuery = useQuery({
@@ -134,13 +135,14 @@ const DashboardPage = () => {
                 ))}
             </div>
             <div className=" bg-white rounded-lg p-4">
-                <LineChart
+                {/* <LineChart
                     datasetsProp={datasetsChartRevenue}
                     labelsProp={labelsChartRevenue}
                     yLabel={'VND'}
                     label={'Revenue'}
                     title={'Total revenue this year'}
-                />
+                /> */}
+                <LineChartRevenue />
             </div>
             <div className="grid grid-cols-12 gap-4">
                 <div className="col-span-8  bg-white rounded-lg p-4">

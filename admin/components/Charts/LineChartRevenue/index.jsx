@@ -23,8 +23,6 @@ ChartJS.register(
     TimeScale,
 );
 import PickDate from './Picker';
-import { useSelector } from 'react-redux';
-import { getUserId } from '@/redux/selector';
 import { useMutation } from '@tanstack/react-query';
 import { getStatisticRevenue } from '@/services/statistic.service';
 import { useEffect, useRef } from 'react';
@@ -34,7 +32,6 @@ import { route } from 'nextjs-routes';
 import { formatISO } from 'date-fns';
 
 const LineChartRevenue = () => {
-    const userId = useSelector(getUserId);
     const searchParams = useSearchParams();
     const filterDay = searchParams.get('date');
     const filterMonth = searchParams.get('month');
@@ -51,7 +48,6 @@ const LineChartRevenue = () => {
     const getRevenueMutation = useMutation({
         mutationFn: () => {
             return getStatisticRevenue({
-                userId,
                 filterDay,
                 filterMonth,
                 filterYear,
@@ -73,7 +69,6 @@ const LineChartRevenue = () => {
             y: data.total,
         };
     });
-    console.log('🚀 ~ file: index.jsx:76 ~ revenue ~ revenue:', revenue);
 
     const options = {
         responsive: true,

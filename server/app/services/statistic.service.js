@@ -350,6 +350,7 @@ export const generateGroupBy = (filterBy) => {
                 year: { $year: '$createdAt' },
                 month: { $month: '$createdAt' },
                 day: { $dayOfMonth: '$createdAt' },
+                hour: { $hour: '$createdAt' },
             };
 
         default:
@@ -357,6 +358,7 @@ export const generateGroupBy = (filterBy) => {
                 year: { $year: '$createdAt' },
                 month: { $month: '$createdAt' },
                 day: { $dayOfMonth: '$createdAt' },
+                hour: { $hour: '$createdAt' },
             };
     }
 };
@@ -369,7 +371,14 @@ export const generateSortStage = (filterBy) => {
         case 'month':
             return { $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 } };
         case 'day':
-            return { $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 } };
+            return {
+                $sort: {
+                    '_id.year': 1,
+                    '_id.month': 1,
+                    '_id.day': 1,
+                    '_id.hour': 1,
+                },
+            };
 
         default:
             return { $sort: { '_id.year': 1, '_id.month': 1 } };
@@ -378,25 +387,6 @@ export const generateSortStage = (filterBy) => {
 export const generateFilterMatch = (day, filterMonth, year) => {
     const dateFilter = {};
 
-    const parsedDate = new Date(day);
-    dateFilter['$match'] = {
-        $expr: {
-            $and: [
-                {
-                    $eq: [{ $year: '$createdAt' }, { $year: parsedDate }],
-                },
-                {
-                    $eq: [{ $month: '$createdAt' }, { $month: parsedDate }],
-                },
-                {
-                    $eq: [
-                        { $dayOfMonth: '$createdAt' },
-                        { $dayOfMonth: parsedDate },
-                    ],
-                },
-            ],
-        },
-    };
     if (year) {
         dateFilter['$match'] = {
             $expr: {
@@ -404,17 +394,40 @@ export const generateFilterMatch = (day, filterMonth, year) => {
             },
         };
     }
-    if (filterMonth?.month) {
-        if (!filterMonth?.year) throw Error('year not found');
+    if (filterMonth) {
+        const parsedMonth = new Date(filterMonth);
         dateFilter['$match'] = {
             $expr: {
-                $and: {
-                    $eq: [{ $year: '$createdAt' }, parseInt(filterMonth?.year)],
-                    $eq: [
-                        { $month: '$createdAt' },
-                        parseInt(filterMonth?.month),
-                    ],
-                },
+                $and: [
+                    { $eq: [{ $year: '$createdAt' }, { $year: parsedMonth }] },
+                    {
+                        $eq: [
+                            { $month: '$createdAt' },
+                            { $month: parsedMonth },
+                        ],
+                    },
+                ],
+            },
+        };
+    }
+    if (day) {
+        const parsedDate = new Date(day);
+        dateFilter['$match'] = {
+            $expr: {
+                $and: [
+                    {
+                        $eq: [{ $year: '$createdAt' }, { $year: parsedDate }],
+                    },
+                    {
+                        $eq: [{ $month: '$createdAt' }, { $month: parsedDate }],
+                    },
+                    {
+                        $eq: [
+                            { $dayOfMonth: '$createdAt' },
+                            { $dayOfMonth: parsedDate },
+                        ],
+                    },
+                ],
             },
         };
     }

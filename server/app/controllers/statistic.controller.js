@@ -108,6 +108,7 @@ export const getAnalysisRevenueByFilter = async (req, res, next) => {
             filterMonth,
             filterYear,
         );
+        // return res.send(dateFilter);
 
         if (userId) {
             agg.push({

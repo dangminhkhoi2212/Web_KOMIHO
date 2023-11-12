@@ -50,6 +50,7 @@
         "react-chartjs-2": "^5.2.0",
         "react-cookie": "^6.1.1",
         "react-countdown": "^2.3.5",
+        "react-datepicker": "^4.21.0",
         "react-day-picker": "^8.9.1",
         "react-dom": "18.2.0",
         "react-draft-wysiwyg": "^1.15.0",
