@@ -1,6 +1,9 @@
+import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { TfiSearch } from 'react-icons/tfi';
 const Search = ({ handleEvent }) => {
+    const searchParams = useSearchParams();
+    const textSearch = searchParams.get('textSearch');
     const {
         register,
         handleSubmit,
@@ -18,7 +21,7 @@ const Search = ({ handleEvent }) => {
                 type="search"
                 className=" px-4 py-1  text-md rounded-s-full  focus:border-accent focus:ring-0 border-2 border-slate-400 outline-none "
                 {...register('textSearch')}
-                placeholder="Search"
+                placeholder={textSearch || 'Search'}
             />
             <button>
                 <TfiSearch className="bg-accent  h-10 flex-grow text-white  text-5xl px-3 rounded-e-full " />

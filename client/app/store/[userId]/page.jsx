@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import ProductCard from '@/components/Store/ProductCard';
+import ProductCard from '@/components/Product/ProductCard';
 import { getAllProducts } from '@/services/product.service';
 import { IoAddOutline } from 'react-icons/io5';
 import Link from 'next/link';

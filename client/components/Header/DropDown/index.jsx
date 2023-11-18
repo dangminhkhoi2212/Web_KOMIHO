@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { createElement, useEffect, useState } from 'react';
 import AvatarText from '@/components/Avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { getName, getUrlAvatar, getUserId } from '@/redux/selector';
@@ -10,9 +10,17 @@ import { resetUser } from '@/components/Auth/authSlice';
 import routes from '@/routes';
 import Cookies from 'js-cookie';
 import { resetAllReducers } from '@/redux/store';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
+import { User2 } from 'lucide-react';
+import { Store } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 const listDropdown = [
-    { name: 'Account', link: routes.profile },
-    { name: 'Store', link: routes.myStore },
+    { name: 'Account', link: routes.profile, icon: User2 },
+    { name: 'Store', link: routes.myStore, icon: Store },
 ];
 export default function DropdownItem() {
     const UrlAvatar = useSelector(getUrlAvatar);
@@ -30,36 +38,35 @@ export default function DropdownItem() {
     };
     return (
         <>
-            <div
-                className="relative text-gray-600 py-1 "
-                onMouseEnter={() => setShow(true)}
-                onMouseLeave={() => setShow(false)}>
-                <AvatarText
-                    src={UrlAvatar}
-                    text={name}
-                    className="cursor-pointer text-sm"
-                />
-                {show && (
-                    <div
-                        className="flex flex-col gap-1  absolute top-full bg-white shadow-md rounded-md p-2 ring-1 z-drop-down  break-words w-40
-                                ">
+            <Popover>
+                <PopoverTrigger>
+                    <AvatarText
+                        src={UrlAvatar}
+                        text={name}
+                        className="cursor-pointer text-sm"
+                    />
+                </PopoverTrigger>
+                <PopoverContent className="ring-1 z-drop-down w-52">
+                    <div className="flex flex-col gap-1   bg-white  rounded-md   break-words">
                         {listDropdown.map((item) => (
                             <Link
                                 href={item.link}
                                 key={item.name}
-                                className="hover:bg-primary hover:text-white  px-2 py-1 rounded-md text-start">
+                                className="flex gap-2 items-center hover:bg-primary hover:text-white  px-2 py-1 rounded-md text-start">
+                                {createElement(item.icon, { size: '18' })}
                                 {item.name}
                             </Link>
                         ))}
                         <hr />
                         <button
-                            className="hover:bg-primary hover:text-white  px-2 py-1 rounded-md text-start"
+                            className="flex gap-2 items-center hover:bg-primary hover:text-white  px-2 py-1 rounded-md text-start"
                             onClick={handleLogout}>
+                            <LogOut size={18} />
                             Logout
                         </button>
                     </div>
-                )}
-            </div>
+                </PopoverContent>
+            </Popover>
         </>
     );
 }

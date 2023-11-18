@@ -13,14 +13,14 @@ import {
     getUserId,
     getUrlAvatar,
 } from '@/redux/selector';
-import AvatarText from '@/components/Avatar';
 import { updateProfile } from '@/services/user.service';
 import { useDispatch } from 'react-redux';
 import { setUser } from '@/components/Auth/authSlice';
 import Loading from '@/components/Loading';
-import clsx from 'clsx';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 const ProfileForm = () => {
     const userId = useSelector(getUserId);
@@ -187,13 +187,14 @@ const ProfileForm = () => {
                 )}
             </div>
             <div className="col-span-3 flex flex-col justify-center items-center gap-3">
-                <AvatarText
-                    src={avtUrl}
-                    size="lg"
-                    onClick={handleChooseFile}
-                    className="cursor-pointer"
-                />
-
+                <div className="w-24 h-24 relative">
+                    <Image
+                        src={avtUrl}
+                        alt={avtUrl}
+                        fill
+                        className="object-center object-cover rounded-full"
+                    />
+                </div>
                 <div>
                     <div
                         className="py-1 px-2 border-2 border-dashed rounded-md text-center cursor-pointer"
@@ -223,7 +224,7 @@ const ProfileForm = () => {
                     <div className="text-md font-medium">
                         <p>File size of your choice: </p>
                         <p
-                            className={clsx(
+                            className={cn(
                                 fileSize > 5
                                     ? 'text-red-400'
                                     : 'text-green-400',

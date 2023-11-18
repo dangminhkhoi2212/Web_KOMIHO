@@ -4,13 +4,12 @@ import { formatPrice } from '@/utils/format';
 import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FaStar } from 'react-icons/fa';
 import { Rating } from 'react-simple-star-rating';
 
 const ProductCard = ({ product }) => {
     if (!product || !product.active) return <></>;
     return (
-        <div className="overflow-hidden bg-white rounded-md shadow-md hover:shadow-xl transition-all duration-300 ease-in-out w-[200px] text-start">
+        <div className="overflow-hidden bg-white rounded-md  hover:shadow-xl transition-all duration-300 ease-in-out w-[200px] text-start">
             <Link
                 href={routes.productDetail(product._id)}
                 className="rounded-md bg-white relative ">

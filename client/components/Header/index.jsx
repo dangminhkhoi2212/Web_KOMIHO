@@ -13,9 +13,20 @@ import Navigation from './Navigation';
 import Link from 'next/link';
 import routes from '@/routes';
 import Cart from './Cart';
+import { useRouter } from 'next/navigation';
+import { route } from 'nextjs-routes';
 const Header = () => {
     const userId = useSelector(getUserId);
-
+    const router = useRouter();
+    const handleSearch = (data) => {
+        if (data.textSearch !== '') {
+            const newRoute = route({
+                pathname: routes.products,
+                query: { textSearch: data.textSearch },
+            });
+            router.replace(newRoute, { scroll: true });
+        } else router.replace(routes.products, { scroll: true });
+    };
     return (
         <div className="grid grid-cols-3 px-10 items-center justify-items-center bg-white text-center pt-1 z-header text-sm sticky top-0 ">
             <div className="col-span-1 flex flex-col justify-start gap-3">
@@ -24,14 +35,14 @@ const Header = () => {
                     <a href="mailto:kkhoi600@gmail.com">kkhoi600@gmail.com</a>
                 </div>
                 <div className="">
-                    <Search />
+                    <Search handleEvent={handleSearch} />
                 </div>
             </div>
             <div className="col-span-1">
                 <div className="">
                     <Logo />
                 </div>
-                {/* <Navigation /> */}
+                <Navigation />
             </div>
             <div className="col-span-1 flex flex-col justify-between ">
                 <div className="col-span-1 text-2xl justify-end flex  mt-2">

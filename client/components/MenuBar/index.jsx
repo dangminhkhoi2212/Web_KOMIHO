@@ -1,8 +1,9 @@
 'use client';
+import { cn } from '@/lib/utils';
 import clsx from 'clsx';
 import { memo, useEffect, useMemo, useState } from 'react';
 
-const MenuBar = ({ list, handleEvent }) => {
+const MenuBar = ({ list, handleEvent, clss }) => {
     const [navs, setNavs] = useState(list || []);
     useEffect(() => {
         setNavs(list);
@@ -21,7 +22,11 @@ const MenuBar = ({ list, handleEvent }) => {
                 return (
                     <div
                         role="button"
-                        className="relative hover:bg-primary/50 rounded-sm flex-1 text-center py-2 transition-all ease-in-out duration-300 "
+                        className={cn(
+                            'relative hover:bg-primary/50 rounded-sm flex-1 text-center py-2 transition-all ease-in-out duration-300 ',
+                            nav.active ? 'text-black' : 'text-gray-400',
+                            clss,
+                        )}
                         key={nav.name}
                         onClick={() => handleSelectTag(nav.tab)}>
                         {nav.name}

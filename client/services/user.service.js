@@ -26,3 +26,10 @@ export const toggleActiveUser = async ({ userId, active }) => {
     return (await api.get(`/user/active?userId=${userId}&active=${active}`))
         .data;
 };
+export const getUsers = async ({ textSearch, limit, page, userId }) => {
+    return (
+        await api.get('/user', {
+            params: { textSearch, limit, page, userId },
+        })
+    ).data;
+};

@@ -1,8 +1,7 @@
 const routes = {
     home: '/',
-    shirt: '/shirt',
-    pants: '/pants',
-    newItems: '/newItems',
+    search: '/search',
+    products: '/products',
 
     login: '/login',
     forgetPassword: '/login/forget-password',
