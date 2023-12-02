@@ -54,7 +54,6 @@ const orderSchema = new Schema(
             default: 'pending',
         },
         payment: { type: Boolean, default: true },
-        note: { type: String, max: 2000, trim: true },
     },
     { timestamps: true, versionKey: false },
 );

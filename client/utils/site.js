@@ -4,6 +4,11 @@ export const clearObject = (ojb) => {
         {},
     );
 };
-export const checkShowProduct = (product) => {
-    return product?.lock?.status === false && product.public === true;
+export const isShowProduct = (product) => {
+    if (!product) return false;
+    return product.public && !product?.lock?.status && product.active;
+};
+export const isShowUser = (user) => {
+    if (!user) return false;
+    return user.public && !user?.lock?.status;
 };

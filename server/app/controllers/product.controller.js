@@ -12,21 +12,7 @@ import {
 } from '../services/cloudinary.service.js';
 import ApiError from '../utils/apiError.js';
 import { sendMail } from '../utils/mailer.js';
-
-User.watch().on('change', async (data) => {
-    try {
-        if (data.operationType === 'delete') {
-            const userId = data.documentKey._id.toString();
-            await deleteOnCloudinary(userId);
-            await Product.deleteMany({ userId });
-        }
-    } catch (error) {
-        console.log(
-            '🚀 ~ file: product.controller.js:16 ~ User.watch ~ error:',
-            error,
-        );
-    }
-});
+import { filterProducts, sortProducts } from '../services/product.service.js';
 
 const deleteOnCloudinary = async (userId) => {
     // delete on cloudinary
@@ -330,14 +316,14 @@ export const toggleActive = async (req, res, next) => {
 const getAll = async (req, res, next) => {
     try {
         const query = req.query;
-
+        const { sortBy, star, percent, textSearch } = query;
         const userId =
             query?.userId && new mongoose.Types.ObjectId(query.userId);
         const withFullImages = query?.withFullImages === 'true' ? true : false;
-        const textSearch = query?.textSearch;
+
         console.log(
-            '🚀 ~ file: product.controller.js:338 ~ getAll ~ textSearch:',
-            textSearch,
+            '🚀 ~ file: product.controller.js:322 ~ getAll ~ query:',
+            query,
         );
 
         const page = parseInt(query?.page) || 1;
@@ -355,6 +341,7 @@ const getAll = async (req, res, next) => {
             ratingsAverage: 1,
             views: 1,
             lock: 1,
+            public: 1,
         };
 
         if (withFullImages) {
@@ -363,47 +350,29 @@ const getAll = async (req, res, next) => {
             projectFilter.cover = { $arrayElemAt: ['$images.url', 0] };
         }
 
-        const agg = [{ $project: projectFilter }];
-        if (textSearch) {
-            if (isValidObjectId(textSearch)) {
-                agg.unshift({
-                    $match: {
-                        $or: [
-                            {
-                                _id: new mongoose.Types.ObjectId(textSearch),
-                            },
-                            {
-                                userId: new mongoose.Types.ObjectId(textSearch),
-                            },
-                        ],
-                    },
-                });
-            } else
-                agg.unshift({
-                    $search: {
-                        index: 'search_product',
-                        text: {
-                            query: textSearch,
-                            path: {
-                                wildcard: '*',
-                            },
-                            fuzzy: {},
-                        },
-                    },
-                });
-        }
-        if (userId) {
-            agg.push({ $match: { userId } });
-        }
-
+        const agg = [];
+        agg.push(
+            ...filterProducts({
+                textSearch,
+                userId,
+                star,
+                percent,
+            }),
+        );
+        agg.push({ $project: projectFilter });
         // Count the matching documents without the skip and limit
         const countAgg = [...agg];
         countAgg.push({ $count: 'count' });
         const countResult = await Product.aggregate(countAgg);
+        // return res.send(countResult);
         const count = countResult.length ? countResult[0].count : 0;
 
         // Add skip and limit for pagination
         agg.push({ $skip: skip }, { $limit: limit });
+        // Add sort
+        const filterSort = sortProducts({ sortBy });
+        if (filterSort) agg.push(filterSort);
+        // return res.send({ agg, query });
 
         // Use the aggregation pipeline to get the products
         const products = await Product.aggregate(agg);
@@ -411,7 +380,7 @@ const getAll = async (req, res, next) => {
         const pageCount = Math.ceil(count / limit);
 
         // Send the response
-        res.send({ products, pageCount, page, limit });
+        return res.send({ products, pageCount, page, limit });
     } catch (error) {
         next(new ApiError(error.code || 500, error.message || error));
     }

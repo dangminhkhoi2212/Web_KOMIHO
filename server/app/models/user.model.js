@@ -20,6 +20,7 @@ const UserSchema = new Schema(
         },
         password: {
             type: String,
+            min: 6,
             trim: true,
         },
         avatar: {
@@ -36,15 +37,11 @@ const UserSchema = new Schema(
                 sub: { type: String, trim: true, max: 100 },
             },
         },
-        bank: {
-            name: { type: String, trim: true },
-            number: { type: String, trim: true },
-        },
+
         productTotal: { type: Number, default: 0 },
         emailVerified: { type: Boolean, default: false },
         viaGoogle: { type: Boolean, default: false },
         refreshToken: { type: String },
-        typeUser: { type: String, required: true, trim: true, default: 'user' },
         public: { type: Boolean, default: true }, // role as delete or block
         active: { type: Boolean, default: true },
         lock: {

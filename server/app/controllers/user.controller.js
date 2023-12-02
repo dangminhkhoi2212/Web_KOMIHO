@@ -80,6 +80,7 @@ const getAllUsers = async (req, res, next) => {
                     name: 1,
                     email: 1,
                     'avatar.url': 1,
+                    public: 1,
                     phone: 1,
                     lock: 1,
                 },
@@ -116,7 +117,7 @@ const getAllUsers = async (req, res, next) => {
         ]);
         const countTemp = textSearch ? users.length : count;
         const pageCount = Math.ceil(countTemp / limit);
-        res.send({ users, pageCount, limit, skip });
+        res.send({ users, pageCount, limit, skip, page });
     } catch (error) {
         next(new ApiError(error.code || 500, error.message));
     }

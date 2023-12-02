@@ -14,44 +14,51 @@ import { AiOutlineDelete } from 'react-icons/ai';
 import Loading from '../loading';
 import { HiOutlineClipboardList } from 'react-icons/hi';
 import { PiUsersThreeBold } from 'react-icons/pi';
+import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 
-const listParent = [
-    {
-        icon: AiOutlineUser,
-        name: 'Profile',
-        link: routes.profile,
-    },
-    {
-        icon: IoLocationOutline,
-        name: 'Address',
-        link: routes.address,
-    },
-    {
-        icon: HiOutlineClipboardList,
-        name: 'My Purchase',
-        link: routes.myPurchase,
-    },
-    {
-        icon: PiUsersThreeBold,
-        name: 'Favorite',
-        link: routes.favorite,
-    },
-    {
-        icon: AiOutlineLock,
-        name: 'Password',
-        link: routes.password,
-    },
-    {
-        icon: RiDeleteBin6Line,
-        name: 'Delete Account',
-        link: routes.deleteAccount,
-    },
-];
 const layout = ({ children }) => {
     const UrlAvatar = useSelector(getUrlAvatar);
-    const userId = useSelector(getUserId);
     const name = useSelector(getName);
-
+    const pathName = usePathname();
+    const listParent = [
+        {
+            icon: AiOutlineUser,
+            name: 'Profile',
+            link: routes.profile,
+            active: pathName.endsWith(routes.profile),
+        },
+        {
+            icon: IoLocationOutline,
+            name: 'Address',
+            link: routes.address,
+            active: pathName.includes(routes.address),
+        },
+        {
+            icon: HiOutlineClipboardList,
+            name: 'My Purchase',
+            link: routes.myPurchase,
+            active: pathName.includes(routes.myPurchase),
+        },
+        {
+            icon: PiUsersThreeBold,
+            name: 'Favorite',
+            link: routes.favorite,
+            active: pathName.includes(routes.favorite),
+        },
+        {
+            icon: AiOutlineLock,
+            name: 'Password',
+            link: routes.password,
+            active: pathName.includes(routes.password),
+        },
+        {
+            icon: RiDeleteBin6Line,
+            name: 'Delete Account',
+            link: routes.deleteAccount,
+            active: pathName.includes(routes.deleteAccount),
+        },
+    ];
     return (
         <div className="grid grid-cols-12 gap-5 items-start xl:mx-20 my-5">
             <div className="col-span-3 flex flex-col gap-5 justify-center items-center">
@@ -62,29 +69,20 @@ const layout = ({ children }) => {
                         text={'Account Management'}
                     />
                 </div>
-                <div className="flex flex-col  gap-2 bg-secondary px-6 py-5 w-full rounded-xl">
+                <div className="flex flex-col  gap-1  px-6 py-5 w-full rounded-xl">
                     {listParent.map((item) => (
                         <div key={item.name}>
                             <Link
                                 href={item.link}
-                                className="flex items-center gap-2 hover:text-primary text:black">
+                                className={cn(
+                                    'flex items-center gap-2 py-2 px-5 mx-2 rounded-md text:black hover:bg-primary/20',
+                                    { 'bg-primary/30': item.active },
+                                )}>
                                 {createElement(item.icon, {
                                     className: 'text-xl',
                                 })}
                                 <span className="">{item.name}</span>
                             </Link>
-                            <div className="mt-1 flex flex-col justify-between gap-2 ms-10 text-gray-700 ">
-                                {item.children &&
-                                    item.children.map((child) => (
-                                        <Link
-                                            href={child.link}
-                                            key={child.name}
-                                            as={child.link}
-                                            className="hover:text-primary">
-                                            {child.name}
-                                        </Link>
-                                    ))}
-                            </div>
                         </div>
                     ))}
                 </div>

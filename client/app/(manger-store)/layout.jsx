@@ -56,13 +56,13 @@ const layout = ({ children }) => {
                         text={'Store Management'}
                     />
                 </div>
-                <div className="flex flex-col  bg-secondary  py-5 w-full rounded-xl">
+                <div className="flex flex-col  gap-1  py-5 w-full rounded-xl">
                     {listParent.map((item) => (
                         <div key={item.name}>
                             <Link
                                 href={item.link}
                                 className={clsx(
-                                    'flex items-center gap-2 py-2 px-5 mx-2 rounded-md text:black',
+                                    'flex items-center gap-2 py-2 px-5 mx-2 rounded-md text:black hover:bg-primary/20',
                                     { 'bg-primary/30': item.active },
                                 )}>
                                 {createElement(item.icon, {

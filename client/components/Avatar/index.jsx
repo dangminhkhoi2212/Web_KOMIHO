@@ -32,13 +32,13 @@ const AvatarText = ({ src, name, text, size = 'md', ...rest }) => {
                     className="object-cover object-center"
                 />
             </div>
-            <div className="col-span-9 space-y-1 text-sm text-gray-500 font-medium">
+            <div className="col-span-9  space-y-1 text-sm text-gray-500 font-medium">
                 {name && (
                     <div className="text-gray-500 text-md font-bold">
                         {name}
                     </div>
                 )}
-                {text}
+                <div className="flex justify-start">{text}</div>
             </div>
         </div>
     );

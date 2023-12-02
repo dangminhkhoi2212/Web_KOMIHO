@@ -41,12 +41,27 @@ export const toggleActiveProduct = async ({ productId, active }) => {
 export const getAllProducts = async ({
     page = 1,
     limit = 20,
-    textSearch,
     userId,
+    withFullImages = false,
+    star,
+    sortBy,
+    percent,
+    textSearch,
 }) => {
+    //percentDiscount,sold,ratingStar have value is number
+    //topViews, ratingsTotal have value is Boolean
     return (
         await api.get('/product', {
-            params: { textSearch, page, limit, userId },
+            params: {
+                page,
+                limit,
+                userId,
+                withFullImages,
+                sortBy,
+                percent,
+                star,
+                textSearch,
+            },
         })
     ).data;
 };

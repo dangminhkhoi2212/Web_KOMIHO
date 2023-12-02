@@ -2,6 +2,7 @@ const routes = {
     home: '/',
     search: '/search',
     products: '/products',
+    sellers: '/sellers',
 
     login: '/login',
     forgetPassword: '/login/forget-password',

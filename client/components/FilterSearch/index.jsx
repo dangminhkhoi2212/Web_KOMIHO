@@ -32,9 +32,12 @@ const FilterSearch = () => {
     const router = useRouter();
 
     const price = searchParams.get('price');
-    const percent =
-        searchParams.get('percent') && parseInt(searchParams.get('percent'));
-    const star = searchParams.get('star') && parseInt(searchParams.get('star'));
+    const tempPercent = searchParams.get('percent');
+    const textSearch = searchParams.get('textSearch');
+
+    const tempStar = searchParams.get('star');
+    const percent = tempPercent && parseInt(tempPercent);
+    const star = tempStar && parseInt(tempStar);
     const sortBy = searchParams.get('sortBy');
     const filter = {
         price,
@@ -44,18 +47,19 @@ const FilterSearch = () => {
     };
     const handleChangeSFilter = (key, value) => {
         filter[key] = value;
+        const queryT = textSearch ? { textSearch } : {};
         const newRoute = route({
             pathname: routes.products,
-            query: { ...clearObject(filter) },
+            query: { ...clearObject(filter), ...queryT },
         });
 
-        router.push(newRoute, { scroll: false });
+        router.push(newRoute, { scroll: true });
     };
     const handleClear = () => {
-        router.replace(routes.products, { scroll: false });
+        router.replace(routes.products, { scroll: true });
     };
     return (
-        <div className="bg-white rounded-lg p-5 flex flex-col gap-4 relative">
+        <div className="bg-white rounded-lg p-5 flex flex-col gap-4  sticky top-0">
             <Badge size="xl">Filter</Badge>
             <section>
                 <RadioGroup
@@ -122,7 +126,8 @@ const FilterSearch = () => {
             <Button
                 onClick={() => {
                     handleClear();
-                }}>
+                }}
+                className="bg-primary">
                 Clear
             </Button>
         </div>

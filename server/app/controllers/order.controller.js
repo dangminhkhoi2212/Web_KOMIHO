@@ -4,23 +4,6 @@ import ApiError from '../utils/apiError.js';
 import Product from '../models/product.model.js';
 export const createOrder = async (req, res, next) => {
     try {
-        //==> orders shape:
-        // userId
-        // sellerId
-        // total
-        // items:{
-        //         product: {
-        //             productId,
-        //             name,
-        //             price,
-        //             images: {
-        //                 url,
-        //             },
-        //         },
-        //         select,
-        //       }
-        // pickupAddress,
-        // storeAddress
         const { orders } = req.body;
 
         if (!orders?.length) return next(new ApiError(400, 'Empty order.'));

@@ -7,19 +7,21 @@ const Search = ({ handleEvent }) => {
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm({ defaultValues: { textSearch: '' } });
 
     const submit = (data) => {
         if (handleEvent) handleEvent(data);
+        setValue('textSearch', '');
     };
     return (
         <form
             onSubmit={handleSubmit(submit)}
-            className=" flex flex-row  h-10 my-2">
+            className="w-full flex flex-row  h-10 my-2">
             <input
                 type="search"
-                className=" px-4 py-1  text-md rounded-s-full  focus:border-accent focus:ring-0 border-2 border-slate-400 outline-none "
+                className="w-full px-4 py-1  text-md rounded-s-full  focus:border-accent focus:ring-0 border-2 border-slate-400 outline-none "
                 {...register('textSearch')}
                 placeholder={textSearch || 'Search'}
             />

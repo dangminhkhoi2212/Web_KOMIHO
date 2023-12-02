@@ -11,12 +11,11 @@ import Link from 'next/link';
 import routes from '@/routes';
 import MenuBar from '@/components/MenuBar';
 import { useRouter } from 'next/navigation';
+import { isShowProduct } from '@/utils/site';
 
 export const filterProductShow = (products) => {
     if (!products) return null;
-    return products.filter(
-        (product) => product.public && !product?.lock?.status,
-    );
+    return products.filter((product) => isShowProduct(product));
 };
 export default function Home() {
     const router = useRouter();
@@ -30,6 +29,10 @@ export default function Home() {
     });
     const topPercentDiscount = filterProductShow(
         getTopPercentDiscount?.data?.products,
+    );
+    console.log(
+        '🚀 ~ file: page.jsx:33 ~ Home ~ getTopPercentDiscount?.data:',
+        getTopPercentDiscount?.data,
     );
     // Top products sold
     const getTopProductsSold = useQuery({
@@ -45,7 +48,7 @@ export default function Home() {
     const getTopProductsViews = useQuery({
         queryKey: ['top-views'],
         queryFn: () => {
-            return getAllProducts({ sortBy: 'top-views' });
+            return getAllProducts({ sortBy: 'top-views', limit: 12 });
         },
     });
     const topProductsViews = filterProductShow(
