@@ -40,7 +40,7 @@ const Cart = () => {
             className="relative inline-flex items-center p-3 text-sm font-medium text-center text-white hover:ring-2 outline-none hover:ring-blue-300 rounded-md">
             <TfiShoppingCartFull className="font-medium text-xl text-black" />
             <span className="sr-only">Notifications</span>
-            {lengthCartItem !== 0 && (
+            {lengthCartItem && userId !== 0 && (
                 <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-medium text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2 dark:border-gray-900">
                     {lengthCartItem}
                 </div>

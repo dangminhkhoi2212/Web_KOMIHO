@@ -28,7 +28,7 @@ const feedbackSchema = new Schema(
             ],
             validate: [arrLimit, 'Maximum 5 photos'],
         },
-
+        isFeedback: { type: Boolean, default: false },
         content: { type: String, trim: true, max: 500 },
     },
     {

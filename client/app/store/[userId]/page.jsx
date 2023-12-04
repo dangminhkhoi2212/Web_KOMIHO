@@ -8,10 +8,8 @@ import routes from '@/routes';
 import { useQuery } from '@tanstack/react-query';
 import Loading from '@/components/Loading';
 const All = ({ params }) => {
-    console.log('🚀 ~ file: page.jsx:11 ~ All ~ params:', params);
     if (!params?.userId) return <></>;
     const [products, setProducts] = useState([]);
-    console.log('🚀 ~ file: page.jsx:12 ~ All ~ products:', products);
     const getProductsQuery = useQuery({
         queryKey: ['store-all'],
         queryFn: () => {
@@ -25,7 +23,7 @@ const All = ({ params }) => {
         setProducts(getProductsQuery?.data?.products);
     }, [getProductsQuery?.data?.products]);
     return (
-        <>
+        <div>
             {getProductsQuery.isLoading && <Loading />}
             {products?.length === 0 ? (
                 <div className="flex flex-col gap-3 justify-center items-center">
@@ -44,7 +42,7 @@ const All = ({ params }) => {
                     ))}
                 </div>
             )}
-        </>
+        </div>
     );
 };
 

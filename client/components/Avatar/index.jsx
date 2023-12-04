@@ -13,7 +13,7 @@ const AvatarText = ({ src, name, text, size = 'md', ...rest }) => {
     };
     if (!src) return <></>;
     return (
-        <div className="grid grid-cols-12 gap-2 items-center">
+        <div className="flex gap-2 items-center max-w-[450px]">
             <div
                 className={cn(
                     { 'w-6 h-6': size === 'xs' },

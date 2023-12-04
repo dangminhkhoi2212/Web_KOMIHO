@@ -12,9 +12,9 @@ import { createFeedBack, getFeedback } from '@/services/feedback.service';
 import { memo, useEffect, useState } from 'react';
 import FeedbackContent from '../FeedbackContent';
 import { uploadImages } from '@/services/image.service';
+import { toast } from 'react-toastify';
 
 const FeedbackForm = ({ orderItemId, userId, productId, sellerId }) => {
-    console.log('🚀 ~ file: index.jsx:17 ~ FeedbackForm ~ sellerId:', sellerId);
     const getFeedbackQuery = useQuery({
         queryKey: ['feedback-order-item', orderItemId],
         queryFn: () => {
@@ -38,7 +38,6 @@ const FeedbackForm = ({ orderItemId, userId, productId, sellerId }) => {
         defaultValues,
     });
 
-    const queryClient = useQueryClient();
     const createFeedbackMutation = useMutation({
         mutationFn: (data) => {
             return createFeedBack(data);
@@ -47,7 +46,7 @@ const FeedbackForm = ({ orderItemId, userId, productId, sellerId }) => {
             getFeedbackQuery.refetch();
         },
         onError(error) {
-            console.log('🚀 ~ file: index.jsx:45 ~ error:', error);
+            toast.error(error);
         },
     });
     const submitFeedback = (data) => {
@@ -86,7 +85,7 @@ const FeedbackForm = ({ orderItemId, userId, productId, sellerId }) => {
                                     isProcessing={
                                         createFeedbackMutation.isLoading
                                     }
-                                    disable={createFeedbackMutation.isLoading}
+                                    disabled={createFeedbackMutation.isLoading}
                                     className="bg-primary/80 !border-none focus:!ring-0 hover:!bg-primary w-40 float-right">
                                     Submit
                                 </Button>

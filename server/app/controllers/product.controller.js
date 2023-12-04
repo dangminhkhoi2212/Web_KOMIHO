@@ -367,11 +367,11 @@ const getAll = async (req, res, next) => {
         // return res.send(countResult);
         const count = countResult.length ? countResult[0].count : 0;
 
+        const filterSort = sortProducts({ sortBy });
+        // Add sort
+        if (filterSort) agg.push(filterSort);
         // Add skip and limit for pagination
         agg.push({ $skip: skip }, { $limit: limit });
-        // Add sort
-        const filterSort = sortProducts({ sortBy });
-        if (filterSort) agg.push(filterSort);
         // return res.send({ agg, query });
 
         // Use the aggregation pipeline to get the products

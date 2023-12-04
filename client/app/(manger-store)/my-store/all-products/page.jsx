@@ -43,7 +43,7 @@ import Search from '@/components/Header/Search';
 import { setPage, setTextSearch } from '@/redux/filterSearchSlice';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Pagination from '@/components/Pagination';
-import { clearOject } from '@/utils/site';
+import { clearObject } from '@/utils/site';
 const AllProduct = () => {
     const router = useRouter();
     const userId = useSelector(getUserId);
@@ -113,7 +113,7 @@ const AllProduct = () => {
     };
 
     const handleSearch = ({ textSearch }) => {
-        const query = clearOject({ limit, textSearch });
+        const query = clearObject({ limit, textSearch });
         const newRoute = route({
             pathname: routes.managerAllProducts,
             query,
@@ -122,7 +122,7 @@ const AllProduct = () => {
     };
 
     const handleRefresh = () => {
-        const query = clearOject({ limit });
+        const query = clearObject({ limit });
         const newRoute = route({
             pathname: routes.managerAllProducts,
             query,
@@ -133,7 +133,7 @@ const AllProduct = () => {
 
     const pageCount = getProductsQuery?.data?.pageCount;
     const handlePageClick = (page) => {
-        const query = clearOject({ page, limit, textSearch });
+        const query = clearObject({ page, limit, textSearch });
         const newRoute = route({
             pathname: routes.managerAllProducts,
             query,

@@ -31,7 +31,7 @@ const Auth = ({ children }) => {
                         <div className=" flex flex-col justify-between  ">
                             <ToastContainer position="bottom-right" />
                             <Header />
-                            <div className="bg-default py-4 lg:px-20 min-h-[400px]  relative z-container">
+                            <div className="bg-default py-4 px-20 min-h-[400px]  relative z-container">
                                 <BreadCrumb />
                                 <Suspense
                                     fallback={<Loading loadingStatus={true} />}>

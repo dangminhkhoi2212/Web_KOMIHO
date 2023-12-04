@@ -30,10 +30,7 @@ export default function Home() {
     const topPercentDiscount = filterProductShow(
         getTopPercentDiscount?.data?.products,
     );
-    console.log(
-        '🚀 ~ file: page.jsx:33 ~ Home ~ getTopPercentDiscount?.data:',
-        getTopPercentDiscount?.data,
-    );
+
     // Top products sold
     const getTopProductsSold = useQuery({
         queryKey: ['top-sold'],
@@ -74,7 +71,6 @@ export default function Home() {
     ];
     return (
         <div className="text-center w-full flex flex-col gap-4 ">
-            {/* <Slider /> */}
             <div className="bg-[url('../public/images/bg_home.svg')] bg-no-repeat bg-cover bg-center h-[450px] rounded-lg  grid grid-cols-3 place-items-center gap-5">
                 <div className="">
                     <h3 className="text-gray-500 font-semibold text-xl">

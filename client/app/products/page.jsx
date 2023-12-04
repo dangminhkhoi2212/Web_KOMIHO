@@ -77,7 +77,7 @@ const ProductsPage = () => {
                             dataLength={products.length}
                             next={fetchNextPage}
                             hasMore={!!hasNextPage}
-                            loader={<Loading sizeProp={50} />}
+                            loader={<p>Loading...</p>}
                             className=" grid grid-cols-5 gap-5  relative">
                             {products?.map((product) => (
                                 <div className="" key={product?._id}>

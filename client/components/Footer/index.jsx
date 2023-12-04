@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import listSupports from './listSupports';
-import Feedback from './Feedback';
-import Logo from '@/components/Logo';
+import MediaLink from './MediaLink';
 const Footer = () => {
     return (
         <div className="grid grid-cols-8 gap-5 justify-items-center  lg:px-40 py-6 bg-white z-header text-sm">
@@ -35,11 +34,9 @@ const Footer = () => {
                 </ul>
             </div>
             <div className="col-span-2 flex flex-col gap-2 ">
-                <span className="text-lg font-semibold">
-                    FEEDBACK FOR WEBSITE
-                </span>
+                <span className="text-lg font-semibold">SOCIAL MEDIA</span>
 
-                <Feedback />
+                <MediaLink />
             </div>
         </div>
     );

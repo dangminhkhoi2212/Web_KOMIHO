@@ -1,10 +1,7 @@
-import { MdOutlineEmail } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 
 import { IoStorefrontOutline } from 'react-icons/io5';
-import { TfiShoppingCartFull } from 'react-icons/tfi';
 import Logo from '@/components/Logo';
-import MediaLink from './MediaLink';
 import Search from './Search';
 import UserTools from './UserTools';
 import DropDown from '@/components/Header/DropDown';

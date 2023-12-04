@@ -10,7 +10,8 @@ import routes from '@/routes';
 import { useRouter } from 'next/navigation';
 const VerifyEmail = () => {
     const searchParams = useSearchParams();
-    const email = searchParams.get('email');
+    const email = searchParams.get('email').replace(' ', '+');
+    console.log('🚀 ~ file: page.jsx:14 ~ VerifyEmail ~ email:', email);
     const emailToken = searchParams.get('emailToken');
     const router = useRouter();
     const verifyEmailMutation = useMutation({

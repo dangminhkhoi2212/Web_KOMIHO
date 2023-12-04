@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
             <body
                 className={clsx(
                     inter.className,
-                    ' scroll-smooth flex flex-col justify-center items-center min-w-[1024px]',
+                    ' scroll-smooth flex flex-col justify-center items-center min-w-[1500px]',
                 )}>
                 <NextTopLoader color="#8FB3FF" showSpinner={false} />
                 <Auth>{children}</Auth>

@@ -86,10 +86,6 @@ const FormEditProduct = ({ product }) => {
     });
     const addProductMutation = useMutation({
         mutationFn: (data) => {
-            console.log(
-                '🚀 ~ file: index.jsx:100 ~ FormEditProduct ~ data:',
-                data,
-            );
             const dataUpdate = handleData(data);
 
             return updateProduct(product._id, dataUpdate);
@@ -102,6 +98,7 @@ const FormEditProduct = ({ product }) => {
 
                 queryClient.invalidateQueries(['products']);
                 dispatch(removeChooseProduct());
+                window.scrollTo(0, 0);
             }
         },
         onError(error) {

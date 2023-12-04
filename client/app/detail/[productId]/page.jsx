@@ -120,6 +120,7 @@ const Detail = ({ params }) => {
     };
 
     if (!product) return <></>;
+    const user = getUserMutation?.data;
     return (
         <div className="flex flex-col gap-5 px-20 relative">
             {allowAccess() && (
@@ -203,7 +204,16 @@ const Detail = ({ params }) => {
                     </div>
                 </div>
                 <div className="px-10 bg-white rounded-md ">
-                    <InfoSeller user={getUserMutation?.data} />
+                    <InfoSeller
+                        user={user}
+                        buttonDiv={
+                            <Link
+                                className="px-3 py-2 rounded-md bg-white ring-1 flex gap-2 items-center hover:bg-primary/20"
+                                href={routes.store(user?._id)}>
+                                <BsShop /> View
+                            </Link>
+                        }
+                    />
                 </div>
                 <div className="px-20 py-10 bg-white rounded-md gap-5">
                     <Badge color="indigo" size="xl">

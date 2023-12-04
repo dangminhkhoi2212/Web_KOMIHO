@@ -101,6 +101,7 @@ const FormAddProduct = () => {
                 });
                 reset(initValue);
                 toast.success('Add product successfully');
+                window.scrollTo(0, 0);
             }
         },
         onError(error) {
