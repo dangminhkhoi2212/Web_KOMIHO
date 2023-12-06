@@ -362,9 +362,9 @@ const getAll = async (req, res, next) => {
         agg.push({ $project: projectFilter });
         // Count the matching documents without the skip and limit
         const countAgg = [...agg];
+
         countAgg.push({ $count: 'count' });
         const countResult = await Product.aggregate(countAgg);
-        // return res.send(countResult);
         const count = countResult.length ? countResult[0].count : 0;
 
         const filterSort = sortProducts({ sortBy });
@@ -372,6 +372,7 @@ const getAll = async (req, res, next) => {
         if (filterSort) agg.push(filterSort);
         // Add skip and limit for pagination
         agg.push({ $skip: skip }, { $limit: limit });
+
         // return res.send({ agg, query });
 
         // Use the aggregation pipeline to get the products

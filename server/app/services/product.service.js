@@ -2,9 +2,7 @@ import mongoose, { isValidObjectId } from 'mongoose';
 
 export const filterProducts = ({ textSearch, userId, star, percent }) => {
     const filters = [];
-    if (userId) {
-        filters.push({ $match: { userId } });
-    }
+
     if (textSearch) {
         if (isValidObjectId(textSearch)) {
             filters.push({
@@ -32,6 +30,11 @@ export const filterProducts = ({ textSearch, userId, star, percent }) => {
                     },
                 },
             });
+    }
+    if (userId) {
+        filters.push({
+            $match: { userId: new mongoose.Types.ObjectId(userId) },
+        });
     }
     if (percent) {
         filters.push({

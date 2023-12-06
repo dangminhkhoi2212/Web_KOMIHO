@@ -214,7 +214,9 @@ const AllProduct = () => {
                     onClick={() => handleRefresh()}>
                     <BiRefresh className="text-2xl text-white" />
                 </button>
-                <Search handleEvent={(data) => handleSearch(data)} />
+                <div className="max-w-xl">
+                    <Search handleEvent={(data) => handleSearch(data)} />
+                </div>
             </div>
             {modalDeleteMany && (
                 <Modal

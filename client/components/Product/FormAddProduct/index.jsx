@@ -195,7 +195,7 @@ const FormAddProduct = () => {
                 <button
                     type="submit"
                     className="h-12 w-16 mt-3 transition ease-in-out  overflow-hidden hover:bg-accent duration-500  cursor-pointer p-3 rounded-xl bg-primary shadow-sm shadow-accent font-bold text-white relative align-bottom float-right">
-                    Save
+                    Add
                 </button>
             </form>
         </FormProvider>
