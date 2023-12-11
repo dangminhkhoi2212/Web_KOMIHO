@@ -57,7 +57,7 @@ const CalendarForm = () => {
                     </div>
                 </PopoverTrigger>
                 <PopoverContent className="flex flex-col gap-2">
-                    <ul className="flex justify-between">
+                    <ul className="flex justify-between list-none">
                         {optionPick.map((op, index) => (
                             <li
                                 key={index}

@@ -24,6 +24,11 @@ import DoughnutChart from '@/components/Charts/DoughnoutChart';
 import VerticalChart from '@/components/Charts/VerticalChart';
 import LineChartRevenue from '@/components/Charts/LineChartRevenue';
 const listNumber = ['red', 'success', 'yellow', 'indigo', 'dark'];
+
+const checkSold = (products) => {
+    if (!products?.length) return;
+    return products.filter((p) => p.sold > 0);
+};
 const page = () => {
     const userId = useSelector(getUserId);
     const getRevenueQuery = useQuery({
@@ -36,17 +41,11 @@ const page = () => {
 
     const data = getRevenueQuery?.data;
     const revenueData = data?.revenue;
-    const topProducts = data?.topProducts;
+    const topProducts = checkSold(data?.topProducts);
     const topCustomers = data?.topCustomers;
-    const [labelsLineRevenue, setLabelsLineRevenue] = useState();
-    const [datasetsLineRevenue, setDatasetsLineRevenue] = useState();
     const [datasetsTopProducts, setDatasetsTopProducts] = useState();
     const [datasetsTopCustomers, setDatasetsTopCustomers] = useState();
     useEffect(() => {
-        setLabelsLineRevenue(revenueData?.list?.map((item) => item.month));
-        setDatasetsLineRevenue(
-            revenueData?.list?.map((item) => item.totalRevenue),
-        );
         setDatasetsTopProducts(topProducts?.map((item) => item.sold));
         setDatasetsTopCustomers(topCustomers?.map((item) => item.totalExpense));
     }, [data]);
