@@ -189,7 +189,10 @@ const deleteUser = async (req, res, next) => {
         }
 
         // delete on mongodb
-        await User.findByIdAndUpdate(userId, { public: false });
+        await Promise.all([
+            await User.findByIdAndUpdate(userId, { public: false }),
+            await Product.updateMany({ userId }, { public: false }),
+        ]);
 
         res.json({ message: `Deleted user ${userId}`, status: 'success' });
     } catch (error) {
@@ -234,10 +237,7 @@ const updateAddress = async (req, res, next) => {
 const recoverAccount = async (req, res, next) => {
     try {
         const email = req.body.email;
-        console.log(
-            '🚀 ~ file: user.controller.js:151 ~ recoverAccount ~ email:',
-            email,
-        );
+
         const result = await User.findOneAndUpdate(
             { email },
             { public: true },
@@ -250,6 +250,7 @@ const recoverAccount = async (req, res, next) => {
         const refreshToken = await createRefreshToken(result._id);
         result.accessToken = accessToken;
         result.refreshToken = refreshToken;
+        await Product.updateMany({ userId: result._id }, { public: true });
         res.send(result);
     } catch (error) {
         next(new ApiError(error.code || 500, error.message || error));

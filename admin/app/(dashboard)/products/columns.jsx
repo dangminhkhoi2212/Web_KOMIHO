@@ -15,27 +15,6 @@ import { NumericFormat } from 'react-number-format';
 import { Star } from 'lucide-react';
 import EditProductButton from '@/components/Button/EditProductButton';
 export const columns = [
-    // {
-    //     id: 'select',
-    //     header: ({ table }) => (
-    //         <Checkbox
-    //             checked={table.getIsAllPageRowsSelected()}
-    //             onCheckedChange={(value) =>
-    //                 table.toggleAllPageRowsSelected(!!value)
-    //             }
-    //             aria-label="Select all"
-    //         />
-    //     ),
-    //     cell: ({ row }) => (
-    //         <Checkbox
-    //             checked={row.getIsSelected()}
-    //             onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //             aria-label="Select row"
-    //         />
-    //     ),
-    //     enableSorting: false,
-    //     enableHiding: false,
-    // },
     {
         accessorKey: 'cover',
         header: 'Cover',
@@ -148,7 +127,7 @@ export const columns = [
                     displayType="text"
                     renderText={(value) => (
                         <span className="flex justify-center items-center gap-2 ">
-                            {value}
+                            {Number(value).toFixed(2)}
                             <Star className="fill-yellow-400 stroke-none" />
                         </span>
                     )}

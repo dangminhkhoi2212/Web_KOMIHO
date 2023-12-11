@@ -10,9 +10,11 @@ import { HiOutlineChatAlt2 } from 'react-icons/hi';
 import Link from 'next/link';
 import routes from '@/routes';
 import { GrLocation } from 'react-icons/gr';
+import { TfiEmail } from 'react-icons/tfi';
 const StoreHeader = ({ user, buttonDiv }) => {
     const listMiddle = [
         { name: 'Products', content: user?.totalProducts, icon: LuStore },
+        { name: 'Email', content: user?.email, icon: TfiEmail },
         {
             name: 'Address',
             content: user?.address?.store?.main,

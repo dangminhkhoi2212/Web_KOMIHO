@@ -65,7 +65,9 @@
         --ring: 212.7 26.8% 83.9%;
     }
 }
-
+:root {
+    --primary: #8fb3ff;
+}
 @layer base {
     * {
         @apply border-border;
@@ -112,7 +114,6 @@
     overflow: auto;
     display: flex !important;
     flex-wrap: nowrap;
-    justify-content: center;
     align-items: center;
     gap: 0.5rem;
     overflow-x: auto;
@@ -122,11 +123,17 @@
     width: 80px !important;
     height: 80px !important;
     display: flex;
-    justify-content: center;
     align-items: center;
     margin: 0.2rem;
+}
+.slick-dots .slick-active {
+    border: 3px soild var(--primary) !important;
 }
 .DropdownMenuItem:hover {
     background: none !important;
     /* color: var(--white); */
+}
+ul,
+ol {
+    list-style: auto;
 }

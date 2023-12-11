@@ -67,7 +67,9 @@ const AllProduct = () => {
                 page,
                 userId,
                 withFullImages: true,
+                withDescription: true,
                 limit,
+                sortBy: 'top-new',
             });
         },
         keepPreviousData: true,
@@ -128,6 +130,7 @@ const AllProduct = () => {
             query,
         });
         router.replace(newRoute);
+        getProductsQuery.refetch();
     };
     const products = getProductsQuery?.data?.products;
 

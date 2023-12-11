@@ -31,6 +31,10 @@ import {
 import { removeChooseProduct } from '@/redux/chooseProductSlice';
 
 const FormEditProduct = ({ product }) => {
+    console.log(
+        '🚀 ~ file: index.jsx:34 ~ FormEditProduct ~ product:',
+        product,
+    );
     const listDeletedImages = useSelector(getListDeletedImages);
 
     const [initValue, setInitValue] = useState({
@@ -80,7 +84,6 @@ const FormEditProduct = ({ product }) => {
             return deleteImages(images);
         },
         onSuccess() {
-            console.log('DELETE');
             dispatch(resetListDeletedImages());
         },
     });
@@ -91,6 +94,7 @@ const FormEditProduct = ({ product }) => {
             return updateProduct(product._id, dataUpdate);
         },
         onSuccess(data) {
+            window.scrollTo(0, 0);
             if (data.ok) {
                 handleDeleteImages();
 
@@ -98,7 +102,6 @@ const FormEditProduct = ({ product }) => {
 
                 queryClient.invalidateQueries(['products']);
                 dispatch(removeChooseProduct());
-                window.scrollTo(0, 0);
             }
         },
         onError(error) {

@@ -12,7 +12,6 @@ const FormSizeAndQuantity = ({ indexColor, focusColor }) => {
     const positionColor = `colors.${indexColor}`;
 
     const {
-        reset,
         resetField,
         control,
         formState: { errors },
@@ -23,10 +22,6 @@ const FormSizeAndQuantity = ({ indexColor, focusColor }) => {
         name: `${positionColor}.sizes`,
     });
     const [indexForm, setIndexForm] = useState(fields.length);
-    console.log(
-        '🚀 ~ file: index.jsx:25 ~ FormSizeAndQuantity ~ fields:',
-        fields,
-    );
 
     const handleFocus = (index) => {
         if (index < 0) index = 0;

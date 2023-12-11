@@ -17,8 +17,8 @@ const ToggleStatus = ({ productId, active }) => {
         },
         onSuccess(data) {
             if (data.ok) {
-                queryClient.invalidateQueries(['products', textSearch]);
                 setToggle(!toggle);
+                queryClient.invalidateQueries(['products']);
             }
         },
         onError(error) {

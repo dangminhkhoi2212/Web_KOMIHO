@@ -31,7 +31,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { route } from 'nextjs-routes';
 import { formatISO } from 'date-fns';
 
-const LineChartRevenue = () => {
+const LineChartRevenue = ({ title }) => {
     const searchParams = useSearchParams();
     const filterDay = searchParams.get('date');
     const filterMonth = searchParams.get('month');
@@ -79,7 +79,7 @@ const LineChartRevenue = () => {
             },
             title: {
                 display: true,
-                text: 'Chart.js Line Chart',
+                text: title,
             },
         },
         scales: {

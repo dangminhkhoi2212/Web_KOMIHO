@@ -132,6 +132,7 @@ export default function Home() {
                     </Button>
                 </div>
             ))}
+            <div className="bg-[url('../public/images/bg_home2.png')] h-[450px] rounded-lg  bg-no-repeat bg-cover bg-center" />
         </div>
     );
 }

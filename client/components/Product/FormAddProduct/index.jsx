@@ -84,7 +84,6 @@ const FormAddProduct = () => {
             return deleteImages(images);
         },
         onSuccess() {
-            console.log('DELETE 2');
             dispatch(resetListDeletedImages());
         },
     });
@@ -93,6 +92,12 @@ const FormAddProduct = () => {
             return addProduct(handleData(data));
         },
         onSuccess(data) {
+            if (typeof window !== 'undefined')
+                window.scrollTo({
+                    top: 0,
+                    left: 0,
+                    behavior: 'smooth',
+                });
             if (data.ok) {
                 handleDeleteImages();
                 const colors = getValues('colors');
@@ -100,8 +105,9 @@ const FormAddProduct = () => {
                     resetField(`colors.${index}`);
                 });
                 reset(initValue);
+                resetField('colors');
                 toast.success('Add product successfully');
-                window.scrollTo(0, 0);
+                router.push(routes.managerAddProduct);
             }
         },
         onError(error) {

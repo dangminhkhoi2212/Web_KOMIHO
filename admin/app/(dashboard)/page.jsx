@@ -32,7 +32,6 @@ const DashboardPage = () => {
         },
     });
     const data = getAnalysisAdminQuery?.data;
-    console.log('🚀 ~ file: page.jsx:20 ~ DashboardPage ~ data:', data);
     if (!data) return <></>;
     const cardsInfo = [
         {
@@ -135,14 +134,7 @@ const DashboardPage = () => {
                 ))}
             </div>
             <div className=" bg-white rounded-lg p-4">
-                {/* <LineChart
-                    datasetsProp={datasetsChartRevenue}
-                    labelsProp={labelsChartRevenue}
-                    yLabel={'VND'}
-                    label={'Revenue'}
-                    title={'Total revenue this year'}
-                /> */}
-                <LineChartRevenue />
+                <LineChartRevenue title={'Revenue statistics chart'} />
             </div>
             <div className="grid grid-cols-12 gap-4">
                 <div className="col-span-8  bg-white rounded-lg p-4">

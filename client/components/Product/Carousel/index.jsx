@@ -25,6 +25,7 @@ const CenterMode = ({ images }) => {
             );
         },
         dots: true,
+        focusOnSelect: true,
         dotsClass: 'slick-dots slick-thumb',
         infinite: true,
         speed: 500,

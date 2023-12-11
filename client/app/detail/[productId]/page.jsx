@@ -7,8 +7,6 @@ import Price from '@/components/Product/Price';
 import { AiOutlineEye } from 'react-icons/ai';
 import FormAddToCart from '@/components/Product/FormAddToCart';
 import { Badge } from 'flowbite-react';
-import AvatarText from '@/components/Avatar';
-import { HiOutlineChatAlt2 } from 'react-icons/hi';
 import { BsShop } from 'react-icons/bs';
 import Link from 'next/link';
 import InfoSeller from '@/components/Product/InfoSeller';
@@ -37,7 +35,7 @@ import InfoProduct from '@/components/Feedback/InfoProduct';
 import { getReports } from '@/services/report.service';
 function createMarkup(data) {
     if (!data) return;
-    return { __html: data.toString() };
+    return { __html: data };
 }
 
 const Detail = ({ params }) => {
@@ -216,7 +214,7 @@ const Detail = ({ params }) => {
                     />
                 </div>
                 <div className="px-20 py-10 bg-white rounded-md gap-5">
-                    <Badge color="indigo" size="xl">
+                    <Badge color="indigo" size="xl" className="mb-4">
                         <h1 className="font-medium"> PRODUCT DESCRIPTION</h1>
                     </Badge>
                     <div

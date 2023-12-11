@@ -10,15 +10,17 @@ import SizeAndQuantity from './SizeAndQuantity';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import clsx from 'clsx';
 
-const FormColor = ({ control }) => {
+const FormColor = ({}) => {
     const {
         resetField,
+        control,
         formState: { errors },
     } = useFormContext();
     const { fields, append, remove, move } = useFieldArray({
         control,
         name: 'colors',
     });
+    console.log('🚀 ~ file: index.jsx:22 ~ FormColor ~ fields:', fields);
 
     const [indexForm, setIndexForm] = useState(fields.length);
 

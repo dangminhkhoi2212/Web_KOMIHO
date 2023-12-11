@@ -60,7 +60,7 @@ const deleteProduct = async (req, res, next) => {
 
         if (!product) return next(new ApiError(405, 'Product not found'));
 
-        await Product.findByIdAndDelete(productId);
+        await Product.findByIdAndUpdate(productId, { public: false });
         await User.findByIdAndUpdate(userId, { $inc: { productTotal: -1 } });
 
         res.json({
@@ -320,6 +320,8 @@ const getAll = async (req, res, next) => {
         const userId =
             query?.userId && new mongoose.Types.ObjectId(query.userId);
         const withFullImages = query?.withFullImages === 'true' ? true : false;
+        const withDescription =
+            query?.withDescription === 'true' ? true : false;
 
         console.log(
             '🚀 ~ file: product.controller.js:322 ~ getAll ~ query:',
@@ -348,6 +350,9 @@ const getAll = async (req, res, next) => {
             projectFilter.images = 1;
         } else {
             projectFilter.cover = { $arrayElemAt: ['$images.url', 0] };
+        }
+        if (withDescription) {
+            projectFilter.description = 1;
         }
 
         const agg = [];

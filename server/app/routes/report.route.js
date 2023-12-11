@@ -7,6 +7,10 @@ import {
     updateReport,
 } from '../controllers/report.controller.js';
 
-router.route('/').post(createReport).patch(updateReport).get(getReport);
+router
+    .route('/')
+    .post(verifyToken, createReport)
+    .patch(verifyToken, updateReport)
+    .get(verifyToken, getReport);
 
 export default router;
