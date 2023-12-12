@@ -4,12 +4,13 @@ import {
     createRefreshToken,
 } from '../services/token.service.js';
 import ApiError from '../utils/apiError.js';
-
+import 'dotenv/config.js';
 export const getSessionListClerk = async (req, res, next) => {
     try {
         const admin = await User.findOne({
             email: process.env.EMAIL_ADMIN,
         }).lean();
+
         const accessToken = createAccessToken(admin._id);
         const refreshToken = createRefreshToken(admin._id);
 

@@ -13,13 +13,12 @@ import Pagination from '@/components/Pagination';
 import { columns } from './columns';
 import { clearOject } from '@/utils/site';
 import Loading from '@/components/Loading';
+
 const ProductsPage = () => {
     const searchParams = useSearchParams();
     const router = useRouter();
     const page = searchParams.get('page') || undefined;
-    console.log('🚀 ~ file: page.jsx:18 ~ ProductsPage ~ page:', page);
     const limit = searchParams.get('limit') || undefined;
-    console.log('🚀 ~ file: page.jsx:20 ~ ProductsPage ~ limit:', limit);
     const textSearch = searchParams.get('textSearch');
     const getAllProductsQuery = useQuery({
         queryKey: ['get-all-products'],

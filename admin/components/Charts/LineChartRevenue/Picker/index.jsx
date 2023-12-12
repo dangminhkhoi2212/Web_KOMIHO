@@ -16,10 +16,7 @@ const CalendarForm = () => {
     const searchParams = useSearchParams();
     const filterDay = searchParams.get('date');
     const filterMonth = searchParams.get('month');
-    console.log(
-        '🚀 ~ file: index.jsx:19 ~ CalendarForm ~ filterMonth:',
-        filterMonth,
-    );
+
     const filterYear = searchParams.get('year');
     const [optionPick, setOptionPick] = useState([
         { name: 'Day', picked: true, cpn: <PickDay /> },
@@ -70,7 +67,7 @@ const CalendarForm = () => {
                     <hr />
                     <div className="flex justify-center items-center">
                         {optionPick.map((op, index) => (
-                            <>
+                            <div key={index}>
                                 {op.picked ? (
                                     <div
                                         key={index}
@@ -80,7 +77,7 @@ const CalendarForm = () => {
                                 ) : (
                                     <></>
                                 )}
-                            </>
+                            </div>
                         ))}
                     </div>
                 </PopoverContent>

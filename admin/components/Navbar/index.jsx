@@ -47,7 +47,11 @@ const Navbar = () => {
             </div>
             {/* <div className="h-[1px] w-full bg-slate-300 rounded-full"></div> */}
             <div className="flex justify-center items-center bg-white rounded-lg py-2 min-h-[40px]">
-                <UserButton showName className="text-white" />
+                <UserButton
+                    showName
+                    className="text-white"
+                    afterSignOutUrl={routes.signIn}
+                />
             </div>
             {/* <div className="h-[1px] w-full bg-slate-300 rounded-full"></div> */}
             <ul className="flex flex-col gap-1">

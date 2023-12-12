@@ -23,6 +23,11 @@ import Link from 'next/link';
 import CardBox from '@/components/CardBox';
 import Loading from '@/components/Loading';
 import LineChartRevenue from '@/components/Charts/LineChartRevenue';
+
+const checkSold = (products) => {
+    if (!products) return;
+    return products.filter((p) => p.value !== 0);
+};
 const DashboardPage = () => {
     const [date, setDate] = useState(new Date());
     const getAnalysisAdminQuery = useQuery({
@@ -92,14 +97,16 @@ const DashboardPage = () => {
             value: item.totalRevenue,
         };
     });
-    const topAllProducts = data?.topAllProducts?.map((item) => {
-        return {
-            _id: item._id,
-            name: item.name,
-            image: item.cover,
-            value: item.sold,
-        };
-    });
+    const topAllProducts = checkSold(
+        data?.topAllProducts?.map((item) => {
+            return {
+                _id: item._id,
+                name: item.name,
+                image: item.cover,
+                value: item.sold,
+            };
+        }),
+    );
 
     return (
         <div className="flex flex-col gap-4 relative">
