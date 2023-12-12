@@ -1,5 +1,6 @@
 'use client';
 import { cn } from '@/lib/utils';
+import clsx from 'clsx';
 import Image from 'next/image';
 
 const AvatarText = ({ src, name, text, size = 'md', ...rest }) => {
@@ -12,7 +13,7 @@ const AvatarText = ({ src, name, text, size = 'md', ...rest }) => {
     };
     if (!src) return <></>;
     return (
-        <div className="grid grid-cols-12 items-center gap-2">
+        <div className="flex gap-2 items-center max-w-[450px]">
             <div
                 className={cn(
                     { 'w-6 h-6': size === 'xs' },
@@ -21,7 +22,7 @@ const AvatarText = ({ src, name, text, size = 'md', ...rest }) => {
                     { 'w-20 h-20': size === 'lg' },
                     { 'w-36 h-36': size === 'xl' },
 
-                    'col-span-3 rounded-full relative overflow-hidden',
+                    ' rounded-full relative overflow-hidden col-span-3',
                 )}>
                 <Image
                     fill={true}
@@ -31,13 +32,13 @@ const AvatarText = ({ src, name, text, size = 'md', ...rest }) => {
                     className="object-cover object-center"
                 />
             </div>
-            <div className="col-span-9 space-y-1 text-sm text-gray-500 font-medium">
+            <div className="col-span-9  space-y-1 text-sm text-gray-500 font-medium">
                 {name && (
-                    <div className=" text-gray-500 text-md font-bold line-clamp-2">
+                    <div className="text-gray-500 text-md font-bold">
                         {name}
                     </div>
                 )}
-                {text}
+                <div className="flex justify-start">{text}</div>
             </div>
         </div>
     );

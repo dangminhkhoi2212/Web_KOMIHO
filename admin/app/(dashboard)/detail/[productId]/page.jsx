@@ -6,7 +6,7 @@ import { getProductByProductId } from '@/services/product.service';
 import Price from '@/components/ProductDetail/Price';
 
 import Link from 'next/link';
-import InfoSeller from '@/components/ProductDetail/InfoSeller';
+import InfoSeller from '@/components/InfoSeller';
 import { routes } from '@/routes';
 import Loading from './loading';
 import LoadingCpn from '@/components/Loading';
