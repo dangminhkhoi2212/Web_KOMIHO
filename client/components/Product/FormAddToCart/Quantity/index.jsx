@@ -26,6 +26,7 @@ const Quantity = () => {
                 className="text-xl w-10 h-10  border-2 flex items-center justify-center"
                 onClick={() => {
                     if (quantity < 100) setValue('quantity', quantity + 1);
+                    if (quantity === 0) setValue('quantity', 1);
                 }}>
                 <CgMathPlus />
             </div>

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import routes from './routes';
 export const config = {
-    matcher: ['/store/:path*', '/manager/:path*', '/account/:path*', '/cart'],
+    matcher: ['/store/:path*', '/manager/:path*', '/account/:path*'],
 };
 
 export default (request) => {

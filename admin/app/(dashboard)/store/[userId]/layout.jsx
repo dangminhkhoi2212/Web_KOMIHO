@@ -2,7 +2,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { getUserApi } from '@/services/user.service';
 import '@/app/globals.css';
-import StoreHeader from '@/components/Store/Header';
+import InfoSeller from '@/components/InfoSeller';
 import Navigation from '@/components/Store/Navigation';
 import Loading from './loading';
 import { useQuery } from '@tanstack/react-query';
@@ -25,7 +25,8 @@ const layout = ({ params, children }) => {
         <div className="flex flex-col gap-5 relative">
             {getUserQuery?.isLoading && <LoadingCpn />}
             <div className="bg-white rounded-xl p-5">
-                <StoreHeader user={user} />
+                {/* <StoreHeader user={user} /> */}
+                <InfoSeller user={user} />
             </div>
             <div className="grid grid-cols-12 gap-5">
                 <nav className="col-span-2 p-5 bg-white rounded-xl">
